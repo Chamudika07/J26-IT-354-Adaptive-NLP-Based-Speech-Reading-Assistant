@@ -218,3 +218,44 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Monorepo additions (preserve the existing Python rules above)
+.env.*
+!.env.example
+!.env.*.example
+node_modules/
+.expo/
+.metro-cache/
+.gradle/
+Pods/
+DerivedData/
+*.xcuserstate
+local.properties
+*.keystore
+*.jks
+.DS_Store
+
+# Private runtime data, credentials, and research artifacts
+uploads/
+private-data/
+datasets/
+checkpoints/
+research/artifacts/
+*.dump
+*.sql.gz
+*.sqlite
+*.sqlite3
+*.wav
+*.mp3
+*.m4a
+*.mp4
+*.pt
+*.pth
+*.onnx
+*.safetensors
+*.pem
+*.key
+
+# The original Python template ignores lib/ globally; allow future app source here.
+!apps/mobile/src/lib/
+!apps/mobile/src/lib/**
