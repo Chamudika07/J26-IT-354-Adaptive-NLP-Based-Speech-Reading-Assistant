@@ -3,7 +3,18 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, CheckConstraint, DateTime, ForeignKey, Index, String, Text, text
+from sqlalchemy import (
+    Boolean,
+    CheckConstraint,
+    DateTime,
+    ForeignKey,
+    Index,
+    LargeBinary,
+    String,
+    Text,
+    UniqueConstraint,
+    text,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base, TimestampMixin, UUIDPrimaryKeyMixin, VersionMixin
@@ -95,3 +106,70 @@ class UserRole(UUIDPrimaryKeyMixin, TimestampMixin, VersionMixin, Base):
     revoked_by_user_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("users.id", ondelete="RESTRICT"), index=True
     )
+
+
+class AuthSession(UUIDPrimaryKeyMixin, TimestampMixin, VersionMixin, Base):
+    """Stable login identity; no device fingerprint or raw credentials."""
+
+    __tablename__ = "auth_sessions"
+    __table_args__ = (
+        CheckConstraint("row_version > 0", name="row_version_positive"),
+        CheckConstraint("authenticated_at <= created_at", name="authentication_order"),
+        CheckConstraint("expires_at > created_at", name="expiry_order"),
+        CheckConstraint(
+            "idle_expires_at > created_at AND idle_expires_at <= expires_at", name="idle_order"
+        ),
+        CheckConstraint(
+            "(revoked_at IS NULL) = (revocation_reason IS NULL)", name="revocation_pair"
+        ),
+        CheckConstraint("revoked_at IS NULL OR revoked_at >= created_at", name="revocation_order"),
+        CheckConstraint(
+            "revocation_reason IS NULL OR revocation_reason IN "
+            "('logout', 'replay', 'account_security')",
+            name="reason_values",
+        ),
+        Index(
+            "ix_auth_sessions_active_user", "user_id", postgresql_where=text("revoked_at IS NULL")
+        ),
+        Index("ix_auth_sessions_expires_at", "expires_at"),
+        Index("ix_auth_sessions_idle_expires_at", "idle_expires_at"),
+    )
+
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("users.id", ondelete="RESTRICT"), index=True
+    )
+    authenticated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    idle_expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    revoked_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    revocation_reason: Mapped[str | None] = mapped_column(String(24))
+
+
+class AuthRefreshToken(UUIDPrimaryKeyMixin, Base):
+    """Retain consumed digests for replay detection until the session expires."""
+
+    __tablename__ = "auth_refresh_tokens"
+    __table_args__ = (
+        CheckConstraint("octet_length(token_digest) = 32", name="digest_length"),
+        CheckConstraint("generation >= 0", name="generation_nonnegative"),
+        CheckConstraint("expires_at > created_at", name="expiry_order"),
+        CheckConstraint(
+            "consumed_at IS NULL OR consumed_at >= created_at", name="consumption_order"
+        ),
+        UniqueConstraint("session_id", "generation", name="uq_auth_refresh_tokens_generation"),
+        Index(
+            "uq_auth_refresh_tokens_current",
+            "session_id",
+            unique=True,
+            postgresql_where=text("consumed_at IS NULL"),
+        ),
+    )
+
+    session_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("auth_sessions.id", ondelete="CASCADE")
+    )
+    token_digest: Mapped[bytes] = mapped_column(LargeBinary, unique=True)
+    generation: Mapped[int]
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    consumed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

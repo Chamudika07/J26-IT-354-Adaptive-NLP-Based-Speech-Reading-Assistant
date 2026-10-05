@@ -8,6 +8,7 @@ DATABASE_URL = "postgresql+psycopg://synthetic:secret-marker@localhost:5432/conf
 
 @pytest.fixture(autouse=True)
 def isolate_settings(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("JWT_SIGNING_KEY", "synthetic-test-signing-key-never-use-in-production")
     for name in ("DATABASE_URL", "MIGRATION_DATABASE_URL", "APP_ENV", "LOG_LEVEL"):
         monkeypatch.delenv(name, raising=False)
 

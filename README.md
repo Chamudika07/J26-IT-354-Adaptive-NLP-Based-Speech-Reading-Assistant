@@ -2,10 +2,11 @@
 
 Adaptive NLP-Based Speech & Reading Assistant for Children with Dyslexia.
 
-This repository contains the project foundation and Database Sprint 1: identity,
-learner, relationship, preference, and consent storage. It does not
-implement diagnosis, authentication flows, OCR, simplification, speech recognition, learner
-analytics, or numeracy algorithms. Use synthetic data only.
+This repository contains the project foundation, Database Sprint 1, and the
+Authentication & Authorization Foundation: identity and learner storage, login/session
+management, and learner access policies. It does not implement diagnosis, OCR,
+simplification, speech recognition, learner analytics, or numeracy algorithms.
+Use synthetic data only.
 
 ## Repository layout
 
@@ -21,7 +22,8 @@ analytics, or numeracy algorithms. Use synthetic data only.
 
 The backend reserves auth, learners, documents, simplification, speech,
 learner_modelling, and numeracy modules. Auth and learners own the nine Sprint 1 tables;
-the other modules remain empty. No business endpoints are exposed.
+auth additionally owns two session tables. The other modules remain empty. Only health
+and the four approved authentication endpoints are exposed.
 
 ## Requirements
 
@@ -37,6 +39,7 @@ No .env file needs to be created.
 
 ```sh
 export POSTGRES_PASSWORD='replace_with_your_own_url_safe_password'
+export JWT_SIGNING_KEY="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
 docker compose up --build -d --wait
 docker compose exec backend alembic upgrade head
 curl http://127.0.0.1:8000/api/v1/health
@@ -46,7 +49,9 @@ curl http://127.0.0.1:8000/api/v1/health/ready
 Expected responses are {"status":"ok"} and {"status":"ready"}. Development API
 documentation is at http://127.0.0.1:8000/docs. All REST endpoints use /api/v1.
 The unchanged Alembic baseline adds no application tables. Three subsequent Sprint 1
-revisions add nine tables and seed only four role definitions. Migrations are explicit.
+revisions add nine tables and seed only four role definitions. Revision
+0005_auth_sessions adds two auth session tables without seeding credentials. Migrations
+are explicit. No account provisioning endpoint is included.
 
 ```sh
 docker compose logs backend
@@ -64,6 +69,7 @@ run the Compose backend on port 8000.
 
 ```sh
 export POSTGRES_PASSWORD='replace_with_your_own_url_safe_password'
+export JWT_SIGNING_KEY="$(python3 -c 'import secrets; print(secrets.token_urlsafe(32))')"
 docker compose up -d --wait db
 cd apps/backend
 uv sync --locked
@@ -102,6 +108,7 @@ Never point tests or migration experiments at shared or production data.
 - [Engineering rules](AGENTS.md)
 - [Architecture, environment variables, migration strategy, and limits](docs/foundation.md)
 - [Database Sprint 1 schema, constraints, indexes, and test commands](docs/database-sprint-1.md)
+- [Authentication, session lifecycle, authorization policies, and limits](docs/auth-authorization-foundation.md)
 - [Mobile setup reserved for later](apps/mobile/README.md)
 - [Research separation and governance](research/README.md)
 
