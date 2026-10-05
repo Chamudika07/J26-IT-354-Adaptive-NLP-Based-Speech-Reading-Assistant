@@ -23,6 +23,13 @@ services:
     environment:
       APP_ENV: ${APP_ENV:-development}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      JWT_SIGNING_KEY: ${JWT_SIGNING_KEY:?Set a random JWT_SIGNING_KEY of at least 32 bytes}
+      JWT_ISSUER: ${JWT_ISSUER:-adaptive-assistant}
+      JWT_AUDIENCE: ${JWT_AUDIENCE:-adaptive-assistant-api}
+      ACCESS_TOKEN_TTL_SECONDS: ${ACCESS_TOKEN_TTL_SECONDS:-300}
+      REFRESH_ABSOLUTE_TTL_SECONDS: ${REFRESH_ABSOLUTE_TTL_SECONDS:-604800}
+      REFRESH_IDLE_TTL_SECONDS: ${REFRESH_IDLE_TTL_SECONDS:-86400}
+      JWT_CLOCK_TOLERANCE_SECONDS: ${JWT_CLOCK_TOLERANCE_SECONDS:-30}
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-adaptive}:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD to a local URL-safe password}@db:5432/${POSTGRES_DB:-adaptive}
     ports:
       - "127.0.0.1:${API_PORT:-8000}:8000"

@@ -23,9 +23,11 @@ def test_mixins_use_postgresql_uuid_and_timezone_aware_timestamps() -> None:
         assert not columns[name].nullable
 
 
-def test_registered_sprint_one_tables_only() -> None:
+def test_registered_foundation_tables_only() -> None:
     assert set(target_metadata.tables) == {
         "users",
+        "auth_sessions",
+        "auth_refresh_tokens",
         "roles",
         "user_roles",
         "learner_profiles",

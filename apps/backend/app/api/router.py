@@ -1,4 +1,4 @@
-"""Versioned API composition; feature routers currently expose no endpoints."""
+"""Versioned API composition; only health and authentication expose endpoints."""
 
 from fastapi import APIRouter
 

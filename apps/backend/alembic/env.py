@@ -3,12 +3,12 @@
 from alembic import context
 from sqlalchemy import Connection, create_engine, pool
 
-from app.core.config import Settings
+from app.core.config import DatabaseSettings
 from app.db.model_registry import target_metadata
 
 
 def configured_url() -> str:
-    settings = Settings()
+    settings = DatabaseSettings()
     return (settings.migration_database_url or settings.database_url).get_secret_value()
 
 

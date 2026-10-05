@@ -28,6 +28,7 @@ def test_postgresql_connectivity_and_utc_session() -> None:
         database_url=SecretStr(value),
         migration_database_url=None,
         app_env="test",
+        jwt_signing_key=SecretStr("synthetic-test-signing-key-never-use-in-production"),
         log_level="WARNING",
     )
     engine = create_db_engine(settings.database_url)

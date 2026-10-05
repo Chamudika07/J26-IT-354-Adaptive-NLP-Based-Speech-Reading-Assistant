@@ -8,7 +8,9 @@ are isolated environments of the same design, not additional application databas
 
 The app factory is app.main:create_app. All REST endpoints use /api/v1. Each module
 reserves router.py, schemas.py, models.py, service.py, and repository.py. No module
-has business endpoints. Database Sprint 1 adds nine auth/learner tables; see
+has content-processing endpoints. Auth exposes login, refresh, logout, and me; see
+[the authentication foundation](auth-authorization-foundation.md). Database Sprint 1
+adds nine auth/learner tables; see
 [the current database specification](database-sprint-1.md).
 
 Requests will flow through routers, services, and module-owned repositories. Modules
@@ -37,7 +39,8 @@ GET /api/v1/health/ready performs SELECT 1; unavailable databases return a sanit
 - The baseline migration is deliberately empty. Applying it creates only Alembic's
   version tracking table; there is no application schema yet.
 - Sprint 1 preserves that baseline and adds 0002_auth_identity, 0003_learner_foundation,
-  and 0004_consent_evidence sequentially. The current head has nine application tables.
+  and 0004_consent_evidence sequentially. Revision 0005_auth_sessions adds two session
+  tables; the current head has eleven application tables.
 - Never run Base.metadata.create_all or automatic migrations at application startup.
 
 Schema-change workflow, from apps/backend:
@@ -66,6 +69,12 @@ changes. Destructive changes require a backup and recovery plan.
 | API_PORT | Compose | Defaults to 8000; bound only to loopback |
 | APP_ENV | Backend | development, test, staging, or production; default development |
 | LOG_LEVEL | Backend | DEBUG, INFO, WARNING, ERROR, CRITICAL; default INFO |
+| JWT_SIGNING_KEY | Backend | Required random secret, at least 32 bytes; example rejected |
+| JWT_ISSUER / JWT_AUDIENCE | Backend | Exact token identifiers; see auth foundation |
+| ACCESS_TOKEN_TTL_SECONDS | Backend | Default 300, maximum 300 |
+| REFRESH_ABSOLUTE_TTL_SECONDS | Backend | Default/maximum 604800 |
+| REFRESH_IDLE_TTL_SECONDS | Backend | Default/maximum 86400 |
+| JWT_CLOCK_TOLERANCE_SECONDS | Backend | Default/maximum 30 |
 | DATABASE_URL | Backend | Required postgresql+psycopg URL |
 | MIGRATION_DATABASE_URL | Alembic | Optional privileged role targeting the same database |
 | TEST_DATABASE_URL | Integration tests | Explicit disposable database ending in _test |
@@ -103,10 +112,11 @@ deletes it and must be an intentional local reset.
 
 ## Child-data protection and current limits
 
-Authentication/authorization flows, consent policy enforcement, file storage, retention
-jobs, and general audit trails are not implemented. Sprint 1 adds consent evidence
-storage and access-grant history. Only operational health endpoints are exposed. Do not add real
-child or learner data to this foundation.
+Authentication/session flows and learner authorization policies are implemented.
+Consent policy enforcement, file storage, retention jobs, and general audit trails
+are not implemented. Sprint 1 adds consent evidence
+storage and access-grant history. Only health and the four authentication endpoints
+are exposed. Do not add real child or learner data to this foundation.
 
 Future endpoints must enforce learner-level permissions, collect minimum necessary
 attributes, use controlled private storage, and define deletion/retention behavior.
@@ -122,8 +132,8 @@ are resolved in uv.lock; Docker uses minor/major-maintained Python/PostgreSQL im
 tags, so those base images are not immutable digest pins. Pin deployment images by
 digest when establishing a release process.
 
-Mobile, generated TypeScript client, authentication, file processing, ML inference,
-workers, and all seven modules' business behavior are deferred. No ML/OCR/LLM/speech
+Mobile, generated TypeScript client, account provisioning/recovery/administration,
+file processing, ML inference, workers, and educational processing are deferred. No ML/OCR/LLM/speech
 libraries or additional backend/database services are introduced.
 
 ## References

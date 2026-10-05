@@ -3,9 +3,9 @@
 from typing import Literal
 from uuid import UUID
 
-from pydantic import AwareDatetime
+from pydantic import AwareDatetime, Field, SecretStr, field_validator
 
-from app.core.schemas import VersionedReadSchema
+from app.core.schemas import Schema, VersionedReadSchema
 
 RoleCode = Literal["guardian", "educator", "learner", "administrator"]
 UserStatus = Literal["active", "disabled", "anonymized"]
@@ -31,3 +31,31 @@ class UserRoleRead(VersionedReadSchema):
     granted_by_user_id: UUID
     revoked_at: AwareDatetime | None
     revoked_by_user_id: UUID | None
+
+
+class LoginRequest(Schema):
+    login_handle: str = Field(min_length=1, max_length=128)
+    password: SecretStr = Field(min_length=1, max_length=128)
+
+    @field_validator("login_handle")
+    @classmethod
+    def normalize_handle(cls, value: str) -> str:
+        return value.strip().lower()
+
+
+class RefreshRequest(Schema):
+    refresh_token: SecretStr = Field(min_length=1, max_length=256)
+
+
+class TokenResponse(Schema):
+    access_token: str = Field(repr=False)
+    refresh_token: str = Field(repr=False)
+    token_type: Literal["bearer"] = "bearer"
+    expires_in: int
+
+
+class MeResponse(Schema):
+    user_id: UUID
+    login_handle: str
+    status: Literal["active"]
+    roles: list[str]

@@ -25,6 +25,7 @@ def settings(monkeypatch: pytest.MonkeyPatch) -> Settings:
     return Settings(
         _env_file=None,
         app_env="test",
+        jwt_signing_key=SecretStr("synthetic-test-signing-key-never-use-in-production"),
         log_level="WARNING",
         database_url=SecretStr("postgresql+psycopg://synthetic:unused@127.0.0.1:1/unit_test"),
     )
@@ -90,3 +91,39 @@ def db_session(postgres_engine: Engine) -> Iterator[Session]:
             finally:
                 session.close()
                 transaction.rollback()
+
+
+@pytest.fixture(scope="session")
+def password_hash() -> str:
+    from app.modules.auth.passwords import hash_password
+
+    return hash_password("Synthetic accessible passphrase 42")
+
+
+@pytest.fixture
+def active_user(db_session, password_hash):
+    from uuid import uuid4
+
+    from app.modules.auth.models import User
+
+    user = User(
+        login_handle="synthetic_" + uuid4().hex[:16],
+        password_hash=password_hash,
+        status="active",
+    )
+    db_session.add(user)
+    db_session.flush()
+    return user
+
+
+@pytest.fixture
+def auth_client(application, db_session):
+    from app.db.session import get_session
+
+    def override():
+        yield db_session
+
+    application.dependency_overrides[get_session] = override
+    with TestClient(application) as test_client:
+        yield test_client
+    application.dependency_overrides.clear()

@@ -34,6 +34,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         redoc_url=None,
         openapi_url="/openapi.json" if settings.app_env in {"development", "test"} else None,
     )
+    application.state.settings = settings
     register_exception_handlers(application)
     application.include_router(router, prefix="/api/v1")
     return application

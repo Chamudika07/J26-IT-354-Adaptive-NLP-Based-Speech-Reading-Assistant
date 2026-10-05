@@ -44,6 +44,7 @@ Do not implement diagnosis. Keep research dependencies and code out of productio
 ## Scope of the current foundation
 
 Do not scaffold React Native or implement feature behavior as incidental cleanup.
-Auth and learners contain Sprint 1 storage models and schemas, but no business
-endpoints. Other feature modules, mobile, research, and API-client locations remain
+Auth and learners contain Sprint 1 storage plus authentication/session and learner
+authorization foundations. Only the approved auth and health endpoints are exposed.
+See docs/auth-authorization-foundation.md for security contracts and deployment limits. Other feature modules, mobile, research, and API-client locations remain
 reserved. Do not rewrite 0001_foundation or published revisions; add new revisions.
