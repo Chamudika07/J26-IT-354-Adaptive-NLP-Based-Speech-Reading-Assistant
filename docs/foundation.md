@@ -8,7 +8,8 @@ are isolated environments of the same design, not additional application databas
 
 The app factory is app.main:create_app. All REST endpoints use /api/v1. Each module
 reserves router.py, schemas.py, models.py, service.py, and repository.py. No module
-has business endpoints or tables yet.
+has business endpoints. Database Sprint 1 adds nine auth/learner tables; see
+[the current database specification](database-sprint-1.md).
 
 Requests will flow through routers, services, and module-owned repositories. Modules
 may call another module's public service interface but must not directly write its
@@ -35,6 +36,8 @@ GET /api/v1/health/ready performs SELECT 1; unavailable databases return a sanit
 - Name check constraints explicitly to satisfy the shared naming convention.
 - The baseline migration is deliberately empty. Applying it creates only Alembic's
   version tracking table; there is no application schema yet.
+- Sprint 1 preserves that baseline and adds 0002_auth_identity, 0003_learner_foundation,
+  and 0004_consent_evidence sequentially. The current head has nine application tables.
 - Never run Base.metadata.create_all or automatic migrations at application startup.
 
 Schema-change workflow, from apps/backend:
@@ -66,6 +69,7 @@ changes. Destructive changes require a backup and recovery plan.
 | DATABASE_URL | Backend | Required postgresql+psycopg URL |
 | MIGRATION_DATABASE_URL | Alembic | Optional privileged role targeting the same database |
 | TEST_DATABASE_URL | Integration tests | Explicit disposable database ending in _test |
+| ALLOW_TEST_DATABASE_RESET | Integration/migration tests | Must be 1 to permit destructive migration tests |
 
 Compose constructs DATABASE_URL using the db hostname. A backend run on the host
 uses 127.0.0.1 and the published PostgreSQL port instead. Alembic reads the optional
@@ -99,8 +103,9 @@ deletes it and must be an intentional local reset.
 
 ## Child-data protection and current limits
 
-Authentication, authorization, consent, file storage, retention jobs, and audit trails
-are not implemented. Only operational health endpoints are exposed. Do not add real
+Authentication/authorization flows, consent policy enforcement, file storage, retention
+jobs, and general audit trails are not implemented. Sprint 1 adds consent evidence
+storage and access-grant history. Only operational health endpoints are exposed. Do not add real
 child or learner data to this foundation.
 
 Future endpoints must enforce learner-level permissions, collect minimum necessary

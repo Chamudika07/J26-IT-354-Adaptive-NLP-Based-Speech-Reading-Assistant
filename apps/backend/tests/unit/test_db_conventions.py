@@ -23,5 +23,22 @@ def test_mixins_use_postgresql_uuid_and_timezone_aware_timestamps() -> None:
         assert not columns[name].nullable
 
 
-def test_foundation_has_no_application_tables() -> None:
-    assert len(target_metadata.tables) == 0
+def test_registered_sprint_one_tables_only() -> None:
+    assert set(target_metadata.tables) == {
+        "users",
+        "roles",
+        "user_roles",
+        "learner_profiles",
+        "guardian_learner_relationships",
+        "educator_learner_relationships",
+        "learner_preferences",
+        "consent_notice_versions",
+        "consent_records",
+    }
+    for table in target_metadata.tables.values():
+        assert list(table.primary_key.columns.keys()) == ["id"]
+        assert isinstance(table.c.id.type, Uuid)
+        for column in table.columns:
+            if isinstance(column.type, DateTime):
+                assert column.type.timezone
+        assert all(constraint.name for constraint in table.constraints)
