@@ -2,8 +2,9 @@
 
 Adaptive NLP-Based Speech & Reading Assistant for Children with Dyslexia.
 
-This repository currently contains only the initial project foundation. It does not
-implement diagnosis, authentication, OCR, simplification, speech recognition, learner
+This repository contains the project foundation and Database Sprint 1: identity,
+learner, relationship, preference, and consent storage. It does not
+implement diagnosis, authentication flows, OCR, simplification, speech recognition, learner
 analytics, or numeracy algorithms. Use synthetic data only.
 
 ## Repository layout
@@ -19,7 +20,8 @@ analytics, or numeracy algorithms. Use synthetic data only.
 | .github | CI, pull-request template, CODEOWNERS placeholder |
 
 The backend reserves auth, learners, documents, simplification, speech,
-learner_modelling, and numeracy modules. They expose no business endpoints or tables.
+learner_modelling, and numeracy modules. Auth and learners own the nine Sprint 1 tables;
+the other modules remain empty. No business endpoints are exposed.
 
 ## Requirements
 
@@ -43,7 +45,8 @@ curl http://127.0.0.1:8000/api/v1/health/ready
 
 Expected responses are {"status":"ok"} and {"status":"ready"}. Development API
 documentation is at http://127.0.0.1:8000/docs. All REST endpoints use /api/v1.
-Alembic's baseline adds no application tables. Migrations are always an explicit step.
+The unchanged Alembic baseline adds no application tables. Three subsequent Sprint 1
+revisions add nine tables and seed only four role definitions. Migrations are explicit.
 
 ```sh
 docker compose logs backend
@@ -82,14 +85,15 @@ From the repository root:
 sh scripts/check_backend.sh
 ```
 
-Ordinary tests use synthetic settings and do not need PostgreSQL. The integration
-test skips unless TEST_DATABASE_URL points to a disposable PostgreSQL database with
-a name ending in _test. It never falls back to DATABASE_URL. CI supplies its own
-isolated PostgreSQL service, runs the integration check, applies migrations, checks
-schema drift, and builds the backend image.
+Ordinary tests use synthetic settings and do not need PostgreSQL. PostgreSQL tests
+require TEST_DATABASE_URL pointing to an exclusive disposable database ending in _test
+and ALLOW_TEST_DATABASE_RESET=1. Migration tests drop and recreate application tables.
+Tests never fall back to DATABASE_URL. CI supplies its own isolated PostgreSQL service,
+runs the full suite, applies migrations, checks schema drift, and builds the image.
 
 To include integration tests locally, provision a disposable database ending in _test
-in an isolated test environment, export TEST_DATABASE_URL, and rerun the check script.
+in an isolated test environment, export TEST_DATABASE_URL and ALLOW_TEST_DATABASE_RESET=1,
+and rerun the check script. See the Sprint 1 guide for complete local commands.
 Never point tests or migration experiments at shared or production data.
 
 ## Team rules and documentation
@@ -97,6 +101,7 @@ Never point tests or migration experiments at shared or production data.
 - [Contribution workflow](CONTRIBUTING.md)
 - [Engineering rules](AGENTS.md)
 - [Architecture, environment variables, migration strategy, and limits](docs/foundation.md)
+- [Database Sprint 1 schema, constraints, indexes, and test commands](docs/database-sprint-1.md)
 - [Mobile setup reserved for later](apps/mobile/README.md)
 - [Research separation and governance](research/README.md)
 

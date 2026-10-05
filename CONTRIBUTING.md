@@ -20,8 +20,10 @@ Install Python 3.13 and uv 0.12.23, then run from the repository root:
 
 This syncs the locked development environment and runs Ruff, formatting checks, mypy,
 and pytest with coverage. The database integration check skips unless an explicit
-TEST_DATABASE_URL names a disposable PostgreSQL database ending in _test. CI provides
-that database and runs the migration upgrade/drift checks and Docker image build.
+TEST_DATABASE_URL names an exclusive disposable PostgreSQL database ending in _test.
+Sprint 1 integration/migration tests additionally require ALLOW_TEST_DATABASE_RESET=1:
+they drop and recreate tables. CI supplies both settings and an isolated database.
+Never run these tests on a shared database. See docs/database-sprint-1.md for setup.
 
 Backend dependency changes go through uv add / uv add --dev from apps/backend.
 Commit both pyproject.toml and uv.lock. Do not hand-edit dependency resolutions.
@@ -42,4 +44,6 @@ Do not implement diagnosis. Keep research dependencies and code out of productio
 ## Scope of the current foundation
 
 Do not scaffold React Native or implement feature behavior as incidental cleanup.
-The seven modules, mobile, research, and API-client locations are reserved only.
+Auth and learners contain Sprint 1 storage models and schemas, but no business
+endpoints. Other feature modules, mobile, research, and API-client locations remain
+reserved. Do not rewrite 0001_foundation or published revisions; add new revisions.

@@ -1,6 +1,7 @@
 # Project documentation
 
 - [Foundation architecture and operations](foundation.md)
+- [Database Sprint 1 schema and verification](database-sprint-1.md)
 - [Complete foundation file inventory](foundation-files.md)
 - [Team workflow](../CONTRIBUTING.md)
 - [Repository engineering rules](../AGENTS.md)
