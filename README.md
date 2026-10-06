@@ -3,8 +3,9 @@
 Adaptive NLP-Based Speech & Reading Assistant for Children with Dyslexia.
 
 This repository contains the project foundation, Database Sprint 1, and the
-Authentication & Authorization Foundation: identity and learner storage, login/session
-management, and learner access policies. It does not implement diagnosis, OCR,
+Authentication & Authorization Foundation, and Learner Profile & Preferences API:
+identity and learner storage, login/session management, scoped profile reads, and
+versioned accessibility preference updates. It does not implement diagnosis, OCR,
 simplification, speech recognition, learner analytics, or numeracy algorithms.
 Use synthetic data only.
 
@@ -22,8 +23,8 @@ Use synthetic data only.
 
 The backend reserves auth, learners, documents, simplification, speech,
 learner_modelling, and numeracy modules. Auth and learners own the nine Sprint 1 tables;
-auth additionally owns two session tables. The other modules remain empty. Only health
-and the four approved authentication endpoints are exposed.
+auth additionally owns two session tables. The other modules remain empty. Health,
+authentication, and the four approved learner/profile/preference endpoints are exposed.
 
 ## Requirements
 
@@ -109,6 +110,7 @@ Never point tests or migration experiments at shared or production data.
 - [Architecture, environment variables, migration strategy, and limits](docs/foundation.md)
 - [Database Sprint 1 schema, constraints, indexes, and test commands](docs/database-sprint-1.md)
 - [Authentication, session lifecycle, authorization policies, and limits](docs/auth-authorization-foundation.md)
+- [Learner Profile & Preferences API and concurrency contract](docs/learner-profile-api.md)
 - [Mobile setup reserved for later](apps/mobile/README.md)
 - [Research separation and governance](research/README.md)
 

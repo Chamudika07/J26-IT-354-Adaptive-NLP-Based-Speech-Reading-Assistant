@@ -9,7 +9,9 @@ are isolated environments of the same design, not additional application databas
 The app factory is app.main:create_app. All REST endpoints use /api/v1. Each module
 reserves router.py, schemas.py, models.py, service.py, and repository.py. No module
 has content-processing endpoints. Auth exposes login, refresh, logout, and me; see
-[the authentication foundation](auth-authorization-foundation.md). Database Sprint 1
+[the authentication foundation](auth-authorization-foundation.md). Learners exposes
+scoped list/detail reads and preference reads/updates; see [the API contract](learner-profile-api.md).
+Database Sprint 1
 adds nine auth/learner tables; see
 [the current database specification](database-sprint-1.md).
 
@@ -115,8 +117,8 @@ deletes it and must be an intentional local reset.
 Authentication/session flows and learner authorization policies are implemented.
 Consent policy enforcement, file storage, retention jobs, and general audit trails
 are not implemented. Sprint 1 adds consent evidence
-storage and access-grant history. Only health and the four authentication endpoints
-are exposed. Do not add real child or learner data to this foundation.
+storage and access-grant history. Health, authentication, and approved learner-profile
+read/preference-update endpoints are exposed. Do not add real child or learner data to this foundation.
 
 Future endpoints must enforce learner-level permissions, collect minimum necessary
 attributes, use controlled private storage, and define deletion/retention behavior.

@@ -171,3 +171,48 @@ def resolve_principal(db: Session, settings: Settings, token: str) -> Principal:
         issued_at=claims.issued_at,
         expires_at=claims.expires_at,
     )
+
+
+def protect_principal_for_write(db: Session, principal: Principal) -> Principal:
+    """Read-only cross-module contract for short, authorized write transactions.
+
+    The input MUST come from current JWT principal resolution. Lock order: user,
+    session, role definitions/assignments; caller then locks its own domain rows.
+    Revalidate after waiting, and retain these locks until caller commit/rollback.
+    No auth rows are written and this function never commits.
+    """
+    from dataclasses import replace
+
+    user = repo.user_by_id(db, principal.user_id, lock=True)
+    session = repo.session_by_id(db, principal.session_id, lock=True)
+    roles = repo.protected_active_roles(db, principal.user_id)
+    now = repo.now(db)
+    if (
+        not _active(user)
+        or user is None
+        or user.login_handle is None
+        or session is None
+        or session.user_id != principal.user_id
+        or not _live(session, now)
+        or principal.expires_at <= now
+    ):
+        raise authentication_required()
+    return replace(principal, login_handle=user.login_handle, roles=roles)
+
+
+def assert_protected_session_live(db: Session, principal: Principal) -> None:
+    """Recheck deadlines after domain-lock waits, immediately before a mutation.
+
+    Call only after protect_principal_for_write in the SAME transaction: those
+    locks protect identity, session revocation, and roles, but cannot stop time.
+    This read-only check acquires no new locks and never commits.
+    """
+    session = repo.session_by_id(db, principal.session_id)
+    now = repo.now(db)
+    if (
+        session is None
+        or session.user_id != principal.user_id
+        or not _live(session, now)
+        or principal.expires_at <= now
+    ):
+        raise authentication_required()

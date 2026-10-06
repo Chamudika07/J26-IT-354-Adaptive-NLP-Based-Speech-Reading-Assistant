@@ -4,7 +4,14 @@ from decimal import Decimal
 from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import AwareDatetime, Field, StringConstraints
+from pydantic import (
+    AwareDatetime,
+    Field,
+    StrictBool,
+    StringConstraints,
+    field_validator,
+    model_validator,
+)
 
 from app.core.schemas import Schema, VersionedReadSchema
 
@@ -100,3 +107,72 @@ class ConsentRecordRead(Schema):
     recorded_at: AwareDatetime
     recorded_by_user_id: UUID
     capture_method: Literal["self_service", "assisted_in_person"]
+
+
+# Public API projections intentionally do not inherit VersionedReadSchema.
+class LearnerListItem(Schema):
+    id: UUID
+    display_name: DisplayName
+
+
+class LearnerListResponse(Schema):
+    items: list[LearnerListItem]
+    next_cursor: UUID | None
+
+
+class LearnerDetailSelfGuardian(Schema):
+    id: UUID
+    display_name: DisplayName
+    age_band: AgeBand | None
+    grade_level: GradeLevel | None
+
+
+class LearnerDetailEducator(Schema):
+    id: UUID
+    display_name: DisplayName
+
+
+class _PublicPreferenceFields(Schema):
+    preferred_language_tag: LanguageTag | None = None
+    text_scale: (
+        Annotated[
+            Decimal,
+            Field(ge=Decimal("0.75"), le=Decimal("3.00"), decimal_places=2, allow_inf_nan=False),
+        ]
+        | None
+    ) = None
+    line_spacing: (
+        Annotated[
+            Decimal,
+            Field(ge=Decimal("1.00"), le=Decimal("3.00"), decimal_places=2, allow_inf_nan=False),
+        ]
+        | None
+    ) = None
+    theme: Literal["system", "light", "dark", "high_contrast"] | None = None
+    reduce_motion: StrictBool | None = None
+
+    @field_validator("text_scale", "line_spacing", mode="before")
+    @classmethod
+    def validate_decimal_input(cls, value: object) -> object:
+        # JSON numbers and decimal strings are supported. Booleans and other
+        # coercions are not. Decimal fields enforce finiteness/range/precision.
+        if value is not None and (
+            isinstance(value, bool) or not isinstance(value, (str, int, float, Decimal))
+        ):
+            raise ValueError("Use a finite decimal number or decimal string")
+        return value
+
+
+class LearnerPreferenceResponse(_PublicPreferenceFields):
+    learner_id: UUID
+    row_version: int = Field(strict=True, ge=0)
+
+
+class LearnerPreferenceUpdate(_PublicPreferenceFields):
+    row_version: int = Field(strict=True, ge=0, le=2147483647)
+
+    @model_validator(mode="after")
+    def require_preference_change(self) -> "LearnerPreferenceUpdate":
+        if not self.model_fields_set - {"row_version"}:
+            raise ValueError("Supply at least one preference field")
+        return self
