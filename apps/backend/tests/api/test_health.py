@@ -35,7 +35,7 @@ def test_readiness_failure_hides_database_details(application: FastAPI, client: 
     assert "private-database-credentials" not in response.text
 
 
-def test_only_health_and_approved_auth_endpoints_are_exposed(client: TestClient) -> None:
+def test_only_approved_endpoints_are_exposed(client: TestClient) -> None:
     assert set(client.get("/openapi.json").json()["paths"]) == {
         "/api/v1/health",
         "/api/v1/health/ready",
@@ -43,6 +43,9 @@ def test_only_health_and_approved_auth_endpoints_are_exposed(client: TestClient)
         "/api/v1/auth/refresh",
         "/api/v1/auth/logout",
         "/api/v1/auth/me",
+        "/api/v1/learners",
+        "/api/v1/learners/{learner_id}",
+        "/api/v1/learners/{learner_id}/preferences",
     }
 
 

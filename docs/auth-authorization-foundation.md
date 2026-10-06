@@ -97,8 +97,8 @@ context. Session ownership must match the JWT subject. Password hashes and refre
 digests never appear in the principal or `/me` response.
 
 Auth owns passwords, JWTs, sessions, authentication dependencies, and global role guards.
-Learners imports only the immutable auth contract and owns its relationship queries and
-policy evaluation. Auth imports no learners models and performs no learner-table writes.
+Learners uses the immutable auth contract and public auth read-lock contracts, and owns
+its relationship queries and policy evaluation. Auth imports no learners models and performs no learner-table writes.
 Any future multi-module lifecycle orchestration belongs above these modules, using
 public services and one explicit transaction; no circular dependency is introduced.
 
@@ -129,7 +129,8 @@ The returned action-scoped grant includes an explicit basic-profile field allowl
 Educators receive only id/display_name; self/guardians may additionally receive age_band
 and grade_level. Future serializers must enforce the allowlist. Preference updates are
 limited to the explicit accessibility field set in the learners service. These are
-contracts; this sprint exposes no learner content or preference endpoints.
+contracts; the subsequent [Learner Profile API sprint](learner-profile-api.md) exposes
+the approved profile and preference endpoints with these restrictions.
 
 Unknown actions, unrelated actors, expired/revoked grants, missing learners, and archived
 learners produce the same 404. Future nested resources must resolve learner ownership

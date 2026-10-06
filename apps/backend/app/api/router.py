@@ -1,4 +1,4 @@
-"""Versioned API composition; only health and authentication expose endpoints."""
+"""Versioned API composition for health, authentication, and approved learner APIs."""
 
 from fastapi import APIRouter
 

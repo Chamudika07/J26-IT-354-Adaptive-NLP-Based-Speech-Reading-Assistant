@@ -64,6 +64,7 @@ async def validation_exception_handler(
     return JSONResponse(
         status_code=422,
         content={"error": {"code": "validation_error", "message": "Invalid request"}},
+        headers={"Cache-Control": "no-store"},
     )
 
 

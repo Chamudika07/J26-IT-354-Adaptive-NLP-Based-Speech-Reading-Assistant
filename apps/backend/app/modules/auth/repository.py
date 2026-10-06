@@ -69,3 +69,22 @@ def locked_open_sessions(db: Session, user_id: UUID) -> list[AuthSession]:
             .execution_options(populate_existing=True)
         )
     )
+
+
+def protected_active_roles(db: Session, user_id: UUID) -> frozenset[str]:
+    """Hold supporting role definitions and assignments until the caller commits.
+
+    Called only after locking user/session. SHARE locks block revocation and role
+    deactivation without serializing unrelated users with the same role.
+    """
+    return frozenset(
+        db.scalars(
+            select(Role.code)
+            .join(UserRole, UserRole.role_id == Role.id)
+            .where(
+                UserRole.user_id == user_id, UserRole.revoked_at.is_(None), Role.is_active.is_(True)
+            )
+            .order_by(Role.id, UserRole.id)
+            .with_for_update(read=True, of=(Role, UserRole))
+        )
+    )
