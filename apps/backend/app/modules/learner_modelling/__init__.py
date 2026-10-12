@@ -16,6 +16,10 @@ from app.modules.learner_modelling.analytics import (
     calculate_reading_accuracy,
     calculate_words_per_minute,
 )
+from app.modules.learner_modelling.models import (
+    LearnerReadingSupportSettings,
+    ReadingSession,
+)
 
 __all__ = [
     "ENGAGEMENT_FORMULA_VERSION",
@@ -23,8 +27,10 @@ __all__ = [
     "EngagementIndicator",
     "EngagementWeights",
     "HesitationStatistics",
+    "LearnerReadingSupportSettings",
     "PartitionKey",
     "PartitionProgress",
+    "ReadingSession",
     "SessionTelemetry",
     "calculate_completion_statistics",
     "calculate_experimental_engagement",

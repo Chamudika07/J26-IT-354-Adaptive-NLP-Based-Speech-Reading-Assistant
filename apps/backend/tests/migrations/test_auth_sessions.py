@@ -26,7 +26,7 @@ def test_sprint_one_to_auth_preserves_existing_rows(postgres_engine):
             ),
             {"id": learner_id, "user_id": user_id},
         )
-        command.upgrade(config, "head")
+        command.upgrade(config, "0005_auth_sessions")
         assert set(inspect(connection).get_table_names()) - before == {
             "auth_sessions",
             "auth_refresh_tokens",
@@ -44,6 +44,7 @@ def test_sprint_one_to_auth_preserves_existing_rows(postgres_engine):
             ).scalar_one()
             == user_id
         )
-        command.check(config)
         connection.execute(text("DELETE FROM learner_profiles WHERE id = :id"), {"id": learner_id})
         connection.execute(text("DELETE FROM users WHERE id = :id"), {"id": user_id})
+        command.upgrade(config, "head")
+        command.check(config)

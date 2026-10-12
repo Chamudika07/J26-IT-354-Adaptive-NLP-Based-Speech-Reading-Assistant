@@ -43,7 +43,7 @@ def test_migration_upgrade_paths_and_role_only_seed(postgres_engine, start):
             "administrator",
         }
         assert connection.execute(text("SELECT version_num FROM alembic_version")).scalar_one() == (
-            "0005_auth_sessions"
+            "0006_learner_reading_sessions"
         )
         command.check(config)
 

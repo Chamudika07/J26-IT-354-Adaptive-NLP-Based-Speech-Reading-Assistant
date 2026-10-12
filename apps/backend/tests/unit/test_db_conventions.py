@@ -36,6 +36,8 @@ def test_registered_foundation_tables_only() -> None:
         "learner_preferences",
         "consent_notice_versions",
         "consent_records",
+        "reading_sessions",
+        "learner_reading_support_settings",
     }
     for table in target_metadata.tables.values():
         assert list(table.primary_key.columns.keys()) == ["id"]
