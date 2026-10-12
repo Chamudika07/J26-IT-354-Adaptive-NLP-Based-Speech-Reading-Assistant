@@ -9,6 +9,7 @@ psychological, or diagnostic findings.
 from collections import defaultdict
 from collections.abc import Sequence
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Literal
 
 ENGAGEMENT_FORMULA_VERSION: str = "v0.1-research-heuristic"
@@ -25,8 +26,12 @@ class SessionTelemetry:
 
     All counts and durations must be non-negative. Missing measurements must remain
     None and must not be coerced to zero.
+
+    session_start_time must be timezone-aware (rejecting naive datetimes) to guarantee
+    deterministic, stable chronological ordering in longitudinal analytics.
     """
 
+    session_start_time: datetime
     words_attempted: int
     words_correct: int
     target_word_count: int
@@ -43,6 +48,13 @@ class SessionTelemetry:
 
     def __post_init__(self) -> None:
         """Validate relational and boundary invariants on telemetry fields."""
+        if (
+            self.session_start_time.tzinfo is None
+            or self.session_start_time.tzinfo.utcoffset(self.session_start_time) is None
+        ):
+            raise ValueError(
+                "session_start_time must be timezone-aware; naive datetimes are not permitted"
+            )
         if self.words_attempted < 0:
             raise ValueError(f"words_attempted cannot be negative, got {self.words_attempted}")
         if self.words_correct < 0:
@@ -195,6 +207,7 @@ def calculate_words_per_minute(
     words_attempted: int,
     active_duration_ms: int,
     min_duration_ms: int = 1000,
+    max_wpm: int | None = None,
 ) -> float | None:
     """Calculate reading pace scaled to words per minute.
 
@@ -205,9 +218,14 @@ def calculate_words_per_minute(
         If active_duration_ms < min_duration_ms (default 1,000 ms), returns None
         because duration is insufficient to produce a meaningful reading pace.
         If words_attempted == 0 and active_duration_ms >= min_duration_ms, returns 0.0.
+        If max_wpm is specified and the computed WPM exceeds max_wpm, returns None
+        to filter out implausible pacing outliers (e.g., telemetry capture artifacts).
+        Note: max_wpm is an unvalidated research ceiling / heuristic, not an empirically
+        established physiological limit.
 
     Validation:
-        Raises ValueError if words_attempted < 0, active_duration_ms < 0, or min_duration_ms < 0.
+        Raises ValueError if words_attempted < 0, active_duration_ms < 0, min_duration_ms < 0,
+        or max_wpm is negative.
     """
     if words_attempted < 0:
         raise ValueError(f"words_attempted cannot be negative, got {words_attempted}")
@@ -215,12 +233,17 @@ def calculate_words_per_minute(
         raise ValueError(f"active_duration_ms cannot be negative, got {active_duration_ms}")
     if min_duration_ms < 0:
         raise ValueError(f"min_duration_ms cannot be negative, got {min_duration_ms}")
+    if max_wpm is not None and max_wpm < 0:
+        raise ValueError(f"max_wpm cannot be negative, got {max_wpm}")
     if active_duration_ms < min_duration_ms:
         return None
     if words_attempted == 0:
         return 0.0
     minutes = active_duration_ms / 60000.0
-    return round(words_attempted / minutes, 2)
+    wpm = round(words_attempted / minutes, 2)
+    if max_wpm is not None and wpm > max_wpm:
+        return None
+    return wpm
 
 
 def calculate_hesitation_frequency(
@@ -275,6 +298,9 @@ def calculate_completion_statistics(telemetry: SessionTelemetry) -> CompletionSt
     Definitions:
         - is_fully_read: True when words_attempted >= target_word_count (and target > 0).
         - completion_ratio: words_attempted / target_word_count (None if target == 0).
+          Note: completion_ratio may exceed 1.0 when words_attempted exceeds target_word_count
+          (e.g., repeated-word attempts, self-corrections, or rereading).
+          This is factual and intentional.
         - active_time_ratio: active_duration_ms / total_duration_ms (None if total == 0).
         - pause_time_ratio: total_pause_duration_ms / total_duration_ms (None if unmeasured).
     """
@@ -399,12 +425,31 @@ def calculate_experimental_engagement(
 def calculate_partitioned_progress(
     sessions: Sequence[SessionTelemetry],
     min_required_sessions: int = 3,
+    max_wpm: int | None = None,
 ) -> dict[PartitionKey, PartitionProgress]:
     """Calculate progress indicators partitioned strictly by comparable contexts.
 
     Progress comparisons across different difficulty tiers (e.g. Early vs Advanced)
     or task types (e.g. Independent vs Assisted) produce uninterpretable conflations.
     This function groups sessions by PartitionKey(task_type, difficulty_tier, support_mode).
+
+    Chronological ordering:
+        Within each partition, sessions are sorted chronologically by
+        `(session_start_time, session_id or "")` prior to metric aggregation and trend
+        calculation. Callers are NOT required to provide pre-sorted session lists;
+        the function is completely deterministic regardless of input list permutation.
+        Identical timestamps are broken deterministically using `session_id`.
+
+    Trend delta & odd-numbered session groups:
+        Longitudinal trend deltas are calculated when `session_count >= 2` as
+        `mean(second_half) - mean(first_half)`. For odd-numbered session counts
+        (e.g., N=3 or N=5), integer floor division `half_point = session_count // 2`
+        is applied: `first_half = partition[:half_point]` and
+        `second_half = partition[half_point:]`.
+        Consequently, the second half contains the extra middle session (e.g., for N=3,
+        first half has 1 session, second half has 2; for N=5, first half has 2 sessions,
+        second half has 3). This slight asymmetry provides slightly heavier weighting to
+        more recent observations while maintaining a completely deterministic split.
 
     Insufficient sample size behavior:
         If a partition contains fewer than min_required_sessions, has_sufficient_evidence
@@ -425,6 +470,9 @@ def calculate_partitioned_progress(
     results: dict[PartitionKey, PartitionProgress] = {}
 
     for key, partition in grouped.items():
+        # Sort chronologically by (session_start_time, session_id or "")
+        partition.sort(key=lambda s: (s.session_start_time, s.session_id or ""))
+
         session_count = len(partition)
         has_sufficient = session_count >= min_required_sessions
         status: Literal["sufficient_evidence", "insufficient_data", "no_sessions"] = (
@@ -446,7 +494,11 @@ def calculate_partitioned_progress(
         wpms = [
             wpm
             for s in partition
-            if (wpm := calculate_words_per_minute(s.words_attempted, s.active_duration_ms))
+            if (
+                wpm := calculate_words_per_minute(
+                    s.words_attempted, s.active_duration_ms, max_wpm=max_wpm
+                )
+            )
             is not None
         ]
         mean_wpm = round(sum(wpms) / len(wpms), 2) if wpms else None
@@ -491,13 +543,21 @@ def calculate_partitioned_progress(
             first_wpms = [
                 wpm
                 for s in first_half
-                if (wpm := calculate_words_per_minute(s.words_attempted, s.active_duration_ms))
+                if (
+                    wpm := calculate_words_per_minute(
+                        s.words_attempted, s.active_duration_ms, max_wpm=max_wpm
+                    )
+                )
                 is not None
             ]
             second_wpms = [
                 wpm
                 for s in second_half
-                if (wpm := calculate_words_per_minute(s.words_attempted, s.active_duration_ms))
+                if (
+                    wpm := calculate_words_per_minute(
+                        s.words_attempted, s.active_duration_ms, max_wpm=max_wpm
+                    )
+                )
                 is not None
             ]
             if first_wpms and second_wpms:

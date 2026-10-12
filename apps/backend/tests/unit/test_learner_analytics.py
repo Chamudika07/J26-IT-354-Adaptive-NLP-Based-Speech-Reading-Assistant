@@ -5,6 +5,8 @@ missing-measurement handling, context partitioning, and deterministic stability 
 synthetic test fixtures.
 """
 
+from datetime import UTC, datetime
+
 import pytest
 
 from app.modules.learner_modelling.analytics import (
@@ -21,6 +23,11 @@ from app.modules.learner_modelling.analytics import (
     calculate_reading_accuracy,
     calculate_words_per_minute,
 )
+
+
+def _utc(year: int, month: int, day: int, hour: int = 0, minute: int = 0) -> datetime:
+    return datetime(year, month, day, hour, minute, tzinfo=UTC)
+
 
 # ==============================================================================
 # 1. Reading Accuracy Tests
@@ -146,6 +153,7 @@ def test_hesitation_frequency_rejects_negative_values() -> None:
 
 def test_completion_statistics_completed_session() -> None:
     telemetry = SessionTelemetry(
+        session_start_time=_utc(2024, 1, 1),
         words_attempted=100,
         words_correct=92,
         target_word_count=100,
@@ -165,6 +173,7 @@ def test_completion_statistics_completed_session() -> None:
 
 def test_completion_statistics_abandoned_session() -> None:
     telemetry = SessionTelemetry(
+        session_start_time=_utc(2024, 1, 1),
         words_attempted=40,
         words_correct=32,
         target_word_count=100,
@@ -183,6 +192,7 @@ def test_completion_statistics_abandoned_session() -> None:
 
 def test_completion_statistics_missing_pause_telemetry() -> None:
     telemetry = SessionTelemetry(
+        session_start_time=_utc(2024, 1, 1),
         words_attempted=50,
         words_correct=45,
         target_word_count=50,
@@ -198,6 +208,7 @@ def test_completion_statistics_missing_pause_telemetry() -> None:
 def test_session_telemetry_validates_invariants() -> None:
     with pytest.raises(ValueError, match="active_duration_ms .* cannot exceed total_duration_ms"):
         SessionTelemetry(
+            session_start_time=_utc(2024, 1, 1),
             words_attempted=10,
             words_correct=10,
             target_word_count=10,
@@ -209,6 +220,7 @@ def test_session_telemetry_validates_invariants() -> None:
         ValueError, match="total_pause_duration_ms .* cannot exceed total_duration_ms"
     ):
         SessionTelemetry(
+            session_start_time=_utc(2024, 1, 1),
             words_attempted=10,
             words_correct=10,
             target_word_count=10,
@@ -231,6 +243,7 @@ def test_experimental_engagement_known_values() -> None:
     # pause_efficiency_subscore = 1.0 - 0.50 = 0.5000
     # composite = 0.50*1.0 + 0.30*0.80 + 0.20*0.50 = 0.50 + 0.24 + 0.10 = 0.8400
     telemetry = SessionTelemetry(
+        session_start_time=_utc(2024, 1, 1),
         words_attempted=100,
         words_correct=90,
         target_word_count=100,
@@ -255,6 +268,7 @@ def test_experimental_engagement_known_values() -> None:
 def test_experimental_engagement_missing_measurements_returns_none() -> None:
     # Missing pause duration must cause indicator to return None
     telemetry = SessionTelemetry(
+        session_start_time=_utc(2024, 1, 1),
         words_attempted=50,
         words_correct=45,
         target_word_count=50,
@@ -275,6 +289,7 @@ def test_experimental_engagement_custom_weights() -> None:
         pause_efficiency_weight=0.20,
     )
     telemetry = SessionTelemetry(
+        session_start_time=_utc(2024, 1, 1),
         words_attempted=100,
         words_correct=90,
         target_word_count=100,
@@ -310,6 +325,7 @@ def test_partitioned_progress_separates_contexts_and_enforces_evidence() -> None
     # 3 sessions of Independent Reading at Intermediate difficulty
     part1_sessions = [
         SessionTelemetry(
+            session_start_time=_utc(2024, 1, 1),
             session_id="s1",
             words_attempted=50,
             words_correct=40,
@@ -321,6 +337,7 @@ def test_partitioned_progress_separates_contexts_and_enforces_evidence() -> None
             support_mode="adaptive",
         ),
         SessionTelemetry(
+            session_start_time=_utc(2024, 1, 2),
             session_id="s2",
             words_attempted=50,
             words_correct=42,
@@ -332,6 +349,7 @@ def test_partitioned_progress_separates_contexts_and_enforces_evidence() -> None
             support_mode="adaptive",
         ),
         SessionTelemetry(
+            session_start_time=_utc(2024, 1, 3),
             session_id="s3",
             words_attempted=50,
             words_correct=45,
@@ -347,6 +365,7 @@ def test_partitioned_progress_separates_contexts_and_enforces_evidence() -> None
     # 1 session of Assisted Reading at Advanced difficulty (insufficient evidence)
     part2_sessions = [
         SessionTelemetry(
+            session_start_time=_utc(2024, 1, 1),
             session_id="s4",
             words_attempted=80,
             words_correct=60,
@@ -414,6 +433,7 @@ def test_partitioned_progress_min_required_sessions_validation() -> None:
 
 def test_deterministic_stability() -> None:
     telemetry = SessionTelemetry(
+        session_start_time=_utc(2024, 1, 1),
         words_attempted=118,
         words_correct=104,
         target_word_count=120,
@@ -440,6 +460,7 @@ def test_deterministic_stability() -> None:
 def test_session_telemetry_additional_invariants() -> None:
     with pytest.raises(ValueError, match="words_attempted cannot be negative"):
         SessionTelemetry(
+            session_start_time=_utc(2024, 1, 1),
             words_attempted=-1,
             words_correct=0,
             target_word_count=10,
@@ -449,6 +470,7 @@ def test_session_telemetry_additional_invariants() -> None:
 
     with pytest.raises(ValueError, match="words_correct cannot be negative"):
         SessionTelemetry(
+            session_start_time=_utc(2024, 1, 1),
             words_attempted=10,
             words_correct=-1,
             target_word_count=10,
@@ -458,6 +480,7 @@ def test_session_telemetry_additional_invariants() -> None:
 
     with pytest.raises(ValueError, match="words_correct .* cannot exceed words_attempted"):
         SessionTelemetry(
+            session_start_time=_utc(2024, 1, 1),
             words_attempted=10,
             words_correct=12,
             target_word_count=10,
@@ -467,6 +490,7 @@ def test_session_telemetry_additional_invariants() -> None:
 
     with pytest.raises(ValueError, match="target_word_count cannot be negative"):
         SessionTelemetry(
+            session_start_time=_utc(2024, 1, 1),
             words_attempted=5,
             words_correct=5,
             target_word_count=-1,
@@ -476,6 +500,7 @@ def test_session_telemetry_additional_invariants() -> None:
 
     with pytest.raises(ValueError, match="active_duration_ms cannot be negative"):
         SessionTelemetry(
+            session_start_time=_utc(2024, 1, 1),
             words_attempted=5,
             words_correct=5,
             target_word_count=10,
@@ -485,6 +510,7 @@ def test_session_telemetry_additional_invariants() -> None:
 
     with pytest.raises(ValueError, match="total_duration_ms cannot be negative"):
         SessionTelemetry(
+            session_start_time=_utc(2024, 1, 1),
             words_attempted=5,
             words_correct=5,
             target_word_count=10,
@@ -494,6 +520,7 @@ def test_session_telemetry_additional_invariants() -> None:
 
     with pytest.raises(ValueError, match="total_pause_duration_ms cannot be negative"):
         SessionTelemetry(
+            session_start_time=_utc(2024, 1, 1),
             words_attempted=5,
             words_correct=5,
             target_word_count=10,
@@ -504,6 +531,7 @@ def test_session_telemetry_additional_invariants() -> None:
 
     with pytest.raises(ValueError, match="hesitation_count cannot be negative"):
         SessionTelemetry(
+            session_start_time=_utc(2024, 1, 1),
             words_attempted=5,
             words_correct=5,
             target_word_count=10,
@@ -514,6 +542,7 @@ def test_session_telemetry_additional_invariants() -> None:
 
     with pytest.raises(ValueError, match="pause_count cannot be negative"):
         SessionTelemetry(
+            session_start_time=_utc(2024, 1, 1),
             words_attempted=5,
             words_correct=5,
             target_word_count=10,
@@ -528,6 +557,7 @@ def test_experimental_engagement_interrupted_and_zero_active_duration() -> None:
     # completion_subscore = 0.50 * (50/100) = 0.2500
     # active_time = 0 -> active_time_subscore = 0.0, pause_efficiency = 0.0
     telemetry_interrupted = SessionTelemetry(
+        session_start_time=_utc(2024, 1, 1),
         words_attempted=50,
         words_correct=45,
         target_word_count=100,
@@ -547,6 +577,7 @@ def test_experimental_engagement_interrupted_and_zero_active_duration() -> None:
 
 def test_experimental_engagement_missing_target_or_total_duration() -> None:
     telemetry_zero_target = SessionTelemetry(
+        session_start_time=_utc(2024, 1, 1),
         words_attempted=0,
         words_correct=0,
         target_word_count=0,
@@ -559,6 +590,7 @@ def test_experimental_engagement_missing_target_or_total_duration() -> None:
     assert "target_word_count" in res1.missing_measurements
 
     telemetry_zero_duration = SessionTelemetry(
+        session_start_time=_utc(2024, 1, 1),
         words_attempted=10,
         words_correct=10,
         target_word_count=50,
@@ -573,6 +605,7 @@ def test_experimental_engagement_missing_target_or_total_duration() -> None:
 
 def test_completion_statistics_zero_durations() -> None:
     telemetry = SessionTelemetry(
+        session_start_time=_utc(2024, 1, 1),
         words_attempted=0,
         words_correct=0,
         target_word_count=0,
@@ -597,3 +630,241 @@ def test_hesitation_frequency_negative_durations_rejected() -> None:
         calculate_hesitation_frequency(
             hesitation_count=1, words_attempted=10, active_duration_ms=-100
         )
+
+
+# ==============================================================================
+# 8. Longitudinal Determinism, Chronological Sorting, and Defect Coverage Tests
+# ==============================================================================
+
+
+def test_session_telemetry_rejects_naive_datetime() -> None:
+    """DEFECT 1: SessionTelemetry must reject naive datetimes without timezone info."""
+    naive_dt = datetime(2024, 1, 1, 10, 0, 0)  # no tzinfo
+    with pytest.raises(ValueError, match="session_start_time must be timezone-aware"):
+        SessionTelemetry(
+            session_start_time=naive_dt,
+            words_attempted=50,
+            words_correct=45,
+            target_word_count=50,
+            active_duration_ms=60000,
+            total_duration_ms=70000,
+        )
+
+
+def test_partitioned_progress_shuffled_input_same_result() -> None:
+    """DEFECT 1: Input list ordering must not affect longitudinal trend deltas."""
+    s1 = SessionTelemetry(
+        session_start_time=_utc(2024, 1, 1, 9, 0),
+        session_id="session-1",
+        words_attempted=50,
+        words_correct=35,  # 70%
+        target_word_count=50,
+        active_duration_ms=60000,
+        total_duration_ms=70000,
+    )
+    s2 = SessionTelemetry(
+        session_start_time=_utc(2024, 1, 2, 9, 0),
+        session_id="session-2",
+        words_attempted=50,
+        words_correct=40,  # 80%
+        target_word_count=50,
+        active_duration_ms=55000,
+        total_duration_ms=65000,
+    )
+    s3 = SessionTelemetry(
+        session_start_time=_utc(2024, 1, 3, 9, 0),
+        session_id="session-3",
+        words_attempted=50,
+        words_correct=45,  # 90%
+        target_word_count=50,
+        active_duration_ms=50000,
+        total_duration_ms=60000,
+    )
+    s4 = SessionTelemetry(
+        session_start_time=_utc(2024, 1, 4, 9, 0),
+        session_id="session-4",
+        words_attempted=50,
+        words_correct=48,  # 96%
+        target_word_count=50,
+        active_duration_ms=45000,
+        total_duration_ms=55000,
+    )
+
+    key = PartitionKey(
+        task_type="independent_reading",
+        difficulty_tier="intermediate",
+        support_mode="adaptive",
+    )
+
+    # Chronological forward order: [s1, s2, s3, s4]
+    # First half = [s1, s2] -> mean acc = (0.70 + 0.80)/2 = 0.7500
+    # Second half = [s3, s4] -> mean acc = (0.90 + 0.96)/2 = 0.9300
+    # Expected delta = 0.9300 - 0.7500 = +0.1800
+    forward_results = calculate_partitioned_progress([s1, s2, s3, s4], min_required_sessions=3)
+    p_fwd = forward_results[key]
+    assert p_fwd.accuracy_trend_delta == 0.1800
+
+    # Reversed order: [s4, s3, s2, s1] - should produce identical results because of internal sort
+    reversed_results = calculate_partitioned_progress([s4, s3, s2, s1], min_required_sessions=3)
+    p_rev = reversed_results[key]
+    assert p_rev.accuracy_trend_delta == 0.1800
+    assert p_rev.wpm_trend_delta == p_fwd.wpm_trend_delta
+    assert p_rev.mean_accuracy == p_fwd.mean_accuracy
+
+    # Permuted order: [s2, s4, s1, s3]
+    permuted_results = calculate_partitioned_progress([s2, s4, s1, s3], min_required_sessions=3)
+    p_perm = permuted_results[key]
+    assert p_perm.accuracy_trend_delta == 0.1800
+
+
+def test_partitioned_progress_equal_timestamps_deterministic_tie_breaker() -> None:
+    """DEFECT 1: Identical timestamps must be stably sorted by session_id tie-breaker."""
+    same_time = _utc(2024, 1, 1, 12, 0)
+    s_a = SessionTelemetry(
+        session_start_time=same_time,
+        session_id="session-a",
+        words_attempted=50,
+        words_correct=35,
+        target_word_count=50,
+        active_duration_ms=60000,
+        total_duration_ms=70000,
+    )
+    s_b = SessionTelemetry(
+        session_start_time=same_time,
+        session_id="session-b",
+        words_attempted=50,
+        words_correct=45,
+        target_word_count=50,
+        active_duration_ms=50000,
+        total_duration_ms=60000,
+    )
+
+    key = PartitionKey(
+        task_type="independent_reading",
+        difficulty_tier="intermediate",
+        support_mode="adaptive",
+    )
+
+    # Since timestamps are identical, s_a ("session-a") sorts before s_b ("session-b")
+    # First half = [s_a] (0.7000), Second half = [s_b] (0.9000), delta = +0.2000
+    res1 = calculate_partitioned_progress([s_a, s_b], min_required_sessions=2)
+    res2 = calculate_partitioned_progress([s_b, s_a], min_required_sessions=2)
+
+    assert res1[key].accuracy_trend_delta == 0.2000
+    assert res2[key].accuracy_trend_delta == 0.2000
+
+
+def test_partitioned_progress_odd_session_split_documented() -> None:
+    """DEFECT 2: Odd-numbered sessions split via floor division; second half gets extra session."""
+    # 5 sessions: floor(5/2) = 2. First half = [:2] (2 sessions), second half = [2:] (3 sessions).
+    sessions = [
+        SessionTelemetry(
+            session_start_time=_utc(2024, 1, day),
+            session_id=f"session-{day}",
+            words_attempted=50,
+            # day 1: 33 (0.66), day 2: 36 (0.72), day 3: 39 (0.78)
+            # day 4: 42 (0.84), day 5: 45 (0.90)
+            words_correct=30 + day * 3,
+            target_word_count=50,
+            active_duration_ms=60000,
+            total_duration_ms=70000,
+        )
+        for day in range(1, 6)
+    ]
+    key = PartitionKey(
+        task_type="independent_reading",
+        difficulty_tier="intermediate",
+        support_mode="adaptive",
+    )
+    results = calculate_partitioned_progress(sessions, min_required_sessions=3)
+    p = results[key]
+    assert p.session_count == 5
+    # First half: day 1 (0.66) + day 2 (0.72) -> mean = 0.6900
+    # Second half: day 3 (0.78) + day 4 (0.84) + day 5 (0.90) -> mean = 0.8400
+    # Delta = 0.8400 - 0.6900 = +0.1500
+    assert p.accuracy_trend_delta == 0.1500
+
+
+def test_words_per_minute_max_wpm_ceiling() -> None:
+    """DEFECT 3: max_wpm parameter acts as an outlier filter when specified."""
+    # 200 words in 2000 ms (0.0333 min) = 6000.00 WPM (an instrument capture glitch)
+    # Default behavior without max_wpm: computes raw value
+    assert calculate_words_per_minute(words_attempted=200, active_duration_ms=2000) == 6000.00
+
+    # With max_wpm cap: returns None when exceeded
+    assert (
+        calculate_words_per_minute(words_attempted=200, active_duration_ms=2000, max_wpm=600)
+        is None
+    )
+
+    # Within legitimate bounds: returns computed WPM
+    assert (
+        calculate_words_per_minute(words_attempted=50, active_duration_ms=30000, max_wpm=600)
+        == 100.00
+    )
+
+    # Negative max_wpm must raise ValueError
+    with pytest.raises(ValueError, match="max_wpm cannot be negative"):
+        calculate_words_per_minute(words_attempted=50, active_duration_ms=30000, max_wpm=-1)
+
+
+def test_partitioned_progress_passes_max_wpm() -> None:
+    """DEFECT 3: calculate_partitioned_progress forwards max_wpm to ignore outliers."""
+    sessions = [
+        SessionTelemetry(
+            session_start_time=_utc(2024, 1, 1),
+            session_id="s1",
+            words_attempted=50,
+            words_correct=45,
+            target_word_count=50,
+            active_duration_ms=60000,  # 50 WPM (normal)
+            total_duration_ms=70000,
+        ),
+        SessionTelemetry(
+            session_start_time=_utc(2024, 1, 2),
+            session_id="s2",
+            words_attempted=200,
+            words_correct=190,
+            target_word_count=200,
+            active_duration_ms=2000,  # 6000 WPM (glitch)
+            total_duration_ms=5000,
+        ),
+        SessionTelemetry(
+            session_start_time=_utc(2024, 1, 3),
+            session_id="s3",
+            words_attempted=50,
+            words_correct=46,
+            target_word_count=50,
+            active_duration_ms=60000,  # 50 WPM (normal)
+            total_duration_ms=70000,
+        ),
+    ]
+    key = PartitionKey(
+        task_type="independent_reading",
+        difficulty_tier="intermediate",
+        support_mode="adaptive",
+    )
+
+    # Without max_wpm: mean WPM is skewed by glitch: (50 + 6000 + 50) / 3 = 2033.33
+    res_uncapped = calculate_partitioned_progress(sessions, min_required_sessions=3)
+    assert res_uncapped[key].mean_wpm == 2033.33
+
+    # With max_wpm=600: outlier session is filtered out from WPM: (50 + 50) / 2 = 50.00
+    res_capped = calculate_partitioned_progress(sessions, min_required_sessions=3, max_wpm=600)
+    assert res_capped[key].mean_wpm == 50.00
+
+
+def test_completion_statistics_ratio_exceeds_one() -> None:
+    """DEFECT 4: completion_ratio > 1.0 when words_attempted exceeds target_word_count."""
+    telemetry = SessionTelemetry(
+        session_start_time=_utc(2024, 1, 1),
+        words_attempted=120,
+        words_correct=100,
+        target_word_count=100,
+        active_duration_ms=80000,
+        total_duration_ms=100000,
+        completion_status="completed",
+    )
+    stats = calculate_completion_statistics(telemetry)
+    assert stats.is_fully_read is True
+    assert stats.completion_ratio == 1.2000
