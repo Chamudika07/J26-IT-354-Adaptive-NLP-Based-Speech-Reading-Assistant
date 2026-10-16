@@ -74,14 +74,16 @@ def test_factory_returns_disabled_provider_by_default():
     assert provider.provider_name == "disabled"
 
 
-def test_factory_configured_external_provider_reports_not_implemented():
+def test_factory_returns_gemini_provider():
+    from app.modules.simplification.provider.gemini import GeminiSimplificationProvider
+
     settings = _make_settings(
         simplification_ai_provider="gemini",
         simplification_ai_api_key=SecretStr("valid-secret-key-for-test-purposes"),
     )
-    with pytest.raises(ProviderUnavailableError) as exc_info:
-        get_simplification_provider(settings)
-    assert "network execution is not yet implemented" in str(exc_info.value)
+    provider = get_simplification_provider(settings)
+    assert isinstance(provider, GeminiSimplificationProvider)
+    assert provider.provider_name == "gemini-1.5-flash"
 
 
 def test_factory_configured_openai_reports_not_implemented():

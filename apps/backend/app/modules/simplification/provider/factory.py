@@ -6,6 +6,7 @@ from app.modules.simplification.provider.base import (
     SimplificationProvider,
 )
 from app.modules.simplification.provider.disabled import DisabledSimplificationProvider
+from app.modules.simplification.provider.gemini import GeminiSimplificationProvider
 
 
 def get_simplification_provider(settings: Settings) -> SimplificationProvider:
@@ -20,9 +21,11 @@ def get_simplification_provider(settings: Settings) -> SimplificationProvider:
     if provider_name == "disabled":
         return DisabledSimplificationProvider()
 
-    if provider_name in {"gemini", "openai"}:
-        # External provider network execution is scheduled for Part 7B.
-        # Confirm that an API key is configured and return safe unavailability.
+    if provider_name == "gemini":
+        return GeminiSimplificationProvider(settings)
+
+    if provider_name == "openai":
+        # External OpenAI provider network execution is not yet implemented.
         if (
             settings.simplification_ai_api_key is None
             or not settings.simplification_ai_api_key.get_secret_value().strip()
