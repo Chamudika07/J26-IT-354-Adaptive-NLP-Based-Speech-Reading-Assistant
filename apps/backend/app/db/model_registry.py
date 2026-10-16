@@ -1,6 +1,7 @@
 """Explicit model discovery for the single Alembic metadata collection."""
 
 from app.db.base import Base
+from app.modules.assessments import models as assessment_models  # noqa: F401
 from app.modules.auth import models as auth_models  # noqa: F401
 from app.modules.documents import models as document_models  # noqa: F401
 from app.modules.learner_modelling import models as learner_modelling_models  # noqa: F401

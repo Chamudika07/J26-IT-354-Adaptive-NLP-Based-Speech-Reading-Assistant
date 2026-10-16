@@ -30,6 +30,9 @@ def test_sprint_one_to_auth_preserves_existing_rows(postgres_engine):
         assert set(inspect(connection).get_table_names()) - before == {
             "auth_sessions",
             "auth_refresh_tokens",
+            "reading_assessment_materials",
+            "reading_assessment_sessions",
+            "reading_assessment_results",
         }
         assert (
             connection.execute(

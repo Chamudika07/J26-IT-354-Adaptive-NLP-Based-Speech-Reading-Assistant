@@ -4,6 +4,7 @@
 - [Database Sprint 1 schema and verification](database-sprint-1.md)
 - [Authentication and authorization foundation](auth-authorization-foundation.md)
 - [Learner Profile & Preferences API](learner-profile-api.md)
+- [Instructor-observed reading assessments](reading-assessments.md)
 - [Complete foundation file inventory](foundation-files.md)
 - [Team workflow](../CONTRIBUTING.md)
 - [Repository engineering rules](../AGENTS.md)

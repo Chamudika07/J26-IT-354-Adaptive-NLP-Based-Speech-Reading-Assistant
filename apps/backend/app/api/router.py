@@ -3,6 +3,7 @@
 from fastapi import APIRouter
 
 from app.api.health import router as health_router
+from app.modules.assessments.router import router as assessments_router
 from app.modules.auth.router import router as auth_router
 from app.modules.documents.router import router as documents_router
 from app.modules.learner_modelling.router import router as learner_modelling_router
@@ -22,3 +23,5 @@ router.include_router(
     learner_modelling_router, prefix="/learner-modelling", tags=["learner-modelling"]
 )
 router.include_router(numeracy_router, prefix="/numeracy", tags=["numeracy"])
+
+router.include_router(assessments_router, tags=["reading-assessments"])

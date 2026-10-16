@@ -7,8 +7,10 @@ are isolated environments of the same design, not additional application databas
 ## Backend boundaries
 
 The app factory is app.main:create_app. All REST endpoints use /api/v1. Each module
-reserves router.py, schemas.py, models.py, service.py, and repository.py. No module
-has content-processing endpoints. Auth exposes login, refresh, logout, and me; see
+reserves router.py, schemas.py, models.py, service.py, and repository.py. Reading
+assessments exposes instructor-observed assessment lifecycle endpoints; other reserved
+feature modules have no content-processing endpoints. Auth exposes login, refresh,
+logout, and me; see
 [the authentication foundation](auth-authorization-foundation.md). Learners exposes
 scoped list/detail reads and preference reads/updates; see [the API contract](learner-profile-api.md).
 Database Sprint 1
@@ -42,7 +44,8 @@ GET /api/v1/health/ready performs SELECT 1; unavailable databases return a sanit
   version tracking table; there is no application schema yet.
 - Sprint 1 preserves that baseline and adds 0002_auth_identity, 0003_learner_foundation,
   and 0004_consent_evidence sequentially. Revision 0005_auth_sessions adds two session
-  tables; the current head has eleven application tables.
+  tables. Revision 0006_reading_assessments adds three assessment tables; the current
+  head has fourteen application tables. See [reading assessments](reading-assessments.md).
 - Never run Base.metadata.create_all or automatic migrations at application startup.
 
 Schema-change workflow, from apps/backend:
@@ -117,8 +120,9 @@ deletes it and must be an intentional local reset.
 Authentication/session flows and learner authorization policies are implemented.
 Consent policy enforcement, file storage, retention jobs, and general audit trails
 are not implemented. Sprint 1 adds consent evidence
-storage and access-grant history. Health, authentication, and approved learner-profile
-read/preference-update endpoints are exposed. Do not add real child or learner data to this foundation.
+storage and access-grant history. Health, authentication, learner-profile/preference,
+and instructor-observed reading-assessment endpoints are exposed. Do not add real
+child or learner data to tests or development.
 
 Future endpoints must enforce learner-level permissions, collect minimum necessary
 attributes, use controlled private storage, and define deletion/retention behavior.
@@ -135,7 +139,8 @@ tags, so those base images are not immutable digest pins. Pin deployment images 
 digest when establishing a release process.
 
 Mobile, generated TypeScript client, account provisioning/recovery/administration,
-file processing, ML inference, workers, and educational processing are deferred. No ML/OCR/LLM/speech
+file processing, ML inference, workers, and automated educational processing remain
+deferred. Reading assessments collect manual observations only. No ML/OCR/LLM/speech
 libraries or additional backend/database services are introduced.
 
 ## References
