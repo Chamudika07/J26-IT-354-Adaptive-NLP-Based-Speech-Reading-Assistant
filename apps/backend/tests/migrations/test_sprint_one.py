@@ -43,7 +43,7 @@ def test_migration_upgrade_paths_and_role_only_seed(postgres_engine, start):
             "administrator",
         }
         assert connection.execute(text("SELECT version_num FROM alembic_version")).scalar_one() == (
-            "0005_auth_sessions"
+            "0006_reading_assessments"
         )
         command.check(config)
 
@@ -96,5 +96,5 @@ def test_schema_drift_constraints_indexes_and_no_native_enums(postgres_engine):
             WHERE n.nspname = 'public' AND NOT t.tgisinternal
         """)
             ).scalar_one()
-            == 10
+            == 15
         )

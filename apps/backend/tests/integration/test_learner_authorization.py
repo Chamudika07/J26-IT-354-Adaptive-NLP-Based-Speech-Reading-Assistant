@@ -103,6 +103,18 @@ PERMISSIONS = {
 }
 
 
+for kind, actions in PERMISSIONS.items():
+    if kind != "administrator":
+        actions.add(Action.READ_READING_ASSESSMENT)
+PERMISSIONS["educator_instructor"].update(
+    {
+        Action.START_READING_ASSESSMENT,
+        Action.SUBMIT_READING_ASSESSMENT,
+        Action.ABANDON_READING_ASSESSMENT,
+    }
+)
+
+
 @pytest.mark.parametrize("kind", PERMISSIONS)
 @pytest.mark.parametrize("action", list(Action))
 def test_complete_policy_matrix(db_session, active_user, learner, kind, action):
