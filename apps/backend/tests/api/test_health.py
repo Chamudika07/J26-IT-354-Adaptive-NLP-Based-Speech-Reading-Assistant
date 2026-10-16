@@ -46,6 +46,9 @@ def test_only_approved_endpoints_are_exposed(client: TestClient) -> None:
         "/api/v1/learners",
         "/api/v1/learners/{learner_id}",
         "/api/v1/learners/{learner_id}/preferences",
+        "/api/v1/simplification/{learner_id}/simplify",
+        "/api/v1/simplification/{learner_id}/vocabulary/explain",
+        "/api/v1/simplification/{learner_id}/sessions/{session_id}/feedback",
     }
 
 
