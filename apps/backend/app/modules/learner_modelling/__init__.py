@@ -33,14 +33,21 @@ from app.modules.learner_modelling.schemas import (
     build_canonical_payload,
     compute_canonical_session_digest,
 )
+from app.modules.learner_modelling.service import (
+    CONSENT_PURPOSE_LEARNING_SUPPORT,
+    ConsentChecker,
+    ingest_reading_session,
+)
 
 __all__ = [
     "CANONICAL_DIGEST_VERSION",
+    "CONSENT_PURPOSE_LEARNING_SUPPORT",
     "ENGAGEMENT_FORMULA_VERSION",
     "NON_CLINICAL_DISCLAIMER",
     "CalculatedMetricsResponse",
     "CompletionStatistics",
     "CompletionStatus",
+    "ConsentChecker",
     "DifficultyTier",
     "EngagementIndicator",
     "EngagementWeights",
@@ -62,4 +69,5 @@ __all__ = [
     "calculate_reading_accuracy",
     "calculate_words_per_minute",
     "compute_canonical_session_digest",
+    "ingest_reading_session",
 ]

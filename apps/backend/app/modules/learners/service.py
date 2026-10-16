@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from enum import StrEnum
-from typing import Literal
+from typing import Literal, cast
 from uuid import UUID
 
 from sqlalchemy.exc import IntegrityError
@@ -187,7 +187,7 @@ def _preference_response(
         preferred_language_tag=row.preferred_language_tag,
         text_scale=row.text_scale,
         line_spacing=row.line_spacing,
-        theme=row.theme,
+        theme=cast(Literal["system", "light", "dark", "high_contrast"] | None, row.theme),
         reduce_motion=row.reduce_motion,
     )
 
