@@ -13,7 +13,8 @@ from app.db.model_registry import target_metadata
 
 def test_original_baseline_is_unchanged() -> None:
     path = Path(__file__).resolve().parents[2] / "alembic/versions/0001_foundation.py"
-    assert hashlib.sha256(path.read_bytes()).hexdigest() == (
+    content = path.read_bytes().replace(b"\r\n", b"\n")
+    assert hashlib.sha256(content).hexdigest() == (
         "74c741cb33817e5b4757c3887689ae3c09f3eccec6d44c3619683b507948a6f7"
     )
 

@@ -7,6 +7,7 @@ import pytest
 from alembic import command
 from alembic.config import Config
 from sqlalchemy import inspect, text
+from sqlalchemy.exc import IntegrityError
 
 
 @pytest.mark.integration
@@ -84,7 +85,7 @@ def test_learner_reading_sessions_migration_lifecycle(postgres_engine) -> None:
         )
 
         # Verify idempotency constraint on (learner_id, client_session_id)
-        with pytest.raises(Exception):  # noqa: B017
+        with pytest.raises(IntegrityError), connection.begin_nested():
             connection.execute(
                 text(
                     "INSERT INTO reading_sessions ("
