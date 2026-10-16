@@ -23,20 +23,30 @@ def test_mixins_use_postgresql_uuid_and_timezone_aware_timestamps() -> None:
         assert not columns[name].nullable
 
 
+FOUNDATION_TABLES = {
+    "users",
+    "auth_sessions",
+    "auth_refresh_tokens",
+    "roles",
+    "user_roles",
+    "learner_profiles",
+    "guardian_learner_relationships",
+    "educator_learner_relationships",
+    "learner_preferences",
+    "consent_notice_versions",
+    "consent_records",
+}
+
+SIMPLIFICATION_TABLES = {
+    "simplification_sessions",
+    "simplification_vocabulary",
+    "simplification_feedback",
+}
+
+
 def test_registered_foundation_tables_only() -> None:
-    assert set(target_metadata.tables) == {
-        "users",
-        "auth_sessions",
-        "auth_refresh_tokens",
-        "roles",
-        "user_roles",
-        "learner_profiles",
-        "guardian_learner_relationships",
-        "educator_learner_relationships",
-        "learner_preferences",
-        "consent_notice_versions",
-        "consent_records",
-    }
+    assert FOUNDATION_TABLES.issubset(set(target_metadata.tables))
+    assert set(target_metadata.tables) == FOUNDATION_TABLES | SIMPLIFICATION_TABLES
     for table in target_metadata.tables.values():
         assert list(table.primary_key.columns.keys()) == ["id"]
         assert isinstance(table.c.id.type, Uuid)
