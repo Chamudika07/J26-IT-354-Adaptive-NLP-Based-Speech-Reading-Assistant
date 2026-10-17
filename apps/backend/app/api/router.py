@@ -9,6 +9,7 @@ from app.modules.documents.router import router as documents_router
 from app.modules.learner_modelling.router import router as learner_modelling_router
 from app.modules.learners.router import router as learners_router
 from app.modules.numeracy.router import router as numeracy_router
+from app.modules.reading_materials.router import router as reading_materials_router
 from app.modules.simplification.router import router as simplification_router
 from app.modules.speech.router import router as speech_router
 
@@ -25,3 +26,5 @@ router.include_router(
 router.include_router(numeracy_router, prefix="/numeracy", tags=["numeracy"])
 
 router.include_router(assessments_router, tags=["reading-assessments"])
+
+router.include_router(reading_materials_router, tags=["reading-materials"])

@@ -36,12 +36,20 @@ def test_readiness_failure_hides_database_details(application: FastAPI, client: 
 
 
 def test_only_approved_endpoints_are_exposed(client: TestClient) -> None:
+    material = "/api/v1/learners/{learner_id}/reading-materials"
     assert set(client.get("/openapi.json").json()["paths"]) == {
         "/api/v1/assessment-materials",
         "/api/v1/learners/{learner_id}/reading-assessments",
         "/api/v1/learners/{learner_id}/reading-assessments/{assessment_id}",
         "/api/v1/learners/{learner_id}/reading-assessments/{assessment_id}/complete",
         "/api/v1/learners/{learner_id}/reading-assessments/{assessment_id}/abandon",
+        "/api/v1/learners/{learner_id}/reading-materials",
+        material + "/{material_id}",
+        material + "/{material_id}/archive",
+        material + "/{material_id}/revisions",
+        material + "/{material_id}/revisions/{revision_id}",
+        material + "/{material_id}/revisions/{revision_id}/processing-runs",
+        material + "/{material_id}/revisions/{revision_id}/processing-runs/{run_id}",
         "/api/v1/health",
         "/api/v1/health/ready",
         "/api/v1/auth/login",

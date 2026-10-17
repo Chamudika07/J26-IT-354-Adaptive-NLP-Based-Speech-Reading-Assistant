@@ -106,8 +106,13 @@ PERMISSIONS = {
 for kind, actions in PERMISSIONS.items():
     if kind != "administrator":
         actions.add(Action.READ_READING_ASSESSMENT)
+        actions.add(Action.READ_READING_MATERIAL)
 PERMISSIONS["educator_instructor"].update(
     {
+        Action.CREATE_READING_MATERIAL,
+        Action.REVISE_READING_MATERIAL,
+        Action.PROCESS_READING_MATERIAL,
+        Action.ARCHIVE_READING_MATERIAL,
         Action.START_READING_ASSESSMENT,
         Action.SUBMIT_READING_ASSESSMENT,
         Action.ABANDON_READING_ASSESSMENT,
