@@ -80,7 +80,8 @@ def context(postgres_engine, password_hash, settings, request):
         with Session(postgres_engine) as db:
             db.execute(
                 text(
-                    "TRUNCATE reading_material_sentence_features, "
+                    "TRUNCATE reading_material_sources, reading_material_extraction_runs, "
+                    "reading_material_extraction_pages, reading_material_sentence_features, "
                     "reading_material_processing_runs, "
                     "reading_material_revisions, reading_materials"
                 )

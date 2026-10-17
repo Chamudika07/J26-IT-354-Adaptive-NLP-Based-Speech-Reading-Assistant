@@ -5,7 +5,8 @@ Adaptive NLP-Based Speech & Reading Assistant for Children with Dyslexia.
 This repository contains the project foundation, Database Sprint 1, and the
 Authentication & Authorization Foundation, Learner Profile & Preferences API,
 instructor-observed reading assessments, and English pasted-text processing with
-transparent text profiles. It does not implement diagnosis, OCR,
+transparent text profiles, plus private machine-readable PDF extraction.
+It does not implement diagnosis, OCR,
 simplification, speech recognition, learner analytics, or numeracy algorithms.
 Use synthetic data only.
 
@@ -21,8 +22,8 @@ Use synthetic data only.
 | scripts | Shared development checks |
 | .github | CI, pull-request template, CODEOWNERS placeholder |
 
-The active modules are auth, learners, reading_assessments, and reading_materials,
-with eighteen application tables in one database. Documents, simplification, speech,
+The active modules are auth, learners, assessments, and reading_materials,
+with twenty-one application tables in one database. Documents, simplification, speech,
 learner_modelling, and numeracy remain placeholders. Text processing uses deterministic
 standard-library rules and reports measurements without judging learner suitability.
 
@@ -53,7 +54,8 @@ The unchanged Alembic baseline adds no application tables. Three subsequent Spri
 revisions add nine tables and seed only four role definitions. Revision
 0005_auth_sessions adds two auth session tables without seeding credentials. Migrations
 are explicit. Revision 0006_reading_assessments adds three assessment tables;
-0007_reading_material_processing adds four material and processing tables.
+0007_reading_material_processing adds four material and processing tables;
+0008_pdf_text_extraction adds three PDF source/extraction tables.
 No account provisioning endpoint is included.
 
 ```sh
@@ -115,6 +117,7 @@ Never point tests or migration experiments at shared or production data.
 - [Learner Profile & Preferences API and concurrency contract](docs/learner-profile-api.md)
 - [Instructor-observed reading assessments](docs/reading-assessments.md)
 - [Reading material processing, profiles, versions, and recovery](docs/reading-material-processing.md)
+- [Private PDF extraction, limits, storage, and recovery](docs/pdf-text-extraction.md)
 - [Mobile setup reserved for later](apps/mobile/README.md)
 - [Research separation and governance](research/README.md)
 

@@ -19,6 +19,7 @@ class MaterialBodyLimit:
             scope["type"] != "http"
             or scope.get("method") != "POST"
             or not PATH.match(scope.get("path", ""))
+            or scope.get("path", "").rstrip("/").endswith("/reading-materials/pdf")
         ):
             await self.app(scope, receive, send)
             return

@@ -51,5 +51,6 @@ English pasted-text deterministic pipeline and transparent profiles.
 See docs/auth-authorization-foundation.md and docs/learner-profile-api.md for security
 and transaction contracts, plus docs/reading-assessments.md for assessment rules
 and docs/reading-material-processing.md for pipeline versions, offsets, and leases.
+See docs/pdf-text-extraction.md for private PDF storage, isolated extraction, and safety limits.
 Other feature modules, mobile, research, and API-client
 locations remain reserved. Do not rewrite 0001_foundation or published revisions; add new revisions.
