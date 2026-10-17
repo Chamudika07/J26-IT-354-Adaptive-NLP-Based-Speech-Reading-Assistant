@@ -6,13 +6,15 @@ educational analytics calculation before session persistence.
 """
 
 from collections.abc import Callable
+from dataclasses import dataclass
 from decimal import Decimal
+from typing import Literal
 from uuid import UUID
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.core.exceptions import SecurityError
+from app.core.exceptions import SecurityError, authentication_required
 from app.modules.auth.contracts import Principal
 from app.modules.auth.service import assert_protected_session_live, protect_principal_for_write
 from app.modules.learner_modelling import repository as repo
@@ -22,17 +24,66 @@ from app.modules.learner_modelling.analytics import (
     calculate_reading_accuracy,
     calculate_words_per_minute,
 )
+from app.modules.learner_modelling.dashboard_projections import (
+    EducatorAnalyticsProjection,
+    GuardianSummaryProjection,
+    LearnerProgressProjection,
+    project_educator_analytics,
+    project_guardian_summary,
+    project_learner_progress,
+)
+from app.modules.learner_modelling.historical import (
+    HistoricalSessionQuery,
+    historical_records_to_observations,
+)
+from app.modules.learner_modelling.longitudinal import (
+    LongitudinalProgressReport,
+    LongitudinalWindow,
+    calculate_longitudinal_progress,
+)
 from app.modules.learner_modelling.models import ReadingSession
 from app.modules.learner_modelling.schemas import (
     ReadingSessionIngest,
     compute_canonical_session_digest,
 )
-from app.modules.learners.service import LearnerAction, authorize_learner_action
+from app.modules.learners.service import (
+    LearnerAction,
+    LearnerAuthorization,
+    authorize_learner_action,
+)
 
 CONSENT_PURPOSE_LEARNING_SUPPORT: str = "learning_support"
 
 # Type of a public consent checker function: (db, learner_id, purpose_code) -> None
 ConsentChecker = Callable[[Session, UUID, str], None]
+
+DashboardAccessPath = Literal["self", "guardian", "educator"]
+
+
+@dataclass(frozen=True, slots=True)
+class _DashboardPolicy[DashboardProjectionT]:
+    """Fixed internal authorization and disclosure mapping; not product policy approval."""
+
+    action: LearnerAction
+    access_path: DashboardAccessPath
+    projector: Callable[[LongitudinalProgressReport], DashboardProjectionT]
+
+
+_LEARNER_DASHBOARD_POLICY = _DashboardPolicy(
+    action=LearnerAction.READ_EDUCATIONAL_SUMMARY,
+    access_path="self",
+    projector=project_learner_progress,
+)
+_GUARDIAN_DASHBOARD_POLICY = _DashboardPolicy(
+    action=LearnerAction.READ_GUARDIAN_SUMMARY,
+    access_path="guardian",
+    projector=project_guardian_summary,
+)
+_EDUCATOR_DASHBOARD_POLICY = _DashboardPolicy(
+    action=LearnerAction.READ_EDUCATIONAL_SUMMARY,
+    access_path="educator",
+    projector=project_educator_analytics,
+)
 
 
 def _fail_closed_consent_checker(
@@ -51,6 +102,121 @@ def _fail_closed_consent_checker(
         "consent_required",
         "Active consent verification interface is not yet available; session ingestion denied.",
     )
+
+
+def read_learner_progress(
+    db: Session,
+    principal: Principal,
+    query: HistoricalSessionQuery,
+    *,
+    consent_checker: ConsentChecker | None = None,
+) -> LearnerProgressProjection:
+    """Return the fixed learner projection after independent authorization and consent."""
+    return _read_dashboard_projection(
+        db,
+        principal,
+        query,
+        policy=_LEARNER_DASHBOARD_POLICY,
+        consent_checker=consent_checker,
+    )
+
+
+def read_guardian_summary(
+    db: Session,
+    principal: Principal,
+    query: HistoricalSessionQuery,
+    *,
+    consent_checker: ConsentChecker | None = None,
+) -> GuardianSummaryProjection:
+    """Return the fixed guardian projection after independent authorization and consent."""
+    return _read_dashboard_projection(
+        db,
+        principal,
+        query,
+        policy=_GUARDIAN_DASHBOARD_POLICY,
+        consent_checker=consent_checker,
+    )
+
+
+def read_educator_analytics(
+    db: Session,
+    principal: Principal,
+    query: HistoricalSessionQuery,
+    *,
+    consent_checker: ConsentChecker | None = None,
+) -> EducatorAnalyticsProjection:
+    """Return the fixed educator projection after independent authorization and consent."""
+    return _read_dashboard_projection(
+        db,
+        principal,
+        query,
+        policy=_EDUCATOR_DASHBOARD_POLICY,
+        consent_checker=consent_checker,
+    )
+
+
+def _read_dashboard_projection[DashboardProjectionT](
+    db: Session,
+    principal: Principal,
+    query: HistoricalSessionQuery,
+    *,
+    policy: _DashboardPolicy[DashboardProjectionT],
+    consent_checker: ConsentChecker | None,
+) -> DashboardProjectionT:
+    """Run one complete read-only dashboard pipeline without owning the transaction.
+
+    The candidate access-path mappings and disclosure policies still require team
+    approval. Consent withdrawal locking/version semantics are also unresolved, so
+    these private entry points must remain unreachable from production routes.
+    """
+    if not isinstance(principal, Principal) or principal.status != "active":
+        raise authentication_required()
+
+    grant = authorize_learner_action(db, principal, query.learner_id, policy.action)
+    _verify_dashboard_grant(grant, principal, query, policy)
+    _evaluate_dashboard_consent(db, query.learner_id, consent_checker)
+
+    records = repo.get_bounded_learner_session_history(db, query)
+    observations = historical_records_to_observations(records)
+    window = LongitudinalWindow(
+        start_at_utc=query.start_at_utc,
+        end_at_utc=query.end_at_utc,
+    )
+    report = calculate_longitudinal_progress(observations, window)
+    return policy.projector(report)
+
+
+def _verify_dashboard_grant[DashboardProjectionT](
+    grant: LearnerAuthorization,
+    principal: Principal,
+    query: HistoricalSessionQuery,
+    policy: _DashboardPolicy[DashboardProjectionT],
+) -> None:
+    """Reject mismatched or malformed grants without disclosing learner context."""
+    if (
+        not isinstance(grant, LearnerAuthorization)
+        or grant.actor_id != principal.user_id
+        or grant.learner_id != query.learner_id
+        or grant.action != policy.action
+        or grant.access_path != policy.access_path
+        or grant.consent_evaluated is not False
+    ):
+        raise SecurityError(404, "not_found", "Resource not found")
+
+
+def _evaluate_dashboard_consent(
+    db: Session,
+    learner_id: UUID,
+    consent_checker: ConsentChecker | None,
+) -> None:
+    """Evaluate injected consent and sanitize unexpected callback failures."""
+    checker = consent_checker if consent_checker is not None else _fail_closed_consent_checker
+    try:
+        checker(db, learner_id, CONSENT_PURPOSE_LEARNING_SUPPORT)
+    except SecurityError:
+        raise
+    except Exception as exc:
+        raise SecurityError(503, "service_unavailable", "Service unavailable") from exc
 
 
 def ingest_reading_session(
