@@ -5,6 +5,7 @@
 - [Authentication and authorization foundation](auth-authorization-foundation.md)
 - [Learner Profile & Preferences API](learner-profile-api.md)
 - [Instructor-observed reading assessments](reading-assessments.md)
+- [Reading material processing and transparent text profiling](reading-material-processing.md)
 - [Complete foundation file inventory](foundation-files.md)
 - [Team workflow](../CONTRIBUTING.md)
 - [Repository engineering rules](../AGENTS.md)

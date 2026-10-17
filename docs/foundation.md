@@ -8,8 +8,10 @@ are isolated environments of the same design, not additional application databas
 
 The app factory is app.main:create_app. All REST endpoints use /api/v1. Each module
 reserves router.py, schemas.py, models.py, service.py, and repository.py. Reading
-assessments exposes instructor-observed assessment lifecycle endpoints; other reserved
-feature modules have no content-processing endpoints. Auth exposes login, refresh,
+assessments exposes instructor-observed assessment lifecycle endpoints. Reading
+materials exposes learner-scoped pasted-text revisions and deterministic processing;
+see [the pipeline contract](reading-material-processing.md). Other reserved modules
+have no content-processing endpoints. Auth exposes login, refresh,
 logout, and me; see
 [the authentication foundation](auth-authorization-foundation.md). Learners exposes
 scoped list/detail reads and preference reads/updates; see [the API contract](learner-profile-api.md).
@@ -44,8 +46,10 @@ GET /api/v1/health/ready performs SELECT 1; unavailable databases return a sanit
   version tracking table; there is no application schema yet.
 - Sprint 1 preserves that baseline and adds 0002_auth_identity, 0003_learner_foundation,
   and 0004_consent_evidence sequentially. Revision 0005_auth_sessions adds two session
-  tables. Revision 0006_reading_assessments adds three assessment tables; the current
-  head has fourteen application tables. See [reading assessments](reading-assessments.md).
+  tables. Revision 0006_reading_assessments adds three assessment tables and
+  0007_reading_material_processing adds four material/processing tables. The current
+  head has eighteen application tables. See [reading assessments](reading-assessments.md)
+  and [reading materials](reading-material-processing.md).
 - Never run Base.metadata.create_all or automatic migrations at application startup.
 
 Schema-change workflow, from apps/backend:
@@ -121,7 +125,7 @@ Authentication/session flows and learner authorization policies are implemented.
 Consent policy enforcement, file storage, retention jobs, and general audit trails
 are not implemented. Sprint 1 adds consent evidence
 storage and access-grant history. Health, authentication, learner-profile/preference,
-and instructor-observed reading-assessment endpoints are exposed. Do not add real
+instructor-observed reading-assessment, and reading-material processing endpoints are exposed. Do not add real
 child or learner data to tests or development.
 
 Future endpoints must enforce learner-level permissions, collect minimum necessary
@@ -139,8 +143,9 @@ tags, so those base images are not immutable digest pins. Pin deployment images 
 digest when establishing a release process.
 
 Mobile, generated TypeScript client, account provisioning/recovery/administration,
-file processing, ML inference, workers, and automated educational processing remain
-deferred. Reading assessments collect manual observations only. No ML/OCR/LLM/speech
+file processing, ML inference, workers, and learner suitability decisions remain
+deferred. Reading assessments collect manual observations only. Reading materials
+measures English pasted text with versioned standard-library rules. No ML/OCR/LLM/speech
 libraries or additional backend/database services are introduced.
 
 ## References

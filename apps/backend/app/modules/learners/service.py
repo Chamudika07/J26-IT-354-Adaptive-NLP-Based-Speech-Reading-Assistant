@@ -33,6 +33,11 @@ class LearnerAction(StrEnum):
     READ_PREFERENCES = "preferences.read"
     UPDATE_PREFERENCES = "preferences.update"
     PERFORM_LEARNING_INTERACTION = "learning.interact"
+    READ_READING_MATERIAL = "reading_material.read"
+    CREATE_READING_MATERIAL = "reading_material.create"
+    REVISE_READING_MATERIAL = "reading_material.revise"
+    PROCESS_READING_MATERIAL = "reading_material.process"
+    ARCHIVE_READING_MATERIAL = "reading_material.archive"
     READ_READING_ASSESSMENT = "reading_assessment.read"
     START_READING_ASSESSMENT = "reading_assessment.start"
     SUBMIT_READING_ASSESSMENT = "reading_assessment.submit"
@@ -41,6 +46,7 @@ class LearnerAction(StrEnum):
 
 _SELF = frozenset(
     {
+        LearnerAction.READ_READING_MATERIAL,
         LearnerAction.READ_READING_ASSESSMENT,
         LearnerAction.READ_BASIC_PROFILE,
         LearnerAction.READ_EDUCATIONAL_SUMMARY,
@@ -51,6 +57,7 @@ _SELF = frozenset(
 )
 _GUARDIAN_VIEWER = frozenset(
     {
+        LearnerAction.READ_READING_MATERIAL,
         LearnerAction.READ_READING_ASSESSMENT,
         LearnerAction.READ_BASIC_PROFILE,
         LearnerAction.READ_GUARDIAN_SUMMARY,
@@ -59,6 +66,7 @@ _GUARDIAN_VIEWER = frozenset(
 )
 _EDUCATOR_VIEWER = frozenset(
     {
+        LearnerAction.READ_READING_MATERIAL,
         LearnerAction.READ_READING_ASSESSMENT,
         LearnerAction.READ_BASIC_PROFILE,
         LearnerAction.READ_EDUCATIONAL_SUMMARY,
@@ -67,6 +75,10 @@ _EDUCATOR_VIEWER = frozenset(
 
 _INSTRUCTOR_WRITES = frozenset(
     {
+        LearnerAction.CREATE_READING_MATERIAL,
+        LearnerAction.REVISE_READING_MATERIAL,
+        LearnerAction.PROCESS_READING_MATERIAL,
+        LearnerAction.ARCHIVE_READING_MATERIAL,
         LearnerAction.START_READING_ASSESSMENT,
         LearnerAction.SUBMIT_READING_ASSESSMENT,
         LearnerAction.ABANDON_READING_ASSESSMENT,

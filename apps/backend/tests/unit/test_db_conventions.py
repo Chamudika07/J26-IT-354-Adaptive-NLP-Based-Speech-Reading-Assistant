@@ -26,6 +26,10 @@ def test_mixins_use_postgresql_uuid_and_timezone_aware_timestamps() -> None:
 def test_registered_foundation_tables_only() -> None:
     assert set(target_metadata.tables) == {
         "reading_assessment_materials",
+        "reading_materials",
+        "reading_material_revisions",
+        "reading_material_processing_runs",
+        "reading_material_sentence_features",
         "reading_assessment_sessions",
         "reading_assessment_results",
         "users",

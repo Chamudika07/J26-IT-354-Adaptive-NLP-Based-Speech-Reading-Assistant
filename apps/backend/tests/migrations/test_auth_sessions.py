@@ -31,6 +31,10 @@ def test_sprint_one_to_auth_preserves_existing_rows(postgres_engine):
             "auth_sessions",
             "auth_refresh_tokens",
             "reading_assessment_materials",
+            "reading_materials",
+            "reading_material_revisions",
+            "reading_material_processing_runs",
+            "reading_material_sentence_features",
             "reading_assessment_sessions",
             "reading_assessment_results",
         }
