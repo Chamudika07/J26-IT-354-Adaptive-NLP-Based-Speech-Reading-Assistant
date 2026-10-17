@@ -558,3 +558,32 @@ def test_gemini_safety_block_without_candidates_raises_provider_response_error()
 
     with pytest.raises(ProviderResponseError, match="no content candidates"):
         provider.simplify(SimplificationRequest(source_text="Valid text."))
+
+
+# ── Test 16: Client Lifecycle and Ownership ───────────────────────────────────
+
+
+def test_gemini_provider_client_ownership_injected_client_not_closed():
+    """Injected HTTP clients are not closed when provider.close() is called."""
+    client = httpx.Client()
+    provider = GeminiSimplificationProvider(_make_settings(), client=client)
+    assert provider._owns_client is False
+    provider.close()
+    assert not client.is_closed
+    client.close()
+
+
+def test_gemini_provider_client_ownership_owned_client_closed():
+    """Internal HTTP clients instantiated by the provider are closed on provider.close()."""
+    provider = GeminiSimplificationProvider(_make_settings(), client=None)
+    assert provider._owns_client is True
+    assert not provider._client.is_closed
+    provider.close()
+    assert provider._client.is_closed
+
+
+def test_gemini_provider_context_manager_lifecycle():
+    """Context manager properly cleans up owned HTTP client upon exit."""
+    with GeminiSimplificationProvider(_make_settings(), client=None) as provider:
+        assert not provider._client.is_closed
+    assert provider._client.is_closed

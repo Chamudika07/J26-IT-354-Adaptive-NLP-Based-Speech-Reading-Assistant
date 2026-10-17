@@ -193,8 +193,24 @@ class GeminiSimplificationProvider:
         else:
             self._base_url = raw_base
 
-        self._client = client
+        if client is not None:
+            self._client = client
+            self._owns_client = False
+        else:
+            self._client = httpx.Client(timeout=self._timeout, follow_redirects=False)
+            self._owns_client = True
         self._sleep_fn = sleep_fn
+
+    def close(self) -> None:
+        """Close the underlying HTTP client if owned by this provider."""
+        if self._owns_client and not self._client.is_closed:
+            self._client.close()
+
+    def __enter__(self) -> "GeminiSimplificationProvider":
+        return self
+
+    def __exit__(self, *args: object) -> None:
+        self.close()
 
     @property
     def provider_name(self) -> str:
@@ -323,12 +339,7 @@ class GeminiSimplificationProvider:
 
         for attempt in range(self._max_retries + 1):
             try:
-                client = self._client or httpx.Client(timeout=self._timeout, follow_redirects=False)
-                try:
-                    response = client.post(url, headers=headers, json=payload)
-                finally:
-                    if self._client is None:
-                        client.close()
+                response = self._client.post(url, headers=headers, json=payload)
 
                 if response.status_code == 200:
                     latency_ms = max(1, int((time.perf_counter() - start_time) * 1000))

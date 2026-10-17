@@ -381,3 +381,187 @@ def test_simplify_database_error_yields_503(auth_client: TestClient) -> None:
     assert data["error"]["code"] == "service_unavailable"
     assert data["error"]["message"] == "Service unavailable"
     assert response.headers.get("Cache-Control") == "no-store"
+
+
+# ── Provider integration & error mapping tests ────────────────────────────────
+
+
+def test_simplify_rate_limited_yields_429_with_retry_after(auth_client: TestClient) -> None:
+    """When the AI provider raises ProviderRateLimitError, return 429 with Retry-After."""
+    from app.modules.simplification.provider.base import ProviderRateLimitError
+
+    url = f"/api/v1/simplification/{LEARNER_ID}/simplify"
+    with patch(
+        "app.modules.simplification.service.simplify_text",
+        side_effect=ProviderRateLimitError("Rate limit exceeded", retry_after=45),
+    ):
+        response = auth_client.post(url, json={"source_text": "Some text."})
+    assert response.status_code == 429
+    data = response.json()
+    assert data["error"]["code"] == "rate_limited"
+    assert data["error"]["message"] == "Try again later"
+    assert response.headers.get("Retry-After") == "45"
+    assert response.headers.get("Cache-Control") == "no-store"
+
+
+def test_simplify_malformed_provider_output_yields_503(auth_client: TestClient) -> None:
+    """When provider returns malformed output (ProviderResponseError), return 503."""
+    from app.modules.simplification.provider.base import ProviderResponseError
+
+    url = f"/api/v1/simplification/{LEARNER_ID}/simplify"
+    with patch(
+        "app.modules.simplification.service.simplify_text",
+        side_effect=ProviderResponseError("Malformed output"),
+    ):
+        response = auth_client.post(url, json={"source_text": "Some text."})
+    assert response.status_code == 503
+    data = response.json()
+    assert data["error"]["code"] == "service_unavailable"
+    assert data["error"]["message"] == "Service unavailable"
+
+
+def test_explain_word_rate_limited_yields_429(auth_client: TestClient) -> None:
+    """When explain_word provider is rate limited, return 429 with Retry-After."""
+    from app.modules.simplification.provider.base import ProviderRateLimitError
+
+    url = f"/api/v1/simplification/{LEARNER_ID}/vocabulary/explain"
+    with patch(
+        "app.modules.simplification.service.explain_word",
+        side_effect=ProviderRateLimitError("Rate limit exceeded", retry_after=15),
+    ):
+        response = auth_client.post(url, json={"term": "chloroplast"})
+    assert response.status_code == 429
+    data = response.json()
+    assert data["error"]["code"] == "rate_limited"
+    assert response.headers.get("Retry-After") == "15"
+
+
+def test_simplify_with_mock_provider_via_dependency_injection(
+    application: FastAPI, auth_client: TestClient
+) -> None:
+    """Verify provider dependency override works through the router end-to-end."""
+    from app.modules.simplification.provider.base import SimplificationAIResult
+    from app.modules.simplification.router import get_simplification_provider_dep
+
+    mock_provider = MagicMock()
+    mock_provider.simplify.return_value = SimplificationAIResult(
+        simplified_text="Adapted simple passage.",
+        strategy_applied=SimplificationStrategy.FULL_REWRITE,
+        target_reading_level=ReadingLevel.BEGINNER,
+        adaptation_attempt=1,
+        output_length=23,
+        ai_provider="gemini-1.5-flash",
+        ai_latency_ms=90,
+    )
+
+    application.dependency_overrides[get_simplification_provider_dep] = lambda: mock_provider
+    try:
+        url = f"/api/v1/simplification/{LEARNER_ID}/simplify"
+        with patch("app.modules.simplification.service.authorize_learner_action"):
+            with patch("app.modules.simplification.service.repo.create_session") as mock_sess:
+                mock_row = MagicMock(spec=SimplificationResponse)
+                mock_row.id = SESSION_ID
+                mock_row.simplified_text = "Adapted simple passage."
+                mock_row.strategy_applied = SimplificationStrategy.FULL_REWRITE
+                mock_row.target_reading_level = ReadingLevel.BEGINNER
+                mock_row.output_difficulty = None
+                mock_row.adaptation_attempt = 1
+                mock_row.validation_warnings = []
+                mock_row.created_at = NOW
+                mock_sess.return_value = mock_row
+
+                response = auth_client.post(url, json={"source_text": "Complicated text."})
+        assert response.status_code == 200
+        data = response.json()
+        assert data["simplified_text"] == "Adapted simple passage."
+        assert data["strategy_applied"] == "full_rewrite"
+    finally:
+        application.dependency_overrides.pop(get_simplification_provider_dep, None)
+
+
+def test_get_simplification_provider_dep_lifecycle_and_cleanup() -> None:
+    """Dependency yields configured provider and executes close() on exit, even on exception."""
+    from pydantic import SecretStr
+
+    from app.core.config import Settings
+    from app.modules.simplification.router import get_simplification_provider_dep
+
+    settings = Settings(
+        _env_file=None,
+        database_url=SecretStr("postgresql+psycopg://user:pass@localhost:5432/db"),
+        jwt_signing_key=SecretStr("secret-key-for-test-lifecycle-cleanup"),
+        app_env="test",
+        simplification_ai_provider="disabled",
+    )
+
+    dep_gen = get_simplification_provider_dep(settings)
+    provider = next(dep_gen)
+    assert hasattr(provider, "close")
+
+    with patch.object(provider, "close") as mock_close:
+        try:
+            dep_gen.throw(RuntimeError("Request error inside endpoint"))
+        except RuntimeError:
+            pass
+        mock_close.assert_called_once()
+
+
+def test_get_simplification_provider_dep_invalid_configuration_yields_503() -> None:
+    """When provider instantiation fails in the dependency, SecurityError(503) is raised."""
+    from app.core.config import Settings
+    from app.modules.simplification.router import get_simplification_provider_dep
+
+    settings = Settings.model_construct(
+        simplification_ai_provider="unsupported_provider_xyz",
+    )
+
+    dep_gen = get_simplification_provider_dep(settings)
+    with pytest.raises(SecurityError) as exc_info:
+        next(dep_gen)
+    assert exc_info.value.status == 503
+    assert exc_info.value.code == "service_unavailable"
+
+
+def test_simplify_unhandled_programming_error_does_not_mask_as_503(
+    auth_client: TestClient,
+) -> None:
+    """Unexpected programming errors must NOT be masked as 503 service_unavailable."""
+    url = f"/api/v1/simplification/{LEARNER_ID}/simplify"
+    with patch(
+        "app.modules.simplification.service.simplify_text",
+        side_effect=TypeError("Unexpected code failure"),
+    ):
+        with pytest.raises(TypeError, match="Unexpected code failure"):
+            auth_client.post(url, json={"source_text": "Any text."})
+
+
+def test_reading_feedback_regression(auth_client: TestClient) -> None:
+    """POST reading feedback returns 200 with correct fields and no-store header."""
+    from app.modules.simplification.schemas import ReadingFeedbackResponse
+
+    url = f"/api/v1/simplification/{LEARNER_ID}/sessions/{SESSION_ID}/feedback"
+    mock_feedback = ReadingFeedbackResponse(
+        feedback_id=FEEDBACK_ID,
+        session_id=SESSION_ID,
+        feedback_recorded=True,
+        created_at=NOW,
+    )
+    with patch(
+        "app.modules.simplification.service.record_reading_feedback",
+        return_value=mock_feedback,
+    ):
+        response = auth_client.post(
+            url,
+            json={
+                "feedback_signal": "just_right",
+                "time_spent_seconds": 120,
+                "vocabulary_lookups_count": 2,
+                "completed_reading": True,
+            },
+        )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["feedback_id"] == str(FEEDBACK_ID)
+    assert data["session_id"] == str(SESSION_ID)
+    assert data["feedback_recorded"] is True
+    assert response.headers.get("Cache-Control") == "no-store"

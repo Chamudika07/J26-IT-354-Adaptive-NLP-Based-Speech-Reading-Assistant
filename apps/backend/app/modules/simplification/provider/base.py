@@ -150,3 +150,7 @@ class SimplificationProvider(Protocol):
             ProviderResponseError: If response fails schema validation.
         """
         ...
+
+    def close(self) -> None:
+        """Release underlying resources (e.g. network clients)."""
+        ...

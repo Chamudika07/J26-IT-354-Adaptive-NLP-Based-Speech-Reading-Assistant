@@ -31,3 +31,7 @@ class DisabledSimplificationProvider:
     ) -> VocabularyExplanationAIResult:
         """Always raises ProviderUnavailableError."""
         raise ProviderUnavailableError("Simplification AI provider is disabled or not configured.")
+
+    def close(self) -> None:
+        """No-op for disabled provider."""
+        return None

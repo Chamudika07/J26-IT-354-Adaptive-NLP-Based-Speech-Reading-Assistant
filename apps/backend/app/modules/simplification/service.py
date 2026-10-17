@@ -38,6 +38,12 @@ from app.modules.simplification.models import (
     SimplificationSession,
     SimplificationVocabulary,
 )
+from app.modules.simplification.provider import (
+    DisabledSimplificationProvider,
+    SimplificationAIResult,
+    SimplificationProvider,
+    VocabularyExplanationAIResult,
+)
 from app.modules.simplification.schemas import (
     ReadingFeedbackRequest,
     ReadingFeedbackResponse,
@@ -97,25 +103,17 @@ def _source_text_for_retention(source_text: str) -> str | None:
 
 
 def _execute_simplification(
-    request: SimplificationRequest,
-) -> dict[str, Any]:
+    request: SimplificationRequest | WordExplanationRequest,
+    provider: SimplificationProvider | None = None,
+) -> SimplificationAIResult | VocabularyExplanationAIResult | dict[str, Any]:
     """Boundary function for AI simplification execution.
 
-    This function is a placeholder that defines the contract for the AI layer.
-    It must return a dict with keys matching the fields required by create_session:
-      simplified_text, strategy_applied, target_reading_level, adaptation_attempt,
-      output_length, ai_provider, ai_latency_ms, output_difficulty (optional),
-      concepts_preserved (optional), validation_warnings (list[str]),
-      vocabulary_items (list of VocabularyItemResponse-compatible dicts).
-
-    The AI provider, model selection, retry logic, and rate-limit handling belong
-    entirely inside this boundary.  Component 2 service functions must never call
-    external AI APIs directly.
+    Delegates to the configured or injected SimplificationProvider.
     """
-    raise NotImplementedError(
-        "AI simplification execution is not yet implemented. "
-        "Implement this function before wiring up the simplification endpoint."
-    )
+    active_provider = provider if provider is not None else DisabledSimplificationProvider()
+    if isinstance(request, SimplificationRequest):
+        return active_provider.simplify(request)
+    return active_provider.explain_word(request)
 
 
 # ── Authorization helpers ──────────────────────────────────────────────────────
@@ -154,20 +152,24 @@ def simplify_text(
     principal: Principal,
     learner_id: UUID,
     request: SimplificationRequest,
+    provider: SimplificationProvider | None = None,
 ) -> SimplificationResponse:
     """Authorize, execute, and persist a simplification session.
 
     Source text is never stored (consent framework not yet implemented).
-    AI execution is delegated to _execute_simplification; this function
-    never calls AI APIs directly.
+    AI execution is delegated to the simplification provider; this function
+    coordinates authorization, session persistence, and transaction commit.
 
     Raises:
         SecurityError(404): Principal is not authorized to interact with the learner.
-        NotImplementedError: AI execution boundary not yet implemented.
+        ProviderError: AI execution failed or provider is unavailable.
     """
     _require_learning_interaction(db, principal, learner_id)
+    active_provider = provider if provider is not None else DisabledSimplificationProvider()
+    should_close = provider is None and hasattr(active_provider, "close")
     try:
-        ai_result = _execute_simplification(request)
+        ai_res = _execute_simplification(request, active_provider)
+        ai_dict: dict[str, Any] = ai_res.to_dict() if hasattr(ai_res, "to_dict") else ai_res
         source_sha256 = _sha256_hex(request.source_text)
         session = repo.create_session(
             db,
@@ -178,28 +180,39 @@ def simplify_text(
             source_text=_source_text_for_retention(request.source_text),
             source_difficulty=request.source_difficulty,
             document_id=request.document_id,
-            strategy_applied=ai_result["strategy_applied"],
-            target_reading_level=ai_result["target_reading_level"],
-            adaptation_attempt=ai_result["adaptation_attempt"],
-            simplified_text=ai_result["simplified_text"],
-            output_length=ai_result["output_length"],
-            output_difficulty=ai_result.get("output_difficulty"),
-            concepts_preserved=ai_result.get("concepts_preserved"),
-            ai_provider=ai_result["ai_provider"],
-            ai_latency_ms=ai_result["ai_latency_ms"],
-            validation_warnings=ai_result.get("validation_warnings", []),
+            strategy_applied=ai_dict["strategy_applied"],
+            target_reading_level=ai_dict["target_reading_level"],
+            adaptation_attempt=ai_dict["adaptation_attempt"],
+            simplified_text=ai_dict["simplified_text"],
+            output_length=ai_dict["output_length"],
+            output_difficulty=ai_dict.get("output_difficulty"),
+            concepts_preserved=ai_dict.get("concepts_preserved"),
+            ai_provider=ai_dict["ai_provider"],
+            ai_latency_ms=ai_dict["ai_latency_ms"],
+            validation_warnings=ai_dict.get("validation_warnings", []),
         )
         vocab_items: list[VocabularyItemResponse] = []
-        for item_data in ai_result.get("vocabulary_items", []):
+        for raw_item in ai_dict.get("vocabulary_items", []):
+            term = str(raw_item.get("term", "")).strip()[:100]
+            definition = str(raw_item.get("simplified_definition", "")).strip()[:500]
+            if not term or not definition:
+                continue
+            example = raw_item.get("example_sentence")
+            if example:
+                example = str(example).strip()[:300]
+            raw_synonyms = raw_item.get("synonyms") or []
+            synonyms = [str(s).strip()[:100] for s in raw_synonyms if str(s).strip()][:5]
+            language_tag = str(raw_item.get("language_tag") or "en")[:10]
+
             vocab_row = repo.create_vocabulary(
                 db,
                 session_id=session.id,
-                term=item_data["term"],
-                simplified_definition=item_data["simplified_definition"],
+                term=term,
+                simplified_definition=definition,
                 source=VocabularySource.AUTOMATIC,
-                language_tag=item_data.get("language_tag", "en"),
-                example_sentence=item_data.get("example_sentence"),
-                synonyms=item_data.get("synonyms", []),
+                language_tag=language_tag,
+                example_sentence=example,
+                synonyms=synonyms,
             )
             vocab_items.append(
                 VocabularyItemResponse(
@@ -227,6 +240,9 @@ def simplify_text(
     except Exception:
         db.rollback()
         raise
+    finally:
+        if should_close:
+            active_provider.close()
 
 
 def get_simplification_session(
@@ -266,31 +282,42 @@ def explain_word(
     principal: Principal,
     learner_id: UUID,
     request: WordExplanationRequest,
+    provider: SimplificationProvider | None = None,
 ) -> WordExplanationResponse:
     """Authorize and persist an on-demand vocabulary explanation.
 
     If request.session_id is provided, the session must belong to the learner.
-    AI execution is delegated and not yet implemented.
 
     Raises:
         SecurityError(404): Not authorized, or session_id provided but not owned.
-        NotImplementedError: AI execution boundary not yet implemented.
+        ProviderError: AI execution failed or provider is unavailable.
     """
     _require_learning_interaction(db, principal, learner_id)
     if request.session_id is not None:
         _require_session_ownership(db, request.session_id, learner_id)
+    active_provider = provider if provider is not None else DisabledSimplificationProvider()
+    should_close = provider is None and hasattr(active_provider, "close")
     try:
-        # AI boundary — not yet implemented; raises NotImplementedError.
-        ai_result: dict[str, Any] = _execute_simplification(request)  # type: ignore[arg-type]
+        ai_res = _execute_simplification(request, active_provider)
+        ai_dict: dict[str, Any] = ai_res.to_dict() if hasattr(ai_res, "to_dict") else ai_res
+        term = str(ai_dict.get("term", "")).strip()[:100]
+        definition = str(ai_dict.get("simplified_definition", "")).strip()[:500]
+        example = ai_dict.get("example_sentence")
+        if example:
+            example = str(example).strip()[:300]
+        raw_synonyms = ai_dict.get("synonyms") or []
+        synonyms = [str(s).strip()[:100] for s in raw_synonyms if str(s).strip()][:5]
+        language_tag = str(ai_dict.get("language_tag") or "en")[:10]
+
         vocab_row = repo.create_vocabulary(
             db,
             session_id=request.session_id,
-            term=ai_result["term"],
-            simplified_definition=ai_result["simplified_definition"],
+            term=term,
+            simplified_definition=definition,
             source=VocabularySource.USER,
-            language_tag=ai_result.get("language_tag", "en"),
-            example_sentence=ai_result.get("example_sentence"),
-            synonyms=ai_result.get("synonyms", []),
+            language_tag=language_tag,
+            example_sentence=example,
+            synonyms=synonyms,
         )
         response = WordExplanationResponse(
             learner_id=learner_id,
@@ -301,7 +328,7 @@ def explain_word(
                 synonyms=list(vocab_row.synonyms),
                 source=VocabularySource.USER,
             ),
-            language_tag=ai_result.get("language_tag", "en"),
+            language_tag=language_tag,
             session_id=request.session_id,
             created_at=vocab_row.created_at,
         )
@@ -310,6 +337,9 @@ def explain_word(
     except Exception:
         db.rollback()
         raise
+    finally:
+        if should_close:
+            active_provider.close()
 
 
 def get_vocabulary_for_session(
