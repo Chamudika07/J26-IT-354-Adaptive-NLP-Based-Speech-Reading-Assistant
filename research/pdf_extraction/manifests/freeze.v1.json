@@ -1,0 +1,16 @@
+{
+  "files": {
+    "protocol.md": "38a0c83a36ccdc82527cb826ea251b8c35e7148bfb812c437758ce55d766d507",
+    "metrics.py": "319325adbdcf4aa518bd28b27a76fccc585d0cd6e4aaa09dca269c99e0f1a8bb",
+    "schemas/__init__.py": "9c85cd8db2164f3282396771835bbcecd0f472f03d121a302e0468a94305c140",
+    "adapters/production_extractor.py": "b8a496b55386b4d9163229ab99c3c9fea1f6123636278a426f9e2c8ba228a4ad",
+    "generators/corpus.py": "ac18c58c81a3532297515222938a3dbf638c34df77f8add21f3e5930572365db",
+    "evaluate.py": "36a84a2178a3d705ba770afd52988f9d2c76227a02c7129f0d1d63d966ffd228",
+    "report.py": "5c4edb9e44f2bd3239d53200e481cb50caab847c3865718d3f09cfbd7e2ef7d7",
+    "uv.lock": "ca5e741a20cf89d4963e72c9386cf100e8dcb8068ade2532a7aef64c1db4f35b",
+    "pyproject.toml": "0da2f3773c208145594c4bbca78cccd91f558e7d133ce18bd6669f7bdbae2f6d",
+    "manifests/benchmark.schema.json": "2b54f1bc2c2e98b5c87a01a4924e83696d7405180eedd899249816d4877b84ee"
+  },
+  "production_commit": "592b1c6c42a8d7fcaab14123703e5a560dccecad",
+  "fingerprint": "94ba2457f33d1def1cd265149852e8dd9b8b32ef31450829c7b44de61b54e14c"
+}

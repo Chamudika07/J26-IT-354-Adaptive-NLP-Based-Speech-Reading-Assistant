@@ -1,0 +1,358 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "experiment_id": {
+      "title": "Experiment Id",
+      "type": "string"
+    },
+    "fixture_id": {
+      "title": "Fixture Id",
+      "type": "string"
+    },
+    "category": {
+      "enum": [
+        "simple_single_column",
+        "multipage",
+        "headings_paragraphs",
+        "tables",
+        "two_column",
+        "headers_footers_page_numbers",
+        "unicode",
+        "punctuation_hyphenation",
+        "mixed_text_images",
+        "image_only_or_scanned_like",
+        "invalid_or_unsupported"
+      ],
+      "title": "Category",
+      "type": "string"
+    },
+    "split": {
+      "enum": [
+        "development",
+        "heldout"
+      ],
+      "title": "Split",
+      "type": "string"
+    },
+    "source_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Sha256",
+      "type": "string"
+    },
+    "source_byte_count": {
+      "minimum": 0,
+      "title": "Source Byte Count",
+      "type": "integer"
+    },
+    "expected_page_count": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Expected Page Count"
+    },
+    "observed_page_count": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Observed Page Count"
+    },
+    "expected_outcome": {
+      "enum": [
+        "extracted",
+        "ocr_required",
+        "needs_review",
+        "failed"
+      ],
+      "title": "Expected Outcome",
+      "type": "string"
+    },
+    "actual_outcome": {
+      "enum": [
+        "extracted",
+        "ocr_required",
+        "needs_review",
+        "failed"
+      ],
+      "title": "Actual Outcome",
+      "type": "string"
+    },
+    "outcome_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Outcome Code"
+    },
+    "extraction_fingerprint": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Extraction Fingerprint",
+      "type": "string"
+    },
+    "production_commit": {
+      "title": "Production Commit",
+      "type": "string"
+    },
+    "metric_version": {
+      "title": "Metric Version",
+      "type": "string"
+    },
+    "character_substitutions": {
+      "minimum": 0,
+      "title": "Character Substitutions",
+      "type": "integer"
+    },
+    "character_deletions": {
+      "minimum": 0,
+      "title": "Character Deletions",
+      "type": "integer"
+    },
+    "character_insertions": {
+      "minimum": 0,
+      "title": "Character Insertions",
+      "type": "integer"
+    },
+    "reference_character_count": {
+      "minimum": 0,
+      "title": "Reference Character Count",
+      "type": "integer"
+    },
+    "word_substitutions": {
+      "minimum": 0,
+      "title": "Word Substitutions",
+      "type": "integer"
+    },
+    "word_deletions": {
+      "minimum": 0,
+      "title": "Word Deletions",
+      "type": "integer"
+    },
+    "word_insertions": {
+      "minimum": 0,
+      "title": "Word Insertions",
+      "type": "integer"
+    },
+    "reference_word_count": {
+      "minimum": 0,
+      "title": "Reference Word Count",
+      "type": "integer"
+    },
+    "raw_page_cer": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Raw Page Cer"
+    },
+    "raw_assembled_cer": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Raw Assembled Cer"
+    },
+    "raw_wer": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Raw Wer"
+    },
+    "normalized_cer": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Normalized Cer"
+    },
+    "normalized_wer": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Normalized Wer"
+    },
+    "exact_match": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Exact Match"
+    },
+    "metric_status": {
+      "title": "Metric Status",
+      "type": "string"
+    },
+    "lexical_page_coverage": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Lexical Page Coverage"
+    },
+    "page_order_correct": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Page Order Correct"
+    },
+    "block_order_score": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Block Order Score"
+    },
+    "review_label": {
+      "enum": [
+        "correct",
+        "acceptable_with_limitation",
+        "needs_review",
+        "extraction_failure"
+      ],
+      "title": "Review Label",
+      "type": "string"
+    },
+    "review_codes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Review Codes",
+      "type": "array"
+    },
+    "latency_median_ms": {
+      "minimum": 0,
+      "title": "Latency Median Ms",
+      "type": "number"
+    },
+    "peak_memory_bytes": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Peak Memory Bytes"
+    },
+    "memory_measurement_method": {
+      "default": "unavailable: runner does not expose per-child RSS",
+      "title": "Memory Measurement Method",
+      "type": "string"
+    },
+    "notes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Notes",
+      "type": "array"
+    },
+    "detail": {
+      "additionalProperties": true,
+      "title": "Detail",
+      "type": "object"
+    }
+  },
+  "required": [
+    "experiment_id",
+    "fixture_id",
+    "category",
+    "split",
+    "source_sha256",
+    "source_byte_count",
+    "expected_page_count",
+    "observed_page_count",
+    "expected_outcome",
+    "actual_outcome",
+    "outcome_code",
+    "extraction_fingerprint",
+    "production_commit",
+    "metric_version",
+    "character_substitutions",
+    "character_deletions",
+    "character_insertions",
+    "reference_character_count",
+    "word_substitutions",
+    "word_deletions",
+    "word_insertions",
+    "reference_word_count",
+    "raw_page_cer",
+    "raw_assembled_cer",
+    "raw_wer",
+    "normalized_cer",
+    "normalized_wer",
+    "exact_match",
+    "metric_status",
+    "lexical_page_coverage",
+    "page_order_correct",
+    "block_order_score",
+    "review_label",
+    "review_codes",
+    "latency_median_ms",
+    "notes",
+    "detail"
+  ],
+  "title": "Result",
+  "type": "object"
+}

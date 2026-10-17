@@ -1,0 +1,3855 @@
+{
+  "schema_version": "1",
+  "benchmark_version": "benchmark-v1",
+  "protocol_version": "protocol-v1",
+  "corpus_id": "original-pdf-66-v1",
+  "split_seed": 22081766,
+  "production_commit": "592b1c6c42a8d7fcaab14123703e5a560dccecad",
+  "fixture_entries": [
+    {
+      "fixture_id": "development-simple_single_column-01",
+      "primary_category": "simple_single_column",
+      "feature_tags": [
+        "simple_single_column"
+      ],
+      "split": "development",
+      "template_family_id": "development-simple_single_column",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22081766,
+      "source_artifact_reference": "development-simple_single_column-01/document.pdf",
+      "source_sha256": "7a43ca708e1e8cb291f2322cae108e8105a7ad8a61a39951e339317fa4fe9a20",
+      "source_byte_count": 33351,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-simple_single_column-01/page-1.txt",
+          "sha256": "026951f1fb81169b430d5ec3721a5f962e48ccd688d8d809df760639653d7abb"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-simple_single_column-01/assembled.txt",
+        "sha256": "026951f1fb81169b430d5ec3721a5f962e48ccd688d8d809df760639653d7abb"
+      },
+      "structural_annotation": {
+        "reference": "development-simple_single_column-01/structure.json",
+        "sha256": "baeaadd21c113d42a604433172c643d08ee698988ed76b12412643b0eada6407"
+      },
+      "authoring_source": {
+        "reference": "development-simple_single_column-01/source.json",
+        "sha256": "5270f8a8cb48fd72cd0e995b57fd2d021e17b5cfd231550b9a1a2ebe2a8a3e15"
+      },
+      "exact_match_required": true,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-simple_single_column-02",
+      "primary_category": "simple_single_column",
+      "feature_tags": [
+        "simple_single_column"
+      ],
+      "split": "development",
+      "template_family_id": "development-simple_single_column",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22081767,
+      "source_artifact_reference": "development-simple_single_column-02/document.pdf",
+      "source_sha256": "a4e5d816cfefb48699a9d09acb58bfa84fa5e6bb27301358641e21c92dbf0131",
+      "source_byte_count": 33351,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-simple_single_column-02/page-1.txt",
+          "sha256": "3dc721eb294bdee624020051cac78c82bbf313726c83fc1bcaccb2eac0183615"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-simple_single_column-02/assembled.txt",
+        "sha256": "3dc721eb294bdee624020051cac78c82bbf313726c83fc1bcaccb2eac0183615"
+      },
+      "structural_annotation": {
+        "reference": "development-simple_single_column-02/structure.json",
+        "sha256": "cb7eede54fe1500dc59dcd19664abc2133fd112cb799523c3fc428fa16807f16"
+      },
+      "authoring_source": {
+        "reference": "development-simple_single_column-02/source.json",
+        "sha256": "d3db1331def79db38ffa8bf20298765a4a45c40b86b6988fb1e74a5ddc6ca66d"
+      },
+      "exact_match_required": true,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-multipage-01",
+      "primary_category": "multipage",
+      "feature_tags": [
+        "multipage"
+      ],
+      "split": "development",
+      "template_family_id": "development-multipage",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22081866,
+      "source_artifact_reference": "development-multipage-01/document.pdf",
+      "source_sha256": "a5c9264144eda7b1204a0104d67aedd14c26833c256f0e516af0b08c9c4204e7",
+      "source_byte_count": 34045,
+      "expected_page_count": 2,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-multipage-01/page-1.txt",
+          "sha256": "770b787515f3d87b6b1f1c158c7b87a84734dc656385d00e64d39e6bf5aec216"
+        },
+        {
+          "reference": "development-multipage-01/page-2.txt",
+          "sha256": "77bccaacfb17f7a5099dabb6cf180b0502bd21aabc312bdd0c0119aef7957dd3"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-multipage-01/assembled.txt",
+        "sha256": "d4754013d32e0195f2a5bf22c94a03b6ad7f96d4938b9bc2048e3a95ff97e023"
+      },
+      "structural_annotation": {
+        "reference": "development-multipage-01/structure.json",
+        "sha256": "f694967690656d8ee99c39a19ca91a6138a7ba965748f3b21ef0768bb029a489"
+      },
+      "authoring_source": {
+        "reference": "development-multipage-01/source.json",
+        "sha256": "35c6671cb21f03a6d01cdffaf075f71b3e85ba9f583690c0d1fb0a4c8f1fe38d"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-multipage-02",
+      "primary_category": "multipage",
+      "feature_tags": [
+        "multipage"
+      ],
+      "split": "development",
+      "template_family_id": "development-multipage",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22081867,
+      "source_artifact_reference": "development-multipage-02/document.pdf",
+      "source_sha256": "8e4f2dfc2434b0c511050657040b475489838ee64cde841a6a22f2c4f92096de",
+      "source_byte_count": 34045,
+      "expected_page_count": 2,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-multipage-02/page-1.txt",
+          "sha256": "75c66278420cbe9b5f5f32aa26c22508c772934bf1f165d57f04b511b8a8ca4c"
+        },
+        {
+          "reference": "development-multipage-02/page-2.txt",
+          "sha256": "dd3ad359237c26052f186c57a9c70c0af5a468084811bb1e0fed138b5c0cf9f6"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-multipage-02/assembled.txt",
+        "sha256": "1e4ea72d02cd7cbf49ef4c622b6aa52bc3cee267e90669dc92d032446ca09ccd"
+      },
+      "structural_annotation": {
+        "reference": "development-multipage-02/structure.json",
+        "sha256": "155383ca1f0155305b6c67a27090b16d5ff2d1c4bc5d866284a72254603e3ae4"
+      },
+      "authoring_source": {
+        "reference": "development-multipage-02/source.json",
+        "sha256": "76116c1b475ca4ab1123a8e4774c4550793c8d2a7f0fcbcc8c71edee849b65c7"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-headings_paragraphs-01",
+      "primary_category": "headings_paragraphs",
+      "feature_tags": [
+        "headings_paragraphs"
+      ],
+      "split": "development",
+      "template_family_id": "development-headings_paragraphs",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22081966,
+      "source_artifact_reference": "development-headings_paragraphs-01/document.pdf",
+      "source_sha256": "0425122d424f900cb760763e1f6bacb13e3f1948be9da540a16137caacc1486d",
+      "source_byte_count": 33474,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-headings_paragraphs-01/page-1.txt",
+          "sha256": "2e1f7ad7bbed8eef478b9835ea08ac1b5df5107902a08b9acd545777121bc72b"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-headings_paragraphs-01/assembled.txt",
+        "sha256": "2e1f7ad7bbed8eef478b9835ea08ac1b5df5107902a08b9acd545777121bc72b"
+      },
+      "structural_annotation": {
+        "reference": "development-headings_paragraphs-01/structure.json",
+        "sha256": "d3150595484445a323ab7fc4a938294d4c45ec58cb7deea2430a85df73a4d2e6"
+      },
+      "authoring_source": {
+        "reference": "development-headings_paragraphs-01/source.json",
+        "sha256": "8bfe3ce63757e82f972bf81431d888b98710b6e27f8dd96ed3d83557f6df0216"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-headings_paragraphs-02",
+      "primary_category": "headings_paragraphs",
+      "feature_tags": [
+        "headings_paragraphs"
+      ],
+      "split": "development",
+      "template_family_id": "development-headings_paragraphs",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22081967,
+      "source_artifact_reference": "development-headings_paragraphs-02/document.pdf",
+      "source_sha256": "b64be197b0e89f748a665a564c1d4d0d251ea191ec402bd82da34e5a7094cd24",
+      "source_byte_count": 33474,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-headings_paragraphs-02/page-1.txt",
+          "sha256": "37d8cae5e59ec2f81422137860b48fe68e1829f9471c3ac40b7b0d02e722d9cc"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-headings_paragraphs-02/assembled.txt",
+        "sha256": "37d8cae5e59ec2f81422137860b48fe68e1829f9471c3ac40b7b0d02e722d9cc"
+      },
+      "structural_annotation": {
+        "reference": "development-headings_paragraphs-02/structure.json",
+        "sha256": "a519bdc3dafef6e5cea4e57bedd093c06750ef9f75aa5c5882a5fc4ecdf315fa"
+      },
+      "authoring_source": {
+        "reference": "development-headings_paragraphs-02/source.json",
+        "sha256": "23872b9816633dee495b5897f99cddaf71c7e7f82b8d6c6467727bdc37122dcb"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-tables-01",
+      "primary_category": "tables",
+      "feature_tags": [
+        "tables"
+      ],
+      "split": "development",
+      "template_family_id": "development-tables",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22082066,
+      "source_artifact_reference": "development-tables-01/document.pdf",
+      "source_sha256": "8344af64ddd20ff33abbeadf8490fcb2350d39a35575eecff8462bc6ce1a96e4",
+      "source_byte_count": 33505,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-tables-01/page-1.txt",
+          "sha256": "b251fd3ef9ba7a8e48892145c8ce7220ac406ac37e292b2ea6793a07515d2ee3"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-tables-01/assembled.txt",
+        "sha256": "b251fd3ef9ba7a8e48892145c8ce7220ac406ac37e292b2ea6793a07515d2ee3"
+      },
+      "structural_annotation": {
+        "reference": "development-tables-01/structure.json",
+        "sha256": "287c1a5ba4c015f160399ccc03551b0f185b64e326eaef96f01409f71ee0fc2b"
+      },
+      "authoring_source": {
+        "reference": "development-tables-01/source.json",
+        "sha256": "8b8f8935c9c8baaf36441c3ee358277a66fac7117df8a7fe5831cbcf1899ea25"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-tables-02",
+      "primary_category": "tables",
+      "feature_tags": [
+        "tables"
+      ],
+      "split": "development",
+      "template_family_id": "development-tables",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22082067,
+      "source_artifact_reference": "development-tables-02/document.pdf",
+      "source_sha256": "cb7e1d66e65111201c06ae89251466c464eed76412ecdefe075643b8f8144ee0",
+      "source_byte_count": 33505,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-tables-02/page-1.txt",
+          "sha256": "fb02fbee1bf1f7b6570a079f02b6bc20ad397a2d583d9dd6453683e3a5d45c33"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-tables-02/assembled.txt",
+        "sha256": "fb02fbee1bf1f7b6570a079f02b6bc20ad397a2d583d9dd6453683e3a5d45c33"
+      },
+      "structural_annotation": {
+        "reference": "development-tables-02/structure.json",
+        "sha256": "6424de8e4a4529245fdfe77b950de9a006a0833f69fcdafc1eed042462205850"
+      },
+      "authoring_source": {
+        "reference": "development-tables-02/source.json",
+        "sha256": "9e80da61d3dd68897a257256b4b8aeea61ab06caeb2398e06e7646f22938abaa"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-two_column-01",
+      "primary_category": "two_column",
+      "feature_tags": [
+        "two_column"
+      ],
+      "split": "development",
+      "template_family_id": "development-two_column",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22082166,
+      "source_artifact_reference": "development-two_column-01/document.pdf",
+      "source_sha256": "fe6522d37856820c793cbd31a7dcd61dd9125e35db4e9339e7e41ec7b19e8e82",
+      "source_byte_count": 33586,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-two_column-01/page-1.txt",
+          "sha256": "23ba4a51d1e6b2b5f41c47ad8fd410f64109902545ee326295c529d3a71cb8ba"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-two_column-01/assembled.txt",
+        "sha256": "23ba4a51d1e6b2b5f41c47ad8fd410f64109902545ee326295c529d3a71cb8ba"
+      },
+      "structural_annotation": {
+        "reference": "development-two_column-01/structure.json",
+        "sha256": "3151752333e3ef0b4954bb553e453db00c53f7295dd2b47a28b6a39ee3881a07"
+      },
+      "authoring_source": {
+        "reference": "development-two_column-01/source.json",
+        "sha256": "f593e3d059e61bb97c17fc7664fed03feb0950d09bd98de4cf23e82f8fba8465"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-two_column-02",
+      "primary_category": "two_column",
+      "feature_tags": [
+        "two_column"
+      ],
+      "split": "development",
+      "template_family_id": "development-two_column",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22082167,
+      "source_artifact_reference": "development-two_column-02/document.pdf",
+      "source_sha256": "467280309c1b266b2b2b982e896d3d0fb04aaab28dc163df211a4d71520e306e",
+      "source_byte_count": 33586,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-two_column-02/page-1.txt",
+          "sha256": "9201ec17e006863c560e78420f34150a9373973a7919848f3f7dbd2016a2facc"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-two_column-02/assembled.txt",
+        "sha256": "9201ec17e006863c560e78420f34150a9373973a7919848f3f7dbd2016a2facc"
+      },
+      "structural_annotation": {
+        "reference": "development-two_column-02/structure.json",
+        "sha256": "0b0894ceca94d46abad307acc161beaccdde8bfc650d7f81d4117da30158a9e3"
+      },
+      "authoring_source": {
+        "reference": "development-two_column-02/source.json",
+        "sha256": "37a3a3dd2265f20a9fb689e3841dcb29317cd042e9b88462d87366be8732cb44"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-headers_footers_page_numbers-01",
+      "primary_category": "headers_footers_page_numbers",
+      "feature_tags": [
+        "headers_footers_page_numbers"
+      ],
+      "split": "development",
+      "template_family_id": "development-headers_footers_page_numbers",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22082266,
+      "source_artifact_reference": "development-headers_footers_page_numbers-01/document.pdf",
+      "source_sha256": "153723232fb64ae392a9d32c5730d92fde2834f7589a653077b37b10aadc4164",
+      "source_byte_count": 34309,
+      "expected_page_count": 2,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-headers_footers_page_numbers-01/page-1.txt",
+          "sha256": "0d7cda7a9f83da43ebc34eb0091b9b66ef2f726582ad3aaf7def23150d82ac6c"
+        },
+        {
+          "reference": "development-headers_footers_page_numbers-01/page-2.txt",
+          "sha256": "76c2104bbc265957a2adf890dd8ae3222d8bb7e7447b657720a3bb5de4946b59"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-headers_footers_page_numbers-01/assembled.txt",
+        "sha256": "30b50c9e92568c8baa123df6f3dfd216c4dd53461c244d134cf08cdf15d31f1d"
+      },
+      "structural_annotation": {
+        "reference": "development-headers_footers_page_numbers-01/structure.json",
+        "sha256": "912d27861855e04a87daabc3d964e1744a34262036423d6a98556844317b566a"
+      },
+      "authoring_source": {
+        "reference": "development-headers_footers_page_numbers-01/source.json",
+        "sha256": "2a652900ccede22040ee74710e6c4ad283f5093249fa50e5059cfe101dc85b41"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-headers_footers_page_numbers-02",
+      "primary_category": "headers_footers_page_numbers",
+      "feature_tags": [
+        "headers_footers_page_numbers"
+      ],
+      "split": "development",
+      "template_family_id": "development-headers_footers_page_numbers",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22082267,
+      "source_artifact_reference": "development-headers_footers_page_numbers-02/document.pdf",
+      "source_sha256": "700bf4f90ca5736b0dfd6d6bab490c7d2a0080d926d86ebeaf184c92dada4983",
+      "source_byte_count": 34307,
+      "expected_page_count": 2,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-headers_footers_page_numbers-02/page-1.txt",
+          "sha256": "03bf38ba3bdc6a76e60d2ec99c73c906078bb5a526949f2a6d7332cc8a8ceadb"
+        },
+        {
+          "reference": "development-headers_footers_page_numbers-02/page-2.txt",
+          "sha256": "72810ca96c662008afe5175355ba710328dd678cff7875db40d4961bf64fc245"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-headers_footers_page_numbers-02/assembled.txt",
+        "sha256": "d3f99ea763969aa08b976adc5a75924133f1beef2526fefeff6d9a8a2bc722dd"
+      },
+      "structural_annotation": {
+        "reference": "development-headers_footers_page_numbers-02/structure.json",
+        "sha256": "d70ce4e0c3e657b85d43facdc0f88df3f82b4f75ac02fc9cb853a522e65e01b3"
+      },
+      "authoring_source": {
+        "reference": "development-headers_footers_page_numbers-02/source.json",
+        "sha256": "c141dfa4f3d10e8f8197b3eae9467362f14b441e96750df3c0bf6c04000ff135"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-unicode-01",
+      "primary_category": "unicode",
+      "feature_tags": [
+        "unicode"
+      ],
+      "split": "development",
+      "template_family_id": "development-unicode",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22082366,
+      "source_artifact_reference": "development-unicode-01/document.pdf",
+      "source_sha256": "b43a1e68d30c2a5c656e5c602c0f6e9093d86689b958cf506c1c57a78dcff234",
+      "source_byte_count": 34435,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-unicode-01/page-1.txt",
+          "sha256": "e94b1288cf0649a85fca628c1c6a86441ff301e2862b1c1530cc4e5b2aad784a"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-unicode-01/assembled.txt",
+        "sha256": "e94b1288cf0649a85fca628c1c6a86441ff301e2862b1c1530cc4e5b2aad784a"
+      },
+      "structural_annotation": {
+        "reference": "development-unicode-01/structure.json",
+        "sha256": "1413d50eb6c24b5fb35f9bd8a480d24daa3379a94edaff6983497e93fa2b3b7b"
+      },
+      "authoring_source": {
+        "reference": "development-unicode-01/source.json",
+        "sha256": "d275ff64d891e9dbc7488786d613461d40d0b6e2523ffd6beda59ef724cceaa0"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-unicode-02",
+      "primary_category": "unicode",
+      "feature_tags": [
+        "unicode"
+      ],
+      "split": "development",
+      "template_family_id": "development-unicode",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22082367,
+      "source_artifact_reference": "development-unicode-02/document.pdf",
+      "source_sha256": "7501aff7b3a7cfe49ffc1905ed89e17777dc0eafd202193370422aebea85a9d5",
+      "source_byte_count": 34435,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-unicode-02/page-1.txt",
+          "sha256": "67390a74be6204b54ab91e210d6135934ff4d25448ac8fac139e6fd971e8aa58"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-unicode-02/assembled.txt",
+        "sha256": "67390a74be6204b54ab91e210d6135934ff4d25448ac8fac139e6fd971e8aa58"
+      },
+      "structural_annotation": {
+        "reference": "development-unicode-02/structure.json",
+        "sha256": "b5f5b911f3abb34d171b817b8684771cd2152e2cd7cf9524420f55660b9c7b50"
+      },
+      "authoring_source": {
+        "reference": "development-unicode-02/source.json",
+        "sha256": "4d3c1e57788b3c586e204cf50d97663831c994377cc3f36787cd53e2c1ada7e1"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-punctuation_hyphenation-01",
+      "primary_category": "punctuation_hyphenation",
+      "feature_tags": [
+        "punctuation_hyphenation"
+      ],
+      "split": "development",
+      "template_family_id": "development-punctuation_hyphenation",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22082466,
+      "source_artifact_reference": "development-punctuation_hyphenation-01/document.pdf",
+      "source_sha256": "9a0643bfa9677be1ab57383d712519c3ae904d0d2af6c84c975e5a73904a94a8",
+      "source_byte_count": 33530,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-punctuation_hyphenation-01/page-1.txt",
+          "sha256": "67f9fea4c4caec681bea5ffc6d3fd05723e03e5ec833a2f6d8001c789ce6cdce"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-punctuation_hyphenation-01/assembled.txt",
+        "sha256": "67f9fea4c4caec681bea5ffc6d3fd05723e03e5ec833a2f6d8001c789ce6cdce"
+      },
+      "structural_annotation": {
+        "reference": "development-punctuation_hyphenation-01/structure.json",
+        "sha256": "d33a3634c5098c5810229e9eb7cb45b00548cf845eb4e54e98ea74b23d996264"
+      },
+      "authoring_source": {
+        "reference": "development-punctuation_hyphenation-01/source.json",
+        "sha256": "94f0904f6a631851241414d9bd42d9b603568e2942fefc1e81978e2341f11879"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-punctuation_hyphenation-02",
+      "primary_category": "punctuation_hyphenation",
+      "feature_tags": [
+        "punctuation_hyphenation"
+      ],
+      "split": "development",
+      "template_family_id": "development-punctuation_hyphenation",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22082467,
+      "source_artifact_reference": "development-punctuation_hyphenation-02/document.pdf",
+      "source_sha256": "20e2624373d84f11bc99e6af90ab53a7dbf94c666c1fb571e623ab4cdad2e18d",
+      "source_byte_count": 33530,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-punctuation_hyphenation-02/page-1.txt",
+          "sha256": "8adf22310079dcfc55b0c81f9b522a3355567f7f509d1e58655531cfe7dab19b"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-punctuation_hyphenation-02/assembled.txt",
+        "sha256": "8adf22310079dcfc55b0c81f9b522a3355567f7f509d1e58655531cfe7dab19b"
+      },
+      "structural_annotation": {
+        "reference": "development-punctuation_hyphenation-02/structure.json",
+        "sha256": "eda1a4efa826a410c89e90405f19b8ea8524d51d6f81ea474154c71344ed9b48"
+      },
+      "authoring_source": {
+        "reference": "development-punctuation_hyphenation-02/source.json",
+        "sha256": "3742e25589e61e3bb8c72a22142cd2175f0f6206dd32039ca9c442594158f62a"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-mixed_text_images-01",
+      "primary_category": "mixed_text_images",
+      "feature_tags": [
+        "mixed_text_images"
+      ],
+      "split": "development",
+      "template_family_id": "development-mixed_text_images",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22082566,
+      "source_artifact_reference": "development-mixed_text_images-01/document.pdf",
+      "source_sha256": "105441898263f13471c3e692d1303ab3a3573bd8f0112b0225cb0d5f33ea50ac",
+      "source_byte_count": 34191,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "needs_review",
+      "expected_outcome_code": "ambiguous_content",
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-mixed_text_images-01/page-1.txt",
+          "sha256": "965c49d372fc13cd6e028d1f854b804d1cf61846be85f9ba0d86c9e62248db58"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-mixed_text_images-01/assembled.txt",
+        "sha256": "965c49d372fc13cd6e028d1f854b804d1cf61846be85f9ba0d86c9e62248db58"
+      },
+      "structural_annotation": {
+        "reference": "development-mixed_text_images-01/structure.json",
+        "sha256": "d5a875ed7c699df57adf05056fc7ff0d12db768671d8369bd28ac7954c1c0f99"
+      },
+      "authoring_source": {
+        "reference": "development-mixed_text_images-01/source.json",
+        "sha256": "f92f27da28ba7fa2a1c3c5a829f940c7cf9ca60c6752bf8d1d5a5f93eeecceb2"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-mixed_text_images-02",
+      "primary_category": "mixed_text_images",
+      "feature_tags": [
+        "mixed_text_images"
+      ],
+      "split": "development",
+      "template_family_id": "development-mixed_text_images",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22082567,
+      "source_artifact_reference": "development-mixed_text_images-02/document.pdf",
+      "source_sha256": "00645deeb1b89bed96809c8bb878bf0a7b5752de35d3238287aa387785372dd6",
+      "source_byte_count": 34997,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "needs_review",
+      "expected_outcome_code": "ambiguous_content",
+      "content_assessment": "missing_visible_content",
+      "reference_scope": "embedded_only",
+      "page_ground_truth": [
+        {
+          "reference": "development-mixed_text_images-02/page-1.txt",
+          "sha256": "b96a902fb3167a7a6d6dae6c0f4cc40cf908c6cf2456e517c071fcd623ca9abf"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-mixed_text_images-02/assembled.txt",
+        "sha256": "b96a902fb3167a7a6d6dae6c0f4cc40cf908c6cf2456e517c071fcd623ca9abf"
+      },
+      "structural_annotation": {
+        "reference": "development-mixed_text_images-02/structure.json",
+        "sha256": "1d92a3c8480aca17346057c68b3d3aac15bc6ba405b0ae2144bf5215ed3765fb"
+      },
+      "authoring_source": {
+        "reference": "development-mixed_text_images-02/source.json",
+        "sha256": "2bde6b7bfa7f0eba916db85695326f0e2b89662c2462d5495dddd349d7b3eece"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-image_only_or_scanned_like-01",
+      "primary_category": "image_only_or_scanned_like",
+      "feature_tags": [
+        "image_only_or_scanned_like"
+      ],
+      "split": "development",
+      "template_family_id": "development-image_only_or_scanned_like",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22082666,
+      "source_artifact_reference": "development-image_only_or_scanned_like-01/document.pdf",
+      "source_sha256": "51626a72f7ac668b2635a6dabf6cfa9b8dc74b0f1b52857be9eade8dac768da7",
+      "source_byte_count": 3414,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "ocr_required",
+      "expected_outcome_code": "image_without_text",
+      "content_assessment": "missing_visible_content",
+      "reference_scope": "embedded_only",
+      "page_ground_truth": [
+        {
+          "reference": "development-image_only_or_scanned_like-01/page-1.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-image_only_or_scanned_like-01/assembled.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "structural_annotation": {
+        "reference": "development-image_only_or_scanned_like-01/structure.json",
+        "sha256": "b4b51b1c09ef8c9a2f021c8b4a202f98ab25fac1d02621c991a62d983d7ba0c9"
+      },
+      "authoring_source": {
+        "reference": "development-image_only_or_scanned_like-01/source.json",
+        "sha256": "50a96696983f937957b099da8a8450ffad5d20df6c74742e0bd42a1a7508a27a"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-image_only_or_scanned_like-02",
+      "primary_category": "image_only_or_scanned_like",
+      "feature_tags": [
+        "image_only_or_scanned_like"
+      ],
+      "split": "development",
+      "template_family_id": "development-image_only_or_scanned_like",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22082667,
+      "source_artifact_reference": "development-image_only_or_scanned_like-02/document.pdf",
+      "source_sha256": "dd980324f85ad630e3dd56bb445ee6ec5853c8eeeebf1a907034db6fff6b23cc",
+      "source_byte_count": 35713,
+      "expected_page_count": 2,
+      "expected_policy_outcome": "ocr_required",
+      "expected_outcome_code": "image_without_text",
+      "content_assessment": "missing_visible_content",
+      "reference_scope": "embedded_only",
+      "page_ground_truth": [
+        {
+          "reference": "development-image_only_or_scanned_like-02/page-1.txt",
+          "sha256": "40a59c9ec8b12f827dee0564198d7925b1fd2f6f6c2d5bf32aca7515e706b963"
+        },
+        {
+          "reference": "development-image_only_or_scanned_like-02/page-2.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-image_only_or_scanned_like-02/assembled.txt",
+        "sha256": "c51e226ef8b64a9706b708559252247d259859e1f112bd00a408694276a01036"
+      },
+      "structural_annotation": {
+        "reference": "development-image_only_or_scanned_like-02/structure.json",
+        "sha256": "8bc49e7f6f09b1846ba67f1370488e8cf08fe9049c68b4d4000f7e60bca1346c"
+      },
+      "authoring_source": {
+        "reference": "development-image_only_or_scanned_like-02/source.json",
+        "sha256": "0390e6a9f873f2b5e1f734f1608fbdae40ddb613be4185ac0f69e5afd8897293"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-invalid_or_unsupported-01",
+      "primary_category": "invalid_or_unsupported",
+      "feature_tags": [
+        "invalid_or_unsupported"
+      ],
+      "split": "development",
+      "template_family_id": "development-invalid_or_unsupported",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22082766,
+      "source_artifact_reference": "development-invalid_or_unsupported-01/document.pdf",
+      "source_sha256": "8635f219c886d3778e8d6e1b6a473f58eccd58231f5fdf2304a0403335fa6c6d",
+      "source_byte_count": 1241,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "failed",
+      "expected_outcome_code": "no_usable_text",
+      "content_assessment": "unusable",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-invalid_or_unsupported-01/page-1.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-invalid_or_unsupported-01/assembled.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "structural_annotation": {
+        "reference": "development-invalid_or_unsupported-01/structure.json",
+        "sha256": "cf698e49fc723638409c3227b98ca35c072f51f945202547d54f2375369e231e"
+      },
+      "authoring_source": {
+        "reference": "development-invalid_or_unsupported-01/source.json",
+        "sha256": "9a6f0afe27fcd0fa26d7e0bd38d52d62bef58adf6e68ef718916e9d34494e5b5"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": false,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "development-invalid_or_unsupported-02",
+      "primary_category": "invalid_or_unsupported",
+      "feature_tags": [
+        "invalid_or_unsupported"
+      ],
+      "split": "development",
+      "template_family_id": "development-invalid_or_unsupported",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22082767,
+      "source_artifact_reference": "development-invalid_or_unsupported-02/document.pdf",
+      "source_sha256": "a95aa89c68697eb93f5a7b58838279d05e2c147c3bfd9f3104166c78f97f3788",
+      "source_byte_count": 33601,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "failed",
+      "expected_outcome_code": "encrypted_pdf",
+      "content_assessment": "unusable",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "development-invalid_or_unsupported-02/page-1.txt",
+          "sha256": "4d2fbe958b7e05018ce45895e2ca1584155e42b9d90e951ff7b7904e2a77bcf3"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "development-invalid_or_unsupported-02/assembled.txt",
+        "sha256": "4d2fbe958b7e05018ce45895e2ca1584155e42b9d90e951ff7b7904e2a77bcf3"
+      },
+      "structural_annotation": {
+        "reference": "development-invalid_or_unsupported-02/structure.json",
+        "sha256": "72a34c11acf8bf823babc433ad687be7173d0a0322bb7b3697699e413b591213"
+      },
+      "authoring_source": {
+        "reference": "development-invalid_or_unsupported-02/source.json",
+        "sha256": "ef48b46b1670638ea2dfafd86a8f69020b59b3c2143ffce0423ca0a940feee44"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": false,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-simple_single_column-01",
+      "primary_category": "simple_single_column",
+      "feature_tags": [
+        "simple_single_column"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-simple_single_column",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22091766,
+      "source_artifact_reference": "heldout-simple_single_column-01/document.pdf",
+      "source_sha256": "5e25558bddff81ceee075c0162a7552b94a39600248f25ed8adb3e9836847620",
+      "source_byte_count": 33380,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-simple_single_column-01/page-1.txt",
+          "sha256": "dd729353afa914a8d4f151e4c32cbadb4977dc13b88928d8e4062503360c95a9"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-simple_single_column-01/assembled.txt",
+        "sha256": "dd729353afa914a8d4f151e4c32cbadb4977dc13b88928d8e4062503360c95a9"
+      },
+      "structural_annotation": {
+        "reference": "heldout-simple_single_column-01/structure.json",
+        "sha256": "2bd0b34e0302b0d1ba7e7d0c571ee194c5210eb6b5615686883a292aaf2fde28"
+      },
+      "authoring_source": {
+        "reference": "heldout-simple_single_column-01/source.json",
+        "sha256": "0112a6cde5864519d6ec1a3ede51432ecc5f00afd4ada771d9c92ce566761a31"
+      },
+      "exact_match_required": true,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-simple_single_column-02",
+      "primary_category": "simple_single_column",
+      "feature_tags": [
+        "simple_single_column"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-simple_single_column",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22091767,
+      "source_artifact_reference": "heldout-simple_single_column-02/document.pdf",
+      "source_sha256": "f01a872d7911bf26501ed341995cb1b4d8074b8221849d154c2f041bd733cc64",
+      "source_byte_count": 33379,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-simple_single_column-02/page-1.txt",
+          "sha256": "3ddc8b53a24dd86605f58731825e51f21ae7a77883ada065d5598319e6800d6d"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-simple_single_column-02/assembled.txt",
+        "sha256": "3ddc8b53a24dd86605f58731825e51f21ae7a77883ada065d5598319e6800d6d"
+      },
+      "structural_annotation": {
+        "reference": "heldout-simple_single_column-02/structure.json",
+        "sha256": "9cf6de265d7a3b89eb0d5b5da49bbefb1246338a49c7945cef7069fadd82fdf0"
+      },
+      "authoring_source": {
+        "reference": "heldout-simple_single_column-02/source.json",
+        "sha256": "02d72f7e088708ea4ead9e5fc894c20793e5fdf6dc9332f3558e15b3aec30e09"
+      },
+      "exact_match_required": true,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-simple_single_column-03",
+      "primary_category": "simple_single_column",
+      "feature_tags": [
+        "simple_single_column"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-simple_single_column",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22091768,
+      "source_artifact_reference": "heldout-simple_single_column-03/document.pdf",
+      "source_sha256": "762619cb8fb8c670897c3e2ac59a4f53b06739c2464521a6b7c9b30fa8649930",
+      "source_byte_count": 33380,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-simple_single_column-03/page-1.txt",
+          "sha256": "686c77dbbcd0ce92f6af50c563f98149f6dc323d38b8286007dfe78cae51011d"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-simple_single_column-03/assembled.txt",
+        "sha256": "686c77dbbcd0ce92f6af50c563f98149f6dc323d38b8286007dfe78cae51011d"
+      },
+      "structural_annotation": {
+        "reference": "heldout-simple_single_column-03/structure.json",
+        "sha256": "b22df903e020019c12f8fc7f2d7c70e67287d79633fc6db0a96afe44464d642b"
+      },
+      "authoring_source": {
+        "reference": "heldout-simple_single_column-03/source.json",
+        "sha256": "2c39f8ef902ce61b9f48c46189e0e3a576b940f73eabbf27c655d225abd783cd"
+      },
+      "exact_match_required": true,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-simple_single_column-04",
+      "primary_category": "simple_single_column",
+      "feature_tags": [
+        "simple_single_column"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-simple_single_column",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22091769,
+      "source_artifact_reference": "heldout-simple_single_column-04/document.pdf",
+      "source_sha256": "aab3419adc78809fb784248c7bcaa293fa004a4dd2e8629eb8e83a281915c56e",
+      "source_byte_count": 33380,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-simple_single_column-04/page-1.txt",
+          "sha256": "3aab53419fee50c765ab3777637c0ff7941b1541dfecc0c9ea1fbf7c96254a61"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-simple_single_column-04/assembled.txt",
+        "sha256": "3aab53419fee50c765ab3777637c0ff7941b1541dfecc0c9ea1fbf7c96254a61"
+      },
+      "structural_annotation": {
+        "reference": "heldout-simple_single_column-04/structure.json",
+        "sha256": "decfc6d01487b68252a7c3a60f0e2dedda15d8386c47a2b6da2f507e00baae42"
+      },
+      "authoring_source": {
+        "reference": "heldout-simple_single_column-04/source.json",
+        "sha256": "8062e1ba83e9d98f2c25fc7270ad284076f41d579e4831179ac03f5b04d59bde"
+      },
+      "exact_match_required": true,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-multipage-01",
+      "primary_category": "multipage",
+      "feature_tags": [
+        "multipage"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-multipage",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22091866,
+      "source_artifact_reference": "heldout-multipage-01/document.pdf",
+      "source_sha256": "2efa4ed18374938c4d0467d4354c2e7cb0410e09a7ec05af12f895fcc437d9fb",
+      "source_byte_count": 34774,
+      "expected_page_count": 3,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-multipage-01/page-1.txt",
+          "sha256": "c6056d0a344413bc86be7bf9ea8dd4710f590c94cce344ab353f791603841a01"
+        },
+        {
+          "reference": "heldout-multipage-01/page-2.txt",
+          "sha256": "3515b2166fcfa4442d9ad5ac1b51beef90220119dba75b98325d8699506b18af"
+        },
+        {
+          "reference": "heldout-multipage-01/page-3.txt",
+          "sha256": "9d806f8447eb3b2b69361b375d46e403af05854d486acff7809341d9b2c6d516"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-multipage-01/assembled.txt",
+        "sha256": "b478ea6bd3d6ce5dcb272e248008c104455ebf886b03f3e0fd56083aad4d3f70"
+      },
+      "structural_annotation": {
+        "reference": "heldout-multipage-01/structure.json",
+        "sha256": "0ed4d502787060c454b21900724875341968ef131092033e8458e26614f7cb21"
+      },
+      "authoring_source": {
+        "reference": "heldout-multipage-01/source.json",
+        "sha256": "ddbff347013a61b7039c9e63fe11c66a42fda698fd38955d84d852621b7f16e6"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-multipage-02",
+      "primary_category": "multipage",
+      "feature_tags": [
+        "multipage"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-multipage",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22091867,
+      "source_artifact_reference": "heldout-multipage-02/document.pdf",
+      "source_sha256": "a39d7defccad326f97fdfd3e75396aa4240da37c7b9d9b5a3952e97b39b02cc0",
+      "source_byte_count": 34777,
+      "expected_page_count": 3,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-multipage-02/page-1.txt",
+          "sha256": "1e9dca791a13a76bc5ba4a55fa39e8d4497c9b9904dc7a329a80579fcaa7b604"
+        },
+        {
+          "reference": "heldout-multipage-02/page-2.txt",
+          "sha256": "31eed41526ea8afc30c6252475ba87fdbfdeb7d2c230b8f4fabe6b409c49cb06"
+        },
+        {
+          "reference": "heldout-multipage-02/page-3.txt",
+          "sha256": "c1064c5000652d6256478eab2b358aadf76fa05d71ca8dfe6d4744197d4b0a24"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-multipage-02/assembled.txt",
+        "sha256": "c7caac9dc78f9f9113779a84c3b311bcd89e7095db83fca7d3ff71b1df9a8f91"
+      },
+      "structural_annotation": {
+        "reference": "heldout-multipage-02/structure.json",
+        "sha256": "3e86ce16fc608e2faf190dff20769996fd4389c6b09649118eebb1f155165d4a"
+      },
+      "authoring_source": {
+        "reference": "heldout-multipage-02/source.json",
+        "sha256": "c738cf033362dcebb84b244b6d30b131d364e51d54b146d17a773136434151e5"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-multipage-03",
+      "primary_category": "multipage",
+      "feature_tags": [
+        "multipage"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-multipage",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22091868,
+      "source_artifact_reference": "heldout-multipage-03/document.pdf",
+      "source_sha256": "f1144fef42bed88856c7f2faca976ae050a2f4f564f57b203b2ccd87deb60dfe",
+      "source_byte_count": 34774,
+      "expected_page_count": 3,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-multipage-03/page-1.txt",
+          "sha256": "72b39e712f2dfa7394d1f06af873ca87ed5925b9ef7edf12a00eb7b614e75a22"
+        },
+        {
+          "reference": "heldout-multipage-03/page-2.txt",
+          "sha256": "386c35abd7925fb15653b1950b7c19b6e67451df7a56f811c338961f5c24f611"
+        },
+        {
+          "reference": "heldout-multipage-03/page-3.txt",
+          "sha256": "8739fe39c3da7547f73fa9c32eb521efabac0f3b2a99272ddac418bbb9890af0"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-multipage-03/assembled.txt",
+        "sha256": "64bd94139726a56ebb3517bcce4ce989eecea9bcfc2877e293e7aa8e2442e576"
+      },
+      "structural_annotation": {
+        "reference": "heldout-multipage-03/structure.json",
+        "sha256": "255d7e4568b8d8448e27a64383f6ae6f14c008442ffc8db76d550736ad82d513"
+      },
+      "authoring_source": {
+        "reference": "heldout-multipage-03/source.json",
+        "sha256": "d21da267b613c710a6af4296122e4cd043e12f6b8e1a5ea753ecb671fb8997dc"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-multipage-04",
+      "primary_category": "multipage",
+      "feature_tags": [
+        "multipage"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-multipage",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22091869,
+      "source_artifact_reference": "heldout-multipage-04/document.pdf",
+      "source_sha256": "83193c3827cf5b1156a78c5d6cd3803f716496820d77c92c3c9f9759d4e60ebc",
+      "source_byte_count": 34774,
+      "expected_page_count": 3,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-multipage-04/page-1.txt",
+          "sha256": "fe3314538ce6fcd3cbe86c3090c4b812179a3c358bca176fcea6d29c20ad2af0"
+        },
+        {
+          "reference": "heldout-multipage-04/page-2.txt",
+          "sha256": "35f11d606bdeebf5ec2786285b9929118ec7bf6dfa7d94a2d3f0ba2d07d16225"
+        },
+        {
+          "reference": "heldout-multipage-04/page-3.txt",
+          "sha256": "2782995bbb9d04b624d5012e4c6702b038ef6c972217210767fceea6e5965f6e"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-multipage-04/assembled.txt",
+        "sha256": "0109d575f611a0e433f34d5f61d058482288e9524551b07318f2b9d99eec6fe5"
+      },
+      "structural_annotation": {
+        "reference": "heldout-multipage-04/structure.json",
+        "sha256": "1379b78930a5b21bd6ab01d51208b465c0e6ca4a88fddbe9ae61d9344394ab6c"
+      },
+      "authoring_source": {
+        "reference": "heldout-multipage-04/source.json",
+        "sha256": "dbb2b290674f9c1dd42878c5cd0f76c069208c6439ff792c09a275783383b2d6"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-headings_paragraphs-01",
+      "primary_category": "headings_paragraphs",
+      "feature_tags": [
+        "headings_paragraphs"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-headings_paragraphs",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22091966,
+      "source_artifact_reference": "heldout-headings_paragraphs-01/document.pdf",
+      "source_sha256": "0ad8809dbc8100f3ba021e3f5e909e5ca05bf8594636962219a3afcc3beb9d7e",
+      "source_byte_count": 33499,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-headings_paragraphs-01/page-1.txt",
+          "sha256": "0ab5169301d39658f3edd8c1d58692acc4cf7542f0946df36b645a9a2b3f3a48"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-headings_paragraphs-01/assembled.txt",
+        "sha256": "0ab5169301d39658f3edd8c1d58692acc4cf7542f0946df36b645a9a2b3f3a48"
+      },
+      "structural_annotation": {
+        "reference": "heldout-headings_paragraphs-01/structure.json",
+        "sha256": "54b1a359edf2bd0373654394e3007eefb8ceafa08f214ed923e2d17e4a4a5f62"
+      },
+      "authoring_source": {
+        "reference": "heldout-headings_paragraphs-01/source.json",
+        "sha256": "6710439a02c4259c514eb923e5c760c528369f9d49ef93370ea5f01f3b93676e"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-headings_paragraphs-02",
+      "primary_category": "headings_paragraphs",
+      "feature_tags": [
+        "headings_paragraphs"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-headings_paragraphs",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22091967,
+      "source_artifact_reference": "heldout-headings_paragraphs-02/document.pdf",
+      "source_sha256": "9a033988c31c122da8cd23c3c9054d90977c5a533a7d3eb6c0177701fc9b0fe4",
+      "source_byte_count": 33500,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-headings_paragraphs-02/page-1.txt",
+          "sha256": "8911ae5519bf713cc367cfc63acb12ec8b24fd0e8632dcb50a89c653f247b739"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-headings_paragraphs-02/assembled.txt",
+        "sha256": "8911ae5519bf713cc367cfc63acb12ec8b24fd0e8632dcb50a89c653f247b739"
+      },
+      "structural_annotation": {
+        "reference": "heldout-headings_paragraphs-02/structure.json",
+        "sha256": "4dc4bcea0c4054401973ee0639e05fbd97406778ec80b0a7e17462ab4242ad99"
+      },
+      "authoring_source": {
+        "reference": "heldout-headings_paragraphs-02/source.json",
+        "sha256": "35242b8a2487f10365baeca30db442f12d9ddd73e00a3aaeeb193746873f6982"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-headings_paragraphs-03",
+      "primary_category": "headings_paragraphs",
+      "feature_tags": [
+        "headings_paragraphs"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-headings_paragraphs",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22091968,
+      "source_artifact_reference": "heldout-headings_paragraphs-03/document.pdf",
+      "source_sha256": "997304adad4f81b956a597a844cfa89d01e7ff5f97566e9d6adb93716ff7191d",
+      "source_byte_count": 33498,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-headings_paragraphs-03/page-1.txt",
+          "sha256": "319b460729a8445c07238fb37864f37b93b4689e8779fcad5852b41a37b03e69"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-headings_paragraphs-03/assembled.txt",
+        "sha256": "319b460729a8445c07238fb37864f37b93b4689e8779fcad5852b41a37b03e69"
+      },
+      "structural_annotation": {
+        "reference": "heldout-headings_paragraphs-03/structure.json",
+        "sha256": "f745abbc3597b8e7232215f1daf13292480201ee33174cbdbb52ed7a24d5c18a"
+      },
+      "authoring_source": {
+        "reference": "heldout-headings_paragraphs-03/source.json",
+        "sha256": "6728b216f4d364e8d35c6bbc16b44e6fca47d328ef6eb668863358e754b8c1f1"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-headings_paragraphs-04",
+      "primary_category": "headings_paragraphs",
+      "feature_tags": [
+        "headings_paragraphs"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-headings_paragraphs",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22091969,
+      "source_artifact_reference": "heldout-headings_paragraphs-04/document.pdf",
+      "source_sha256": "7e4a7e941c6221b76f4f34329bec97aaa84f7836860d9452b80014f71dfaef43",
+      "source_byte_count": 33499,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-headings_paragraphs-04/page-1.txt",
+          "sha256": "645a8d0bdea5714ecfada7f15605c399d60d6cf4732da8a3ec6997ceef568012"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-headings_paragraphs-04/assembled.txt",
+        "sha256": "645a8d0bdea5714ecfada7f15605c399d60d6cf4732da8a3ec6997ceef568012"
+      },
+      "structural_annotation": {
+        "reference": "heldout-headings_paragraphs-04/structure.json",
+        "sha256": "9d89b0df44ed485b38697e647d571714ddcba2d1b2e100426557791771d64a47"
+      },
+      "authoring_source": {
+        "reference": "heldout-headings_paragraphs-04/source.json",
+        "sha256": "a39e796ced3e2ec2094430bb857389e2ec9a191a693c780ff986a8102a8b5e71"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-tables-01",
+      "primary_category": "tables",
+      "feature_tags": [
+        "tables"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-tables",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092066,
+      "source_artifact_reference": "heldout-tables-01/document.pdf",
+      "source_sha256": "6661452fd72ce83af71e82da93eb69fd8ced085c41b9ca90bbd38878377fe8d6",
+      "source_byte_count": 33524,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-tables-01/page-1.txt",
+          "sha256": "2076d7cc10362c59a10b87d8fc23722a95495c244774da9d63f238c0891234ac"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-tables-01/assembled.txt",
+        "sha256": "2076d7cc10362c59a10b87d8fc23722a95495c244774da9d63f238c0891234ac"
+      },
+      "structural_annotation": {
+        "reference": "heldout-tables-01/structure.json",
+        "sha256": "9fb0ddf3ab0be549f4560606ca5b754455d39e184d687365825b03e7bfca54ed"
+      },
+      "authoring_source": {
+        "reference": "heldout-tables-01/source.json",
+        "sha256": "ce498fa6270d57aa0c88be5449fee560e65265e1577d31ab1d28844ae2666d2c"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-tables-02",
+      "primary_category": "tables",
+      "feature_tags": [
+        "tables"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-tables",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092067,
+      "source_artifact_reference": "heldout-tables-02/document.pdf",
+      "source_sha256": "fdca2e9d6c2ae10b0f6fbe244d44bdfed47f462546f7504a55059c7979ecc1d1",
+      "source_byte_count": 33524,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-tables-02/page-1.txt",
+          "sha256": "3304a278cc54eba8d77aef723bed18e921aa343ad12d603e32f14b2962269d3f"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-tables-02/assembled.txt",
+        "sha256": "3304a278cc54eba8d77aef723bed18e921aa343ad12d603e32f14b2962269d3f"
+      },
+      "structural_annotation": {
+        "reference": "heldout-tables-02/structure.json",
+        "sha256": "7fd1f333fed93c1ebba1a1092c0aa1cbfb64f0571c8811a2ac9b6cdbc1120c23"
+      },
+      "authoring_source": {
+        "reference": "heldout-tables-02/source.json",
+        "sha256": "33a35e425b91bb155806b35a956b30bfcb1e712e7df9b6cef755b0672c650b6b"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-tables-03",
+      "primary_category": "tables",
+      "feature_tags": [
+        "tables"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-tables",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092068,
+      "source_artifact_reference": "heldout-tables-03/document.pdf",
+      "source_sha256": "bf8bad3c9fc5f01de84bc8a978a7b7ecbc6ece07e1c4db0842b5aed1bb1ecfab",
+      "source_byte_count": 33524,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-tables-03/page-1.txt",
+          "sha256": "fa8fef5b605399a6f9e5192ee49677869f915797fbd9500daf2ea82581a661a0"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-tables-03/assembled.txt",
+        "sha256": "fa8fef5b605399a6f9e5192ee49677869f915797fbd9500daf2ea82581a661a0"
+      },
+      "structural_annotation": {
+        "reference": "heldout-tables-03/structure.json",
+        "sha256": "5170a2fb0e6b04bfc12d7ff01c0bf9da6a52216c7eca7891c9fbb2e21d3dd6ad"
+      },
+      "authoring_source": {
+        "reference": "heldout-tables-03/source.json",
+        "sha256": "b6e5a38ffa20d3113d34afb71df12eeb92b871fb0ea83ed4eb0b8d2a0270ba04"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-tables-04",
+      "primary_category": "tables",
+      "feature_tags": [
+        "tables"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-tables",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092069,
+      "source_artifact_reference": "heldout-tables-04/document.pdf",
+      "source_sha256": "429c92196bd9f01d2d64916acba28d2a4dc95ca193c31cf41c9c71ebdc0451a2",
+      "source_byte_count": 33524,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-tables-04/page-1.txt",
+          "sha256": "3c263bd2adccc9c05d198c4f3b6ddbcd14553701fd589a8378cdc757603493dd"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-tables-04/assembled.txt",
+        "sha256": "3c263bd2adccc9c05d198c4f3b6ddbcd14553701fd589a8378cdc757603493dd"
+      },
+      "structural_annotation": {
+        "reference": "heldout-tables-04/structure.json",
+        "sha256": "c338e5d8e90ed26a5b69ae55f83309c82995845f9f6842d7f9219c744dcacb7c"
+      },
+      "authoring_source": {
+        "reference": "heldout-tables-04/source.json",
+        "sha256": "b0055f61b82827d68d9dd64623526e81567d75d829254e3e90a5fe11d3377578"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-two_column-01",
+      "primary_category": "two_column",
+      "feature_tags": [
+        "two_column"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-two_column",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092166,
+      "source_artifact_reference": "heldout-two_column-01/document.pdf",
+      "source_sha256": "fb66d33b7d62e0c49a4562bfb1a18804c0892898e0d7af71236630b90b364bab",
+      "source_byte_count": 33598,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "ordering_problem",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-two_column-01/page-1.txt",
+          "sha256": "67a679c973aa789bf141708d0b21dffb7e590ca7bf7627b85c9e220368d301c1"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-two_column-01/assembled.txt",
+        "sha256": "67a679c973aa789bf141708d0b21dffb7e590ca7bf7627b85c9e220368d301c1"
+      },
+      "structural_annotation": {
+        "reference": "heldout-two_column-01/structure.json",
+        "sha256": "b4fb26e9c88928f8276963588d60cd49a0fa34b0cc3b5da86baf0d1e4bedf870"
+      },
+      "authoring_source": {
+        "reference": "heldout-two_column-01/source.json",
+        "sha256": "3b33979ae8e1b2928bded29d22bdbed11e5382ee98134b4f2a75d47559b662a5"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-two_column-02",
+      "primary_category": "two_column",
+      "feature_tags": [
+        "two_column"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-two_column",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092167,
+      "source_artifact_reference": "heldout-two_column-02/document.pdf",
+      "source_sha256": "3c9afcd6eaa11cd57ada4d013599cb1d6acd3ac1480fb496707ffa501b224743",
+      "source_byte_count": 33598,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "ordering_problem",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-two_column-02/page-1.txt",
+          "sha256": "d498b354ab9022d45f26e1df1c27927fe09a07133e72f6f3e2e69a3c52235ad0"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-two_column-02/assembled.txt",
+        "sha256": "d498b354ab9022d45f26e1df1c27927fe09a07133e72f6f3e2e69a3c52235ad0"
+      },
+      "structural_annotation": {
+        "reference": "heldout-two_column-02/structure.json",
+        "sha256": "72add65ebd068b87077f030d598ac10d8893211bcf032acbaa1393c13fd5f35b"
+      },
+      "authoring_source": {
+        "reference": "heldout-two_column-02/source.json",
+        "sha256": "66bc99088261ff19a0e196856398a4a454b345d2099ffb7acde6c2e4aa35bc54"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-two_column-03",
+      "primary_category": "two_column",
+      "feature_tags": [
+        "two_column"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-two_column",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092168,
+      "source_artifact_reference": "heldout-two_column-03/document.pdf",
+      "source_sha256": "10994182e84bf3fd63c30487f2bea958d49ac81514886292dc7ae6c351d52704",
+      "source_byte_count": 33598,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "ordering_problem",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-two_column-03/page-1.txt",
+          "sha256": "e5ad7829f947d9f9199ba2937d51d9cd4d73ebe155e9b2afebde92b0bb83046a"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-two_column-03/assembled.txt",
+        "sha256": "e5ad7829f947d9f9199ba2937d51d9cd4d73ebe155e9b2afebde92b0bb83046a"
+      },
+      "structural_annotation": {
+        "reference": "heldout-two_column-03/structure.json",
+        "sha256": "a984fd6fd9508404509006a7e9234a20559f8969698e92177aa2c88c781afdbd"
+      },
+      "authoring_source": {
+        "reference": "heldout-two_column-03/source.json",
+        "sha256": "88fce2618155724b8ff539a813083e01134cd3ed18a1dffa49f0c2608eb84aca"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-two_column-04",
+      "primary_category": "two_column",
+      "feature_tags": [
+        "two_column"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-two_column",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092169,
+      "source_artifact_reference": "heldout-two_column-04/document.pdf",
+      "source_sha256": "ce1b6dc4c4a3cfc677d1827449757e307b26faca0f3ab8bd091ec059d00a388b",
+      "source_byte_count": 33598,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "ordering_problem",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-two_column-04/page-1.txt",
+          "sha256": "486d3db4b99fa6ced871d1ac838cf6f6bc017e0d645fe0a197a47feccd009b59"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-two_column-04/assembled.txt",
+        "sha256": "486d3db4b99fa6ced871d1ac838cf6f6bc017e0d645fe0a197a47feccd009b59"
+      },
+      "structural_annotation": {
+        "reference": "heldout-two_column-04/structure.json",
+        "sha256": "1c4fe01608a9fc72e82f77de7fe89ca27270db2a3064342d1be787b4d49fe910"
+      },
+      "authoring_source": {
+        "reference": "heldout-two_column-04/source.json",
+        "sha256": "60951955b90bbf430d593e7f3b49f6b346959caf17b7aedbe493e66cd05a5c9e"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-headers_footers_page_numbers-01",
+      "primary_category": "headers_footers_page_numbers",
+      "feature_tags": [
+        "headers_footers_page_numbers"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-headers_footers_page_numbers",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092266,
+      "source_artifact_reference": "heldout-headers_footers_page_numbers-01/document.pdf",
+      "source_sha256": "37ca02613fd3b0b487c8da08aaffb927b4afe02a008bdbea59ad727a158a3316",
+      "source_byte_count": 35173,
+      "expected_page_count": 3,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-headers_footers_page_numbers-01/page-1.txt",
+          "sha256": "673a3cf6ea73c9f739b2861547a9e4b05f2bd11f88dd6a1ae01a34e93e450bb3"
+        },
+        {
+          "reference": "heldout-headers_footers_page_numbers-01/page-2.txt",
+          "sha256": "27090dbb9c7a8ade94aea8ecfe67b0f3047d900d0d355ba850182208eb440378"
+        },
+        {
+          "reference": "heldout-headers_footers_page_numbers-01/page-3.txt",
+          "sha256": "7bd82485384065b8f54b5a0a065c135596280b7507013a12f64363b7e6d0da1a"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-headers_footers_page_numbers-01/assembled.txt",
+        "sha256": "016af65ff92ea304bfe4935cdbab447cbade1cc0799f5d64bf7817b16dfd5dcb"
+      },
+      "structural_annotation": {
+        "reference": "heldout-headers_footers_page_numbers-01/structure.json",
+        "sha256": "0e7734184761f0a06d2f94bb4c2389686741f7edfd8f429b92617e914e9ca7c1"
+      },
+      "authoring_source": {
+        "reference": "heldout-headers_footers_page_numbers-01/source.json",
+        "sha256": "8b85754393fb2b77f6005dfe2cbe3127143c45bdf66cb9b62d75bb496cd59577"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-headers_footers_page_numbers-02",
+      "primary_category": "headers_footers_page_numbers",
+      "feature_tags": [
+        "headers_footers_page_numbers"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-headers_footers_page_numbers",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092267,
+      "source_artifact_reference": "heldout-headers_footers_page_numbers-02/document.pdf",
+      "source_sha256": "5172a1e0ee731e081f162504e204965c77e1580979a14046cf71cfa0f674a203",
+      "source_byte_count": 35173,
+      "expected_page_count": 3,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-headers_footers_page_numbers-02/page-1.txt",
+          "sha256": "e524d3870c674bb2f102621d22516353444602c6d3c5e29ff9524ccebcfa77d6"
+        },
+        {
+          "reference": "heldout-headers_footers_page_numbers-02/page-2.txt",
+          "sha256": "57bbb307516a1f8e1b48418d7e75398426960f7e53f7135fc436490c82941209"
+        },
+        {
+          "reference": "heldout-headers_footers_page_numbers-02/page-3.txt",
+          "sha256": "19cc5ed379eb6018e016791cf12120119ea117c4fc36152c7eda89e31b682d97"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-headers_footers_page_numbers-02/assembled.txt",
+        "sha256": "37230ea96e1c56bd6751a2b47a1b55d6b17ea9f5072fcc4e6c16c15c79fccecb"
+      },
+      "structural_annotation": {
+        "reference": "heldout-headers_footers_page_numbers-02/structure.json",
+        "sha256": "7a784f5f1933ea7cce197c4762f9b4d6d3b5ca1bf297c76da22ea0944f30b031"
+      },
+      "authoring_source": {
+        "reference": "heldout-headers_footers_page_numbers-02/source.json",
+        "sha256": "42dab692101f7d5567ba32f3dacfb2b3e342a611548442223ce6a9c1ff36d13d"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-headers_footers_page_numbers-03",
+      "primary_category": "headers_footers_page_numbers",
+      "feature_tags": [
+        "headers_footers_page_numbers"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-headers_footers_page_numbers",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092268,
+      "source_artifact_reference": "heldout-headers_footers_page_numbers-03/document.pdf",
+      "source_sha256": "8b2955fd3149c6266f7b3d4076d1ec0b03dfa1ca7a94b26a77e41f245573ac30",
+      "source_byte_count": 35170,
+      "expected_page_count": 3,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-headers_footers_page_numbers-03/page-1.txt",
+          "sha256": "fbdc0265ca1a0116ad3ccdd744fea7c2e5a3579838a7af275531e4a18c40f040"
+        },
+        {
+          "reference": "heldout-headers_footers_page_numbers-03/page-2.txt",
+          "sha256": "8eb22c92d5dcf60d8d9bf8aa507250f39b54a52c51c84c2f06f6afa9eae72634"
+        },
+        {
+          "reference": "heldout-headers_footers_page_numbers-03/page-3.txt",
+          "sha256": "a5a201a5b5182c460a7bf14d12ea8827cdcae56c7051baeed1ada9fbfa6668a0"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-headers_footers_page_numbers-03/assembled.txt",
+        "sha256": "f62e68694b2fd60a86a2f7f07513e298995ce5886c6fa7f4a86dfcfdf72d5173"
+      },
+      "structural_annotation": {
+        "reference": "heldout-headers_footers_page_numbers-03/structure.json",
+        "sha256": "379fcba3804154cf80d04a1cbc6081cef107f5a5693a4a7817f090f1a0d3051f"
+      },
+      "authoring_source": {
+        "reference": "heldout-headers_footers_page_numbers-03/source.json",
+        "sha256": "76ae86aaa014600cbdccc9efeee81e01ace592cec561a4452823532c0123eb24"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-headers_footers_page_numbers-04",
+      "primary_category": "headers_footers_page_numbers",
+      "feature_tags": [
+        "headers_footers_page_numbers"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-headers_footers_page_numbers",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092269,
+      "source_artifact_reference": "heldout-headers_footers_page_numbers-04/document.pdf",
+      "source_sha256": "e6ca8538b4ea3b521cafdcdf1c993c53de8757c3685b55e9078eff9d2b268d08",
+      "source_byte_count": 35170,
+      "expected_page_count": 3,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-headers_footers_page_numbers-04/page-1.txt",
+          "sha256": "294a7c2f5100cb9adf01fefa1f9dd518a203f49692c97c829f0622d5a575609f"
+        },
+        {
+          "reference": "heldout-headers_footers_page_numbers-04/page-2.txt",
+          "sha256": "bf1b91b2c8dc903239e25ff6e5330c57a511454d231d33097eb11c9feb176310"
+        },
+        {
+          "reference": "heldout-headers_footers_page_numbers-04/page-3.txt",
+          "sha256": "a3f270b9547999a5166b9e03854ff47e2b52cbe3f583573d4b82f2fe7564d7e3"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-headers_footers_page_numbers-04/assembled.txt",
+        "sha256": "9ab4062221e7b6ab2fdfa228cc97de9f0aabe90dc9df0253c6d4b84aede5d286"
+      },
+      "structural_annotation": {
+        "reference": "heldout-headers_footers_page_numbers-04/structure.json",
+        "sha256": "b5535dd9f177cf37107d5e7dfcbc9ac37fcdf1db24a0e191be67a446b34ba333"
+      },
+      "authoring_source": {
+        "reference": "heldout-headers_footers_page_numbers-04/source.json",
+        "sha256": "2021774b4bd222bd807651e69a3adf00ef77bbc4d308ed0db898b360c260bbdb"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-unicode-01",
+      "primary_category": "unicode",
+      "feature_tags": [
+        "unicode"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-unicode",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092366,
+      "source_artifact_reference": "heldout-unicode-01/document.pdf",
+      "source_sha256": "23ad09ea381aeafab8b393207a8206d26556c8c98e4d0475cce853beb6b72dae",
+      "source_byte_count": 34989,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-unicode-01/page-1.txt",
+          "sha256": "4c5e99290244007c01602e748079de7443e06cb1279f11e971f814b91ef447f4"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-unicode-01/assembled.txt",
+        "sha256": "4c5e99290244007c01602e748079de7443e06cb1279f11e971f814b91ef447f4"
+      },
+      "structural_annotation": {
+        "reference": "heldout-unicode-01/structure.json",
+        "sha256": "f036e90707e16a6a06bdb028ca00986d4e2c0c62c51949c63ceb98b61c189f59"
+      },
+      "authoring_source": {
+        "reference": "heldout-unicode-01/source.json",
+        "sha256": "97929ed64d5772e06bec49341f84ec97c66b0a60f1111c9a762119ab920a91d5"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-unicode-02",
+      "primary_category": "unicode",
+      "feature_tags": [
+        "unicode"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-unicode",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092367,
+      "source_artifact_reference": "heldout-unicode-02/document.pdf",
+      "source_sha256": "70852bab4a93c677d0e4f29201326b3f634361e1f956de3e8d181de61344a2ec",
+      "source_byte_count": 34989,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-unicode-02/page-1.txt",
+          "sha256": "eb140780bde35a6a96fbf6bcc01d3d7483fe0ff6b20aba7a5541d09bbd22f56f"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-unicode-02/assembled.txt",
+        "sha256": "eb140780bde35a6a96fbf6bcc01d3d7483fe0ff6b20aba7a5541d09bbd22f56f"
+      },
+      "structural_annotation": {
+        "reference": "heldout-unicode-02/structure.json",
+        "sha256": "96931a96bca89acbc91d32f125ccabd4d1796cfe5e15947e7a9d51a1cd668890"
+      },
+      "authoring_source": {
+        "reference": "heldout-unicode-02/source.json",
+        "sha256": "d6b8c0a777d2624e7f4a9a8f981ed6fa6df537bec0a89fda6faa28f5cf54e782"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-unicode-03",
+      "primary_category": "unicode",
+      "feature_tags": [
+        "unicode"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-unicode",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092368,
+      "source_artifact_reference": "heldout-unicode-03/document.pdf",
+      "source_sha256": "fd3419ea890e24672e55617dd3c2fd06fa8f0742a2251f34df1b2b714c5ccf5f",
+      "source_byte_count": 34989,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-unicode-03/page-1.txt",
+          "sha256": "28bbd9b111a149ba999f232af3e778025b90995d909e8567472d52e951a36f11"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-unicode-03/assembled.txt",
+        "sha256": "28bbd9b111a149ba999f232af3e778025b90995d909e8567472d52e951a36f11"
+      },
+      "structural_annotation": {
+        "reference": "heldout-unicode-03/structure.json",
+        "sha256": "3cc5a99ea52957e91e0fa9f3bfaeea532f6d0a481b65aea7079bfdd2e4e563cf"
+      },
+      "authoring_source": {
+        "reference": "heldout-unicode-03/source.json",
+        "sha256": "957dda54ba510e27e9688796c2c83a01ad92da388008a2ac0237a28547ae612d"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-unicode-04",
+      "primary_category": "unicode",
+      "feature_tags": [
+        "unicode"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-unicode",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092369,
+      "source_artifact_reference": "heldout-unicode-04/document.pdf",
+      "source_sha256": "7c9f2c3fafc6941532f3e386e318f0b71f7c8a4faa3e147ae6f157d4bed57b0d",
+      "source_byte_count": 34989,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-unicode-04/page-1.txt",
+          "sha256": "30fbad9489d9f48d343b5ea1fe8a694928aa4614ccfb4c1fb37ee5918be83be9"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-unicode-04/assembled.txt",
+        "sha256": "30fbad9489d9f48d343b5ea1fe8a694928aa4614ccfb4c1fb37ee5918be83be9"
+      },
+      "structural_annotation": {
+        "reference": "heldout-unicode-04/structure.json",
+        "sha256": "e5690bacbb6133fa6809d4aa11cd4a3983eb2e48e76669f522db68fc310f7135"
+      },
+      "authoring_source": {
+        "reference": "heldout-unicode-04/source.json",
+        "sha256": "fd1366dfc74f45cc094681316784101364cfef7c7bc40c1bb7b24553c5a388de"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-punctuation_hyphenation-01",
+      "primary_category": "punctuation_hyphenation",
+      "feature_tags": [
+        "punctuation_hyphenation"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-punctuation_hyphenation",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092466,
+      "source_artifact_reference": "heldout-punctuation_hyphenation-01/document.pdf",
+      "source_sha256": "27bbc5d40120615441b5e92142fc5d973561b0c265d0b6e2895daf05ee8c10dd",
+      "source_byte_count": 33395,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-punctuation_hyphenation-01/page-1.txt",
+          "sha256": "e509ebbaf8867defb562f40ed3815c6eaaf52123efaa54fe86c2bf70eb90f6cf"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-punctuation_hyphenation-01/assembled.txt",
+        "sha256": "e509ebbaf8867defb562f40ed3815c6eaaf52123efaa54fe86c2bf70eb90f6cf"
+      },
+      "structural_annotation": {
+        "reference": "heldout-punctuation_hyphenation-01/structure.json",
+        "sha256": "5e7eb294aa52a11008deba2f27255d5675d43c9d2a69020df766fecda1e71c07"
+      },
+      "authoring_source": {
+        "reference": "heldout-punctuation_hyphenation-01/source.json",
+        "sha256": "417ae3e20c5307c354f555532cd76798dd650ddb87c18e46c5c9bae80d88b7d5"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-punctuation_hyphenation-02",
+      "primary_category": "punctuation_hyphenation",
+      "feature_tags": [
+        "punctuation_hyphenation"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-punctuation_hyphenation",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092467,
+      "source_artifact_reference": "heldout-punctuation_hyphenation-02/document.pdf",
+      "source_sha256": "3ab36fc27c449395d2161cb15add7549e6b8a95107873814be437caaea15b813",
+      "source_byte_count": 33395,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-punctuation_hyphenation-02/page-1.txt",
+          "sha256": "13816fe5166a2fd78b602ce09a85fdffdaf7ad47a94cf6d1eea06a4ff77c8b41"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-punctuation_hyphenation-02/assembled.txt",
+        "sha256": "13816fe5166a2fd78b602ce09a85fdffdaf7ad47a94cf6d1eea06a4ff77c8b41"
+      },
+      "structural_annotation": {
+        "reference": "heldout-punctuation_hyphenation-02/structure.json",
+        "sha256": "bd732c464894608bacdc58325d829f281564afc651a5b9bb81e9e6345552fd4b"
+      },
+      "authoring_source": {
+        "reference": "heldout-punctuation_hyphenation-02/source.json",
+        "sha256": "ec497dda5444cfc81a340b60f93596a4bc8410f86fd5be73dfa4cfb72e33e504"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-punctuation_hyphenation-03",
+      "primary_category": "punctuation_hyphenation",
+      "feature_tags": [
+        "punctuation_hyphenation"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-punctuation_hyphenation",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092468,
+      "source_artifact_reference": "heldout-punctuation_hyphenation-03/document.pdf",
+      "source_sha256": "55253ac4d4cec911bc9bc95843e24866419c97a299a833bfe088181f7b318467",
+      "source_byte_count": 33395,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-punctuation_hyphenation-03/page-1.txt",
+          "sha256": "0607c29e76aabe1ab6f830014b9d07bae5f3ae8640f48e7c0810e72c64f3a39b"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-punctuation_hyphenation-03/assembled.txt",
+        "sha256": "0607c29e76aabe1ab6f830014b9d07bae5f3ae8640f48e7c0810e72c64f3a39b"
+      },
+      "structural_annotation": {
+        "reference": "heldout-punctuation_hyphenation-03/structure.json",
+        "sha256": "acb9dc43d7cdd33abc55f15fdc2cec562d9b510d746d4737649ec291d2ec4f95"
+      },
+      "authoring_source": {
+        "reference": "heldout-punctuation_hyphenation-03/source.json",
+        "sha256": "bb7fc4f19298d98e2030e4515ffaa54d16db4d9a552389de951ae72dc675b0a7"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-punctuation_hyphenation-04",
+      "primary_category": "punctuation_hyphenation",
+      "feature_tags": [
+        "punctuation_hyphenation"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-punctuation_hyphenation",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092469,
+      "source_artifact_reference": "heldout-punctuation_hyphenation-04/document.pdf",
+      "source_sha256": "6edb761de47546081124e48f1419ac26eb8f16305d048316859294cc4ce85e92",
+      "source_byte_count": 33395,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "extracted",
+      "expected_outcome_code": null,
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-punctuation_hyphenation-04/page-1.txt",
+          "sha256": "ea18182078be4818e4e4e67247d9f5e97c8f473ccd7dc5677664779c59269afa"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-punctuation_hyphenation-04/assembled.txt",
+        "sha256": "ea18182078be4818e4e4e67247d9f5e97c8f473ccd7dc5677664779c59269afa"
+      },
+      "structural_annotation": {
+        "reference": "heldout-punctuation_hyphenation-04/structure.json",
+        "sha256": "66fd30032dac43d1bddec67319424ff4e014a7facc0d26154164444cd6d3e6e1"
+      },
+      "authoring_source": {
+        "reference": "heldout-punctuation_hyphenation-04/source.json",
+        "sha256": "a2685b9de0aaa7f760ca477fc0c294117c09848257f3d2e9bc0544becbba97af"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-mixed_text_images-01",
+      "primary_category": "mixed_text_images",
+      "feature_tags": [
+        "mixed_text_images"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-mixed_text_images",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092566,
+      "source_artifact_reference": "heldout-mixed_text_images-01/document.pdf",
+      "source_sha256": "41eb0f095ea07f7730df69d1db56a01540a05732fa45a91494ee7c8dfd1f767c",
+      "source_byte_count": 34220,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "needs_review",
+      "expected_outcome_code": "ambiguous_content",
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-mixed_text_images-01/page-1.txt",
+          "sha256": "679cd2cc6548f0661981a8ebcb116ec93e05ae9199b640086fb40b602fae29be"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-mixed_text_images-01/assembled.txt",
+        "sha256": "679cd2cc6548f0661981a8ebcb116ec93e05ae9199b640086fb40b602fae29be"
+      },
+      "structural_annotation": {
+        "reference": "heldout-mixed_text_images-01/structure.json",
+        "sha256": "8778891467bb4d2b543dfc0210ad20c96a2d2ee5916d0ebe18951035e1c280ae"
+      },
+      "authoring_source": {
+        "reference": "heldout-mixed_text_images-01/source.json",
+        "sha256": "495ff3fefb8d374ae87d454c1332252385296ed7a6b18ccd405c5c9de1437568"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-mixed_text_images-02",
+      "primary_category": "mixed_text_images",
+      "feature_tags": [
+        "mixed_text_images"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-mixed_text_images",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092567,
+      "source_artifact_reference": "heldout-mixed_text_images-02/document.pdf",
+      "source_sha256": "281a34bb2fe0f0cbb962a8e42cf41c1708562f8f1ccdc79413a134d2e51ccfd0",
+      "source_byte_count": 35027,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "needs_review",
+      "expected_outcome_code": "ambiguous_content",
+      "content_assessment": "missing_visible_content",
+      "reference_scope": "embedded_only",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-mixed_text_images-02/page-1.txt",
+          "sha256": "3a5574320314ed338f2b93a84599c77d5e39c4771646e0e97888d3caccc5af78"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-mixed_text_images-02/assembled.txt",
+        "sha256": "3a5574320314ed338f2b93a84599c77d5e39c4771646e0e97888d3caccc5af78"
+      },
+      "structural_annotation": {
+        "reference": "heldout-mixed_text_images-02/structure.json",
+        "sha256": "6b006d23c921f55d915c4fa68b761b9667e02d22be26797bc796e7ce1c57b267"
+      },
+      "authoring_source": {
+        "reference": "heldout-mixed_text_images-02/source.json",
+        "sha256": "427c9d87db5f3cee89b5e013c5c8ecc698146d460a2d739b71ff8647a5ddf531"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-mixed_text_images-03",
+      "primary_category": "mixed_text_images",
+      "feature_tags": [
+        "mixed_text_images"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-mixed_text_images",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092568,
+      "source_artifact_reference": "heldout-mixed_text_images-03/document.pdf",
+      "source_sha256": "6cdefbddea4f51e753fbe78fb3f83707e4654067edb89fb49c54ec5c62c66d00",
+      "source_byte_count": 34221,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "needs_review",
+      "expected_outcome_code": "ambiguous_content",
+      "content_assessment": "complete",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-mixed_text_images-03/page-1.txt",
+          "sha256": "84a987f44cf702babd2a19f9ac16f8a0ced5cd7b69795965edf06e4c6042830a"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-mixed_text_images-03/assembled.txt",
+        "sha256": "84a987f44cf702babd2a19f9ac16f8a0ced5cd7b69795965edf06e4c6042830a"
+      },
+      "structural_annotation": {
+        "reference": "heldout-mixed_text_images-03/structure.json",
+        "sha256": "6073275a787d063a5c5724bcde61511085c2aec8ab0755fe2e5ba0053bfd3d73"
+      },
+      "authoring_source": {
+        "reference": "heldout-mixed_text_images-03/source.json",
+        "sha256": "7e5264d14eca4149f8dd8e638d9c5013658a8546657fecf4c31cb70454e2af02"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-mixed_text_images-04",
+      "primary_category": "mixed_text_images",
+      "feature_tags": [
+        "mixed_text_images"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-mixed_text_images",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092569,
+      "source_artifact_reference": "heldout-mixed_text_images-04/document.pdf",
+      "source_sha256": "46db820cab27041f27a42c1154187b830347730516f1e5248dc907eb9aeb6e16",
+      "source_byte_count": 35028,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "needs_review",
+      "expected_outcome_code": "ambiguous_content",
+      "content_assessment": "missing_visible_content",
+      "reference_scope": "embedded_only",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-mixed_text_images-04/page-1.txt",
+          "sha256": "043697b9d2d1dc21947c3d88a97197533ae4b42caf70b04352c6ed63460737ba"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-mixed_text_images-04/assembled.txt",
+        "sha256": "043697b9d2d1dc21947c3d88a97197533ae4b42caf70b04352c6ed63460737ba"
+      },
+      "structural_annotation": {
+        "reference": "heldout-mixed_text_images-04/structure.json",
+        "sha256": "7fe2ddaa785ad721a22331a180e002c22369b1e375658772e14e8b6f4670a8e2"
+      },
+      "authoring_source": {
+        "reference": "heldout-mixed_text_images-04/source.json",
+        "sha256": "034177f0cb56b347ef5a8f6ee098f63f743fdcb0a8b63a561932e15309f728df"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-image_only_or_scanned_like-01",
+      "primary_category": "image_only_or_scanned_like",
+      "feature_tags": [
+        "image_only_or_scanned_like"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-image_only_or_scanned_like",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092666,
+      "source_artifact_reference": "heldout-image_only_or_scanned_like-01/document.pdf",
+      "source_sha256": "5d5eca5efc25c19214698a1d6a6d5179995a7376813983e9a5cec13d0992ebe6",
+      "source_byte_count": 3628,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "ocr_required",
+      "expected_outcome_code": "image_without_text",
+      "content_assessment": "missing_visible_content",
+      "reference_scope": "embedded_only",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-image_only_or_scanned_like-01/page-1.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-image_only_or_scanned_like-01/assembled.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "structural_annotation": {
+        "reference": "heldout-image_only_or_scanned_like-01/structure.json",
+        "sha256": "a0beada00c9f8c4b848d8d54ae2a1b2c93377e8bdfcd1c914d1096d4ae35966f"
+      },
+      "authoring_source": {
+        "reference": "heldout-image_only_or_scanned_like-01/source.json",
+        "sha256": "6cd2cadfc3cf41c9de200ca162a61b8a131bd8ce3c09c15de2fe9607471fbff2"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-image_only_or_scanned_like-02",
+      "primary_category": "image_only_or_scanned_like",
+      "feature_tags": [
+        "image_only_or_scanned_like"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-image_only_or_scanned_like",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092667,
+      "source_artifact_reference": "heldout-image_only_or_scanned_like-02/document.pdf",
+      "source_sha256": "b03ebe317077932a7a5b1d3c40d897c6a396034d8dd3e511c600784625e4d235",
+      "source_byte_count": 36079,
+      "expected_page_count": 2,
+      "expected_policy_outcome": "ocr_required",
+      "expected_outcome_code": "image_without_text",
+      "content_assessment": "missing_visible_content",
+      "reference_scope": "embedded_only",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-image_only_or_scanned_like-02/page-1.txt",
+          "sha256": "a02c41972e375fa7aed381078b475edf1b747efe543297f8cbaf9b4b1081811e"
+        },
+        {
+          "reference": "heldout-image_only_or_scanned_like-02/page-2.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-image_only_or_scanned_like-02/assembled.txt",
+        "sha256": "1dcfb9b86150c381d3124f8aca8cbd1db679e03f4d23939301ddce9a26516526"
+      },
+      "structural_annotation": {
+        "reference": "heldout-image_only_or_scanned_like-02/structure.json",
+        "sha256": "8215966f69d1916518902dc5f9498931a8d94aa8dfe4f30f51cdb9abd5076ee7"
+      },
+      "authoring_source": {
+        "reference": "heldout-image_only_or_scanned_like-02/source.json",
+        "sha256": "559b27c298790bdd9d947c55739699f8cdccab4dd48ddc6a3e43e249831443f7"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-image_only_or_scanned_like-03",
+      "primary_category": "image_only_or_scanned_like",
+      "feature_tags": [
+        "image_only_or_scanned_like"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-image_only_or_scanned_like",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092668,
+      "source_artifact_reference": "heldout-image_only_or_scanned_like-03/document.pdf",
+      "source_sha256": "cb195d338426f6f84bc4689c8d3d4b275e75d9a757ddf2c98c06cd1aa734b709",
+      "source_byte_count": 3730,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "ocr_required",
+      "expected_outcome_code": "image_without_text",
+      "content_assessment": "missing_visible_content",
+      "reference_scope": "embedded_only",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-image_only_or_scanned_like-03/page-1.txt",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-image_only_or_scanned_like-03/assembled.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "structural_annotation": {
+        "reference": "heldout-image_only_or_scanned_like-03/structure.json",
+        "sha256": "0c5cfe78a1667a0bbd21757ca718861c0b890cb81e68296f1582e1b731c6ad5e"
+      },
+      "authoring_source": {
+        "reference": "heldout-image_only_or_scanned_like-03/source.json",
+        "sha256": "69214dba0938c0e601346a4e73338f049cb1ddb20d659928685a37e5ecb7e1e1"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-image_only_or_scanned_like-04",
+      "primary_category": "image_only_or_scanned_like",
+      "feature_tags": [
+        "image_only_or_scanned_like"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-image_only_or_scanned_like",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092669,
+      "source_artifact_reference": "heldout-image_only_or_scanned_like-04/document.pdf",
+      "source_sha256": "95a6327fc0b1d77816dcd10e075f51518e7e631d1347d11a06427f6ece18a317",
+      "source_byte_count": 35597,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "needs_review",
+      "expected_outcome_code": "ambiguous_content",
+      "content_assessment": "missing_visible_content",
+      "reference_scope": "embedded_only",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-image_only_or_scanned_like-04/page-1.txt",
+          "sha256": "83f951c5c98626ac0de2ca25b4d9f0ffc07107e767a545d5c1ce87b0a26b7a1b"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-image_only_or_scanned_like-04/assembled.txt",
+        "sha256": "83f951c5c98626ac0de2ca25b4d9f0ffc07107e767a545d5c1ce87b0a26b7a1b"
+      },
+      "structural_annotation": {
+        "reference": "heldout-image_only_or_scanned_like-04/structure.json",
+        "sha256": "e3197097e739cfbcdedf062466ff4657e95e96603814912eeb14040414b58d6a"
+      },
+      "authoring_source": {
+        "reference": "heldout-image_only_or_scanned_like-04/source.json",
+        "sha256": "6c12098e895ee9543fd56a6c47a52d2ddd7c32ba0946fd3e5326e848cb2fde0c"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": true,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-invalid_or_unsupported-01",
+      "primary_category": "invalid_or_unsupported",
+      "feature_tags": [
+        "invalid_or_unsupported"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-invalid_or_unsupported",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092766,
+      "source_artifact_reference": "heldout-invalid_or_unsupported-01/document.pdf",
+      "source_sha256": "fbbe5db457d55db8fc7f873ae208ec7fed3345451dfda846dc922cfc1f55738c",
+      "source_byte_count": 44,
+      "expected_page_count": null,
+      "expected_policy_outcome": "failed",
+      "expected_outcome_code": "malformed_pdf",
+      "content_assessment": "unusable",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [],
+      "assembled_ground_truth": {
+        "reference": "heldout-invalid_or_unsupported-01/assembled.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "structural_annotation": {
+        "reference": "heldout-invalid_or_unsupported-01/structure.json",
+        "sha256": "de92bd6ceb3bed8f65d25c77274c576734f7c7993742e0bef20e42ae27d1ae30"
+      },
+      "authoring_source": {
+        "reference": "heldout-invalid_or_unsupported-01/source.json",
+        "sha256": "20804d771a62746cd057531abb19ae9b17029b1959597ce379c6fa4a1d9a132e"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": false,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-invalid_or_unsupported-02",
+      "primary_category": "invalid_or_unsupported",
+      "feature_tags": [
+        "invalid_or_unsupported"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-invalid_or_unsupported",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092767,
+      "source_artifact_reference": "heldout-invalid_or_unsupported-02/document.pdf",
+      "source_sha256": "77a4e2b792f8e64fc2b8adfd77619eda6ae7a1a300314fcf0793ab5c85a77916",
+      "source_byte_count": 33633,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "failed",
+      "expected_outcome_code": "unsupported_pdf_features",
+      "content_assessment": "unusable",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-invalid_or_unsupported-02/page-1.txt",
+          "sha256": "3a5574320314ed338f2b93a84599c77d5e39c4771646e0e97888d3caccc5af78"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-invalid_or_unsupported-02/assembled.txt",
+        "sha256": "3a5574320314ed338f2b93a84599c77d5e39c4771646e0e97888d3caccc5af78"
+      },
+      "structural_annotation": {
+        "reference": "heldout-invalid_or_unsupported-02/structure.json",
+        "sha256": "8b6e067992506978671c416a24ab160b704db7450ed0c755614f3b498282b7d2"
+      },
+      "authoring_source": {
+        "reference": "heldout-invalid_or_unsupported-02/source.json",
+        "sha256": "df6a53c3c16ef68ae6434ea091d4bccb4453b5a195bc40b8857913ba51908333"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": false,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-invalid_or_unsupported-03",
+      "primary_category": "invalid_or_unsupported",
+      "feature_tags": [
+        "invalid_or_unsupported"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-invalid_or_unsupported",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092768,
+      "source_artifact_reference": "heldout-invalid_or_unsupported-03/document.pdf",
+      "source_sha256": "5ce0e725eb2d71b7d96b104a67a8d1a5738769d88cf7eda2a663596dc69db9bd",
+      "source_byte_count": 33277,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "failed",
+      "expected_outcome_code": "unsupported_pdf_features",
+      "content_assessment": "unusable",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-invalid_or_unsupported-03/page-1.txt",
+          "sha256": "84a987f44cf702babd2a19f9ac16f8a0ced5cd7b69795965edf06e4c6042830a"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-invalid_or_unsupported-03/assembled.txt",
+        "sha256": "84a987f44cf702babd2a19f9ac16f8a0ced5cd7b69795965edf06e4c6042830a"
+      },
+      "structural_annotation": {
+        "reference": "heldout-invalid_or_unsupported-03/structure.json",
+        "sha256": "8ba1bf685f5ac41ee3ed7fb75f9140edff45283b7431b2beb6d55f05fec63b00"
+      },
+      "authoring_source": {
+        "reference": "heldout-invalid_or_unsupported-03/source.json",
+        "sha256": "ff69382129a1d98230db7f646b194c953ae42dea6499b7a87155c3c521531f88"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": false,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    },
+    {
+      "fixture_id": "heldout-invalid_or_unsupported-04",
+      "primary_category": "invalid_or_unsupported",
+      "feature_tags": [
+        "invalid_or_unsupported"
+      ],
+      "split": "heldout",
+      "template_family_id": "heldout-invalid_or_unsupported",
+      "provenance_type": "original",
+      "creator_or_source_reference": "Phase 2B original synthetic generator",
+      "license_or_permission_reference": "Original text: CC0-1.0; font: Bitstream Vera license",
+      "generator_name": "ReportLab",
+      "generator_version": "4.5.1",
+      "generator_configuration": {
+        "implementation": "original-source-v1",
+        "invariant": true,
+        "font": "Bitstream Vera",
+        "font_sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+        "font_license": "ReportLab fonts/bitstream-vera-license.txt",
+        "pypdf_version": "6.21.0",
+        "pillow_version": "13.0.0"
+      },
+      "generator_seed": 22092769,
+      "source_artifact_reference": "heldout-invalid_or_unsupported-04/document.pdf",
+      "source_sha256": "ad06ca5f23974eae42b88e24335877d4294e20132ae4478d67e608216ecf0cdf",
+      "source_byte_count": 33280,
+      "expected_page_count": 1,
+      "expected_policy_outcome": "failed",
+      "expected_outcome_code": "unsupported_pdf_features",
+      "content_assessment": "unusable",
+      "reference_scope": "embedded_and_visible",
+      "page_ground_truth": [
+        {
+          "reference": "heldout-invalid_or_unsupported-04/page-1.txt",
+          "sha256": "9ba2b7ccbcf15ed01a710d3f2fb59c7e118fa4f630bd223dced804e64dab784b"
+        }
+      ],
+      "assembled_ground_truth": {
+        "reference": "heldout-invalid_or_unsupported-04/assembled.txt",
+        "sha256": "9ba2b7ccbcf15ed01a710d3f2fb59c7e118fa4f630bd223dced804e64dab784b"
+      },
+      "structural_annotation": {
+        "reference": "heldout-invalid_or_unsupported-04/structure.json",
+        "sha256": "676a930d349175ce49b174006e522ddd96dd4d2b3c102cf2ab6af9cc007c65d2"
+      },
+      "authoring_source": {
+        "reference": "heldout-invalid_or_unsupported-04/source.json",
+        "sha256": "899c12ef8acc1aac4015cd2f6486efe5d98de69f7aaeaab70f36ec8b94f7383b"
+      },
+      "exact_match_required": false,
+      "metric_eligibility": false,
+      "known_limitations": [
+        "One generator engine; exploratory synthetic corpus",
+        "Automated authoring-source annotations, no independent human raters"
+      ],
+      "notes": "Embedded primary; visible raster reference separate; no OCR."
+    }
+  ]
+}
