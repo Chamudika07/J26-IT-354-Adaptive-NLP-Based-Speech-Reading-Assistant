@@ -5,7 +5,9 @@ with language_tag exactly `en`. It has no automatic language detection, so a dec
 language tag is not proof that the source is English. There is no diagnosis, severity,
 easy/medium/hard band, grade/readability score, vocabulary difficulty, learner
 suitability decision, simplification, generative model, speech, or external NLP service.
-No heavy NLP dependency, file upload, PDF extraction, OCR, or background queue is added.
+The pasted-text pipeline adds no heavy NLP dependency or background queue.
+Phase 2A now provides separate private PDF extraction; see [PDF extraction](pdf-text-extraction.md).
+OCR and image uploads remain deferred.
 
 ## Ownership and architecture
 
@@ -249,8 +251,8 @@ snippets, actor IDs, relationship details, SQL constraint names, or parser excep
 Archiving is not deletion. Copyright/licensing, production retention/purge (including
 backups), and any research consent/assent require separate governance before real-child
 deployment. There are no copyrighted production seeds; tests use synthetic original
-text. Future PDF work may introduce private blob references, extraction versions/page
-provenance/warnings, and resource-limited parsing. OCR/images require a later explicit
+text. Phase 2A provides private PDF storage, extraction versions/page provenance/warnings,
+and process-bounded parsing; see [PDF extraction](pdf-text-extraction.md). OCR/images require a later explicit
 approval. No unused blob credentials or configuration exist now.
 
 ## Verification

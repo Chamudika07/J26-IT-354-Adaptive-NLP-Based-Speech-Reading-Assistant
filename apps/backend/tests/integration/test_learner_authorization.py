@@ -109,6 +109,9 @@ for kind, actions in PERMISSIONS.items():
         actions.add(Action.READ_READING_MATERIAL)
 PERMISSIONS["educator_instructor"].update(
     {
+        Action.UPLOAD_PDF,
+        Action.EXTRACT_PDF,
+        Action.ARCHIVE_PDF,
         Action.CREATE_READING_MATERIAL,
         Action.REVISE_READING_MATERIAL,
         Action.PROCESS_READING_MATERIAL,

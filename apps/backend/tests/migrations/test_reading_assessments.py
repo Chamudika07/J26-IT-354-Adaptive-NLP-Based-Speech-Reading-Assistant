@@ -28,6 +28,9 @@ def test_0005_upgrade_preserves_data_and_downgrade_reupgrade(postgres_engine):
             "reading_material_revisions",
             "reading_material_processing_runs",
             "reading_material_sentence_features",
+            "reading_material_sources",
+            "reading_material_extraction_runs",
+            "reading_material_extraction_pages",
             "reading_assessment_sessions",
             "reading_assessment_results",
         }
@@ -40,7 +43,7 @@ def test_0005_upgrade_preserves_data_and_downgrade_reupgrade(postgres_engine):
             assert connection.scalar(text(f"SELECT count(*) FROM {table}")) == 0
         assert (
             connection.scalar(text("SELECT version_num FROM alembic_version"))
-            == "0007_reading_material_processing"
+            == "0008_pdf_text_extraction"
         )
         command.check(config)
         command.downgrade(config, "0005_auth_sessions")

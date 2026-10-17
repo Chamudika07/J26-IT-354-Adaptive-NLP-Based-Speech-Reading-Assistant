@@ -33,6 +33,9 @@ class LearnerAction(StrEnum):
     READ_PREFERENCES = "preferences.read"
     UPDATE_PREFERENCES = "preferences.update"
     PERFORM_LEARNING_INTERACTION = "learning.interact"
+    UPLOAD_PDF = "reading_material.upload_pdf"
+    EXTRACT_PDF = "reading_material.extract_pdf"
+    ARCHIVE_PDF = "reading_material.archive_pdf"
     READ_READING_MATERIAL = "reading_material.read"
     CREATE_READING_MATERIAL = "reading_material.create"
     REVISE_READING_MATERIAL = "reading_material.revise"
@@ -75,6 +78,9 @@ _EDUCATOR_VIEWER = frozenset(
 
 _INSTRUCTOR_WRITES = frozenset(
     {
+        LearnerAction.UPLOAD_PDF,
+        LearnerAction.EXTRACT_PDF,
+        LearnerAction.ARCHIVE_PDF,
         LearnerAction.CREATE_READING_MATERIAL,
         LearnerAction.REVISE_READING_MATERIAL,
         LearnerAction.PROCESS_READING_MATERIAL,

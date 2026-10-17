@@ -1,5 +1,6 @@
 """Validated server configuration; credentials are never exposed by repr."""
 
+from pathlib import Path
 from typing import Literal
 
 from pydantic import Field, SecretStr, field_validator, model_validator
@@ -45,6 +46,8 @@ class DatabaseSettings(BaseSettings):
 
 class Settings(DatabaseSettings):
     """Runtime security settings; migrations need only DatabaseSettings."""
+
+    pdf_storage_root: Path | None = Field(default=None, repr=False)
 
     jwt_signing_key: SecretStr
     jwt_issuer: str = Field(default="adaptive-assistant", min_length=1, max_length=200)

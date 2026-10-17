@@ -41,7 +41,12 @@ class ReadingMaterialRevision(UUIDPrimaryKeyMixin, Base):
         CheckConstraint("revision_number > 0", name="number_positive"),
         CheckConstraint("length(btrim(title)) > 0", name="title_nonblank"),
         CheckConstraint("language_tag = 'en'", name="language_english"),
-        CheckConstraint("source_kind = 'plain_text'", name="source_plain_text"),
+        CheckConstraint(
+            "(source_kind = 'plain_text' AND extraction_run_id IS NULL) OR "
+            "(source_kind = 'pdf_text' AND extraction_run_id IS NOT NULL)",
+            name="source_provenance",
+        ),
+        UniqueConstraint("extraction_run_id", name="uq_revision_extraction"),
         CheckConstraint("length(original_text) BETWEEN 1 AND 50000", name="text_length"),
         CheckConstraint("source_sha256 ~ '^[0-9a-f]{64}$'", name="hash_format"),
         CheckConstraint(
@@ -51,6 +56,9 @@ class ReadingMaterialRevision(UUIDPrimaryKeyMixin, Base):
     )
     material_id: Mapped[UUID] = mapped_column(
         ForeignKey("reading_materials.id", ondelete="RESTRICT")
+    )
+    extraction_run_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("reading_material_extraction_runs.id", ondelete="RESTRICT")
     )
     revision_number: Mapped[int]
     title: Mapped[str] = mapped_column(String(200))
