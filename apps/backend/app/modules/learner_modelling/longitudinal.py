@@ -214,6 +214,7 @@ class MetricTrend(FrozenLongitudinalModel):
     valid_observation_count: Annotated[int, Field(ge=0)]
     missing_observation_count: Annotated[int, Field(ge=0)]
     missing_observations: Annotated[tuple[MissingObservationCount, ...], Field(max_length=8)]
+    mean_value: NonNegativeDecimal | None
     first_value: NonNegativeDecimal | None
     first_observed_at: AwareDatetime | None
     latest_value: NonNegativeDecimal | None
@@ -251,6 +252,8 @@ class MetricTrend(FrozenLongitudinalModel):
             raise ValueError("zero valid observations cannot expose descriptive values")
         if self.valid_observation_count > 0 and self.first_value is None:
             raise ValueError("valid observations require first and latest values")
+        if (self.valid_observation_count == 0) != (self.mean_value is None):
+            raise ValueError("mean value must be present exactly when valid observations exist")
         if self.evidence_sufficient:
             if self.comparison_blocker is not None:
                 raise ValueError("sufficient evidence cannot have a comparison blocker")
@@ -597,6 +600,7 @@ def _build_metric_trend(
             MissingObservationCount(reason_code=reason, count=count)
             for reason, count in sorted(missing.items())
         ),
+        mean_value=_mean(metric_name, observations) if observations else None,
         first_value=first.value if first else None,
         first_observed_at=first.observed_at if first else None,
         latest_value=latest.value if latest else None,
