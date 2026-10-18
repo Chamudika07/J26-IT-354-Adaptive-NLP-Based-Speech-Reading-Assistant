@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta, timezone
+from typing import Any
 from unittest.mock import MagicMock
 from uuid import UUID, uuid4
 
@@ -14,9 +15,17 @@ from app.core.exceptions import SecurityError
 from app.modules.auth.contracts import Principal
 from app.modules.learner_modelling import api_adapters, repository, service
 from app.modules.learner_modelling.api_contracts import ReportingRequest
+from app.modules.learner_modelling.dashboard_projections import (
+    DashboardWindow,
+    EducatorAnalyticsProjection,
+    GuardianSummaryProjection,
+)
 from app.modules.learner_modelling.historical import (
+    CANDIDATE_MAX_HISTORICAL_SESSIONS,
+    CANDIDATE_MAX_REPORTING_WINDOW,
     HistoricalDataIntegrityError,
     HistoricalResultLimitExceeded,
+    HistoricalSessionQuery,
 )
 from app.modules.learner_modelling.router import router
 from app.modules.learners.service import LearnerAction, LearnerAuthorization
@@ -33,12 +42,12 @@ def _request(**changes: object) -> ReportingRequest:
     return ReportingRequest.model_validate(values)
 
 
-def _principal() -> Principal:
+def _principal(*roles: str) -> Principal:
     now = datetime(2026, 1, 1, tzinfo=UTC)
     return Principal(
         user_id=uuid4(),
         login_handle="synthetic-api-preparation-user",
-        roles=frozenset({"learner"}),
+        roles=frozenset(roles or ("learner",)),
         session_id=uuid4(),
         authenticated_at=now,
         token_id=uuid4(),
@@ -52,14 +61,55 @@ def _authorization(
     request: ReportingRequest,
     *,
     learner_id: UUID | None = None,
+    action: LearnerAction = LearnerAction.READ_EDUCATIONAL_SUMMARY,
+    access_path: service.DashboardAccessPath = "self",
 ) -> LearnerAuthorization:
     return LearnerAuthorization(
         actor_id=principal.user_id,
         learner_id=learner_id or request.learner_id,
-        action=LearnerAction.READ_EDUCATIONAL_SUMMARY,
-        access_path="self",
+        action=action,
+        access_path=access_path,
         basic_profile_fields=frozenset(),
         consent_evaluated=False,
+    )
+
+
+def _guardian_projection(request: ReportingRequest) -> GuardianSummaryProjection:
+    return GuardianSummaryProjection(
+        reporting_period=DashboardWindow(
+            start_at_utc=request.start_at_utc,
+            end_at_utc=request.end_at_utc,
+        ),
+        included_session_count=0,
+        contexts=(),
+        support_exposures=(),
+        difficulty_history=(),
+        evidence_limitations=(
+            "Synthetic limitation one.",
+            "Synthetic limitation two.",
+            "Synthetic limitation three.",
+        ),
+        disclaimer="Synthetic guardian projection for adapter testing only.",
+    )
+
+
+def _educator_projection(request: ReportingRequest) -> EducatorAnalyticsProjection:
+    return EducatorAnalyticsProjection(
+        reporting_period=DashboardWindow(
+            start_at_utc=request.start_at_utc,
+            end_at_utc=request.end_at_utc,
+        ),
+        included_session_count=0,
+        partitions=(),
+        support_mode_exposures=(),
+        difficulty_timeline=(),
+        longitudinal_calculation_version="v0.1-early-late-3",
+        limitations=(
+            "Synthetic limitation one.",
+            "Synthetic limitation two.",
+            "Synthetic limitation three.",
+        ),
+        disclaimer="Synthetic educator projection for adapter testing only.",
     )
 
 
@@ -259,6 +309,241 @@ def test_invalid_authorization_remains_sanitized_and_precedes_consent(
     )
     assert str(request.learner_id) not in error.message
     consent.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    (
+        "adapter_name",
+        "service_name",
+        "role",
+        "projection_type",
+        "projection_factory",
+    ),
+    [
+        (
+            "_read_guardian_summary",
+            "read_guardian_summary",
+            "guardian",
+            GuardianSummaryProjection,
+            _guardian_projection,
+        ),
+        (
+            "_read_educator_analytics",
+            "read_educator_analytics",
+            "educator",
+            EducatorAnalyticsProjection,
+            _educator_projection,
+        ),
+    ],
+)
+def test_role_adapter_delegates_only_to_exact_service_with_bounded_query(
+    monkeypatch: pytest.MonkeyPatch,
+    adapter_name: str,
+    service_name: str,
+    role: str,
+    projection_type: type[object],
+    projection_factory: Any,
+) -> None:
+    request = _request(session_limit=37)
+    principal = _principal(role)
+    db = MagicMock(spec=Session)
+    approved_synthetic_consent = MagicMock(name="approved_synthetic_consent")
+    expected = projection_factory(request)
+    service_readers = {
+        name: MagicMock(name=name)
+        for name in (
+            "read_learner_progress",
+            "read_guardian_summary",
+            "read_educator_analytics",
+        )
+    }
+    service_readers[service_name].return_value = expected
+    for name, reader in service_readers.items():
+        monkeypatch.setattr(service, name, reader)
+
+    adapter = getattr(api_adapters, adapter_name)
+    result = adapter(
+        db,
+        principal,
+        request,
+        consent_checker=approved_synthetic_consent,
+    )
+
+    assert result is expected
+    assert isinstance(result, projection_type)
+    selected_reader = service_readers[service_name]
+    selected_reader.assert_called_once()
+    called_db, called_principal, query = selected_reader.call_args.args
+    assert called_db is db
+    assert called_principal is principal
+    assert isinstance(query, HistoricalSessionQuery)
+    assert query.learner_id == request.learner_id
+    assert query.start_at_utc == request.start_at_utc
+    assert query.end_at_utc == request.end_at_utc
+    assert query.session_limit == 37
+    assert query.bounds.maximum_sessions == CANDIDATE_MAX_HISTORICAL_SESSIONS
+    assert query.bounds.maximum_window == CANDIDATE_MAX_REPORTING_WINDOW
+    assert selected_reader.call_args.kwargs == {"consent_checker": approved_synthetic_consent}
+    for name, reader in service_readers.items():
+        if name != service_name:
+            reader.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    ("adapter_name", "role", "action", "access_path"),
+    [
+        (
+            "_read_guardian_summary",
+            "guardian",
+            LearnerAction.READ_GUARDIAN_SUMMARY,
+            "guardian",
+        ),
+        (
+            "_read_educator_analytics",
+            "educator",
+            LearnerAction.READ_EDUCATIONAL_SUMMARY,
+            "educator",
+        ),
+    ],
+)
+def test_role_adapter_without_consent_callback_fails_closed_before_history(
+    monkeypatch: pytest.MonkeyPatch,
+    adapter_name: str,
+    role: str,
+    action: LearnerAction,
+    access_path: service.DashboardAccessPath,
+) -> None:
+    request = _request()
+    principal = _principal(role)
+    authorize = MagicMock(
+        return_value=_authorization(
+            principal,
+            request,
+            action=action,
+            access_path=access_path,
+        )
+    )
+    history = MagicMock()
+    monkeypatch.setattr(service, "authorize_learner_action", authorize)
+    monkeypatch.setattr(repository, "get_bounded_learner_session_history", history)
+
+    adapter = getattr(api_adapters, adapter_name)
+    with pytest.raises(SecurityError) as exc_info:
+        adapter(MagicMock(spec=Session), principal, request)
+
+    error = exc_info.value
+    assert (error.status, error.code) == (403, "consent_required")
+    assert str(request.learner_id) not in error.message
+    assert authorize.call_args.args[2] == request.learner_id
+    assert authorize.call_args.args[3] is action
+    history.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    ("adapter_name", "role", "action", "access_path"),
+    [
+        (
+            "_read_guardian_summary",
+            "guardian",
+            LearnerAction.READ_GUARDIAN_SUMMARY,
+            "guardian",
+        ),
+        (
+            "_read_educator_analytics",
+            "educator",
+            LearnerAction.READ_EDUCATIONAL_SUMMARY,
+            "educator",
+        ),
+    ],
+)
+def test_role_adapter_rejects_wrong_learner_grant_before_consent_or_history(
+    monkeypatch: pytest.MonkeyPatch,
+    adapter_name: str,
+    role: str,
+    action: LearnerAction,
+    access_path: service.DashboardAccessPath,
+) -> None:
+    request = _request()
+    principal = _principal(role)
+    consent = MagicMock(name="approved_synthetic_consent")
+    history = MagicMock()
+    monkeypatch.setattr(
+        service,
+        "authorize_learner_action",
+        MagicMock(
+            return_value=_authorization(
+                principal,
+                request,
+                learner_id=uuid4(),
+                action=action,
+                access_path=access_path,
+            )
+        ),
+    )
+    monkeypatch.setattr(repository, "get_bounded_learner_session_history", history)
+
+    adapter = getattr(api_adapters, adapter_name)
+    with pytest.raises(SecurityError) as exc_info:
+        adapter(
+            MagicMock(spec=Session),
+            principal,
+            request,
+            consent_checker=consent,
+        )
+
+    error = exc_info.value
+    assert (error.status, error.code, error.message) == (
+        404,
+        "not_found",
+        "Resource not found",
+    )
+    assert str(request.learner_id) not in error.message
+    consent.assert_not_called()
+    history.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    ("adapter_name", "service_name", "failure"),
+    [
+        (
+            "_read_guardian_summary",
+            "read_guardian_summary",
+            HistoricalResultLimitExceeded("private guardian history details"),
+        ),
+        (
+            "_read_educator_analytics",
+            "read_educator_analytics",
+            HistoricalDataIntegrityError("private educator telemetry details"),
+        ),
+    ],
+)
+def test_role_adapter_service_failures_remain_sanitized(
+    monkeypatch: pytest.MonkeyPatch,
+    adapter_name: str,
+    service_name: str,
+    failure: Exception,
+) -> None:
+    request = _request()
+    reader = MagicMock(side_effect=failure)
+    monkeypatch.setattr(service, service_name, reader)
+
+    adapter = getattr(api_adapters, adapter_name)
+    with pytest.raises(SecurityError) as exc_info:
+        adapter(
+            MagicMock(spec=Session),
+            _principal(),
+            request,
+            consent_checker=MagicMock(name="approved_synthetic_consent"),
+        )
+
+    error = exc_info.value
+    assert (error.status, error.code, error.message) == (
+        503,
+        "service_unavailable",
+        "Service unavailable",
+    )
+    assert str(request.learner_id) not in error.message
+    assert "private" not in error.message
 
 
 def test_inactive_adapters_are_not_exposed_as_routes() -> None:
