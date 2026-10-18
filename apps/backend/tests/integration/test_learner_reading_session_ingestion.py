@@ -155,6 +155,41 @@ def test_simulated_approved_consent_persists_session(
         assert stored.calculated_engagement_score == engagement
 
 
+def test_uncommitted_ingestion_is_removed_by_caller_rollback(
+    postgres_engine: Engine, learner_environment: tuple[UUID, Principal]
+) -> None:
+    learner_id, principal = learner_environment
+    payload = _make_ingest_payload(learner_id)
+
+    def allow_synthetic_consent(_db: Session, lid: UUID, purpose: str) -> None:
+        assert lid == learner_id
+        assert purpose == "learning_support"
+
+    with Session(postgres_engine) as db:
+        stored, is_new = service.ingest_reading_session(
+            db,
+            principal,
+            payload,
+            consent_checker=allow_synthetic_consent,
+        )
+
+        assert is_new is True
+        assert stored.client_session_id == payload.client_session_id
+        assert db.in_transaction()
+        assert repo.get_session_by_client_id(db, learner_id, payload.client_session_id) is not None
+        db.rollback()
+
+    with Session(postgres_engine) as fresh_db:
+        assert (
+            repo.get_session_by_client_id(
+                fresh_db,
+                learner_id,
+                payload.client_session_id,
+            )
+            is None
+        )
+
+
 def test_idempotent_replay_and_conflict_in_postgres(
     postgres_engine: Engine, learner_environment: tuple[UUID, Principal]
 ) -> None:
