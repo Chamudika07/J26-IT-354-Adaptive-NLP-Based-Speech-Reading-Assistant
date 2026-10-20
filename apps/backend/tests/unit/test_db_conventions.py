@@ -43,10 +43,25 @@ SIMPLIFICATION_TABLES = {
     "simplification_feedback",
 }
 
+READING_TABLES = {
+    "reading_assessment_materials",
+    "reading_materials",
+    "reading_material_revisions",
+    "reading_material_processing_runs",
+    "reading_material_sentence_features",
+    "reading_material_sources",
+    "reading_material_extraction_runs",
+    "reading_material_extraction_pages",
+    "reading_assessment_sessions",
+    "reading_assessment_results",
+}
 
-def test_registered_foundation_tables_only() -> None:
+
+def test_registered_application_tables_only() -> None:
     assert FOUNDATION_TABLES.issubset(set(target_metadata.tables))
-    assert set(target_metadata.tables) == FOUNDATION_TABLES | SIMPLIFICATION_TABLES
+    assert set(target_metadata.tables) == (
+        FOUNDATION_TABLES | SIMPLIFICATION_TABLES | READING_TABLES
+    )
     for table in target_metadata.tables.values():
         assert list(table.primary_key.columns.keys()) == ["id"]
         assert isinstance(table.c.id.type, Uuid)

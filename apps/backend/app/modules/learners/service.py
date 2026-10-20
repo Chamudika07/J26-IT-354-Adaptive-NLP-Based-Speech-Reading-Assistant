@@ -1,5 +1,7 @@
 """Learner authorization, public projections, and preference transactions."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Literal
@@ -31,10 +33,24 @@ class LearnerAction(StrEnum):
     READ_PREFERENCES = "preferences.read"
     UPDATE_PREFERENCES = "preferences.update"
     PERFORM_LEARNING_INTERACTION = "learning.interact"
+    UPLOAD_PDF = "reading_material.upload_pdf"
+    EXTRACT_PDF = "reading_material.extract_pdf"
+    ARCHIVE_PDF = "reading_material.archive_pdf"
+    READ_READING_MATERIAL = "reading_material.read"
+    CREATE_READING_MATERIAL = "reading_material.create"
+    REVISE_READING_MATERIAL = "reading_material.revise"
+    PROCESS_READING_MATERIAL = "reading_material.process"
+    ARCHIVE_READING_MATERIAL = "reading_material.archive"
+    READ_READING_ASSESSMENT = "reading_assessment.read"
+    START_READING_ASSESSMENT = "reading_assessment.start"
+    SUBMIT_READING_ASSESSMENT = "reading_assessment.submit"
+    ABANDON_READING_ASSESSMENT = "reading_assessment.abandon"
 
 
 _SELF = frozenset(
     {
+        LearnerAction.READ_READING_MATERIAL,
+        LearnerAction.READ_READING_ASSESSMENT,
         LearnerAction.READ_BASIC_PROFILE,
         LearnerAction.READ_EDUCATIONAL_SUMMARY,
         LearnerAction.READ_PREFERENCES,
@@ -44,6 +60,8 @@ _SELF = frozenset(
 )
 _GUARDIAN_VIEWER = frozenset(
     {
+        LearnerAction.READ_READING_MATERIAL,
+        LearnerAction.READ_READING_ASSESSMENT,
         LearnerAction.READ_BASIC_PROFILE,
         LearnerAction.READ_GUARDIAN_SUMMARY,
         LearnerAction.READ_PREFERENCES,
@@ -51,10 +69,58 @@ _GUARDIAN_VIEWER = frozenset(
 )
 _EDUCATOR_VIEWER = frozenset(
     {
+        LearnerAction.READ_READING_MATERIAL,
+        LearnerAction.READ_READING_ASSESSMENT,
         LearnerAction.READ_BASIC_PROFILE,
         LearnerAction.READ_EDUCATIONAL_SUMMARY,
     }
 )
+
+_INSTRUCTOR_WRITES = frozenset(
+    {
+        LearnerAction.UPLOAD_PDF,
+        LearnerAction.EXTRACT_PDF,
+        LearnerAction.ARCHIVE_PDF,
+        LearnerAction.CREATE_READING_MATERIAL,
+        LearnerAction.REVISE_READING_MATERIAL,
+        LearnerAction.PROCESS_READING_MATERIAL,
+        LearnerAction.ARCHIVE_READING_MATERIAL,
+        LearnerAction.START_READING_ASSESSMENT,
+        LearnerAction.SUBMIT_READING_ASSESSMENT,
+        LearnerAction.ABANDON_READING_ASSESSMENT,
+    }
+)
+
+
+def authorize_learner_action_for_write(
+    db: Session, principal: Principal, learner_id: UUID, action: LearnerAction
+) -> LearnerAuthorization:
+    """Caller first protects auth state; lock learner then grant until caller commit.
+
+    Never commits. Call assert_protected_learner_action_live after all domain lock
+    waits: relationship locks prevent revocation, but cannot prevent expiry.
+    """
+    if action not in _INSTRUCTOR_WRITES:
+        raise SecurityError(404, "not_found", "Resource not found")
+    return _authorized_profile(db, principal, learner_id, action, for_write=True)[1]
+
+
+def assert_protected_learner_action_live(
+    db: Session, principal: Principal, learner_id: UUID, action: LearnerAction
+) -> None:
+    """Recheck time-sensitive access after write protection in the same transaction."""
+    if action not in _INSTRUCTOR_WRITES:
+        raise SecurityError(404, "not_found", "Resource not found")
+    authorize_learner_action(db, principal, learner_id, action)
+
+
+def authorize_reading_material_catalog(db: Session, principal: Principal) -> None:
+    """Catalog eligibility reveals no learner identities or relationship details."""
+    if "educator" not in principal.roles or not repo.has_active_instructor_learner(
+        db, principal.user_id
+    ):
+        raise SecurityError(403, "forbidden", "Access denied")
+
 
 # Preference writes enforce this allowlist independently of role.
 ACCESSIBILITY_PREFERENCE_FIELDS = frozenset(
@@ -123,10 +189,15 @@ def _authorized_profile(
         ):
             path = "guardian"
     if path is None and "educator" in principal.roles:
-        level = repo.educator_level(db, principal.user_id, learner_id, repo.current_time(db))
+        level = repo.educator_level(
+            db, principal.user_id, learner_id, repo.current_time(db), lock=for_write
+        )
         if level in {"viewer", "instructor"} and (
             action in _EDUCATOR_VIEWER
-            or (level == "instructor" and action == LearnerAction.PERFORM_LEARNING_INTERACTION)
+            or (
+                level == "instructor"
+                and action in _INSTRUCTOR_WRITES | {LearnerAction.PERFORM_LEARNING_INTERACTION}
+            )
         ):
             path = "educator"
     if path is None:

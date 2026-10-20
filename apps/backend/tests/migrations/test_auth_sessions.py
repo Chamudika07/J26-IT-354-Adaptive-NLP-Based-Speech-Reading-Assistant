@@ -33,6 +33,16 @@ def test_sprint_one_to_auth_preserves_existing_rows(postgres_engine):
             "simplification_sessions",
             "simplification_vocabulary",
             "simplification_feedback",
+            "reading_assessment_materials",
+            "reading_materials",
+            "reading_material_revisions",
+            "reading_material_processing_runs",
+            "reading_material_sentence_features",
+            "reading_material_sources",
+            "reading_material_extraction_runs",
+            "reading_material_extraction_pages",
+            "reading_assessment_sessions",
+            "reading_assessment_results",
         }
         assert (
             connection.execute(

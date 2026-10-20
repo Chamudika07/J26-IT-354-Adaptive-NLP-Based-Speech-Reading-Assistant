@@ -259,3 +259,6 @@ research/artifacts/
 # The original Python template ignores lib/ globally; allow future app source here.
 !apps/mobile/src/lib/
 !apps/mobile/src/lib/**
+
+# Private PDF runtime objects (configured outside this repository).
+pdf-objects/

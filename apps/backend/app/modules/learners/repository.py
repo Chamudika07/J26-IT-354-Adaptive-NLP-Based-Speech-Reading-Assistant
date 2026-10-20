@@ -63,12 +63,28 @@ def guardian_level(
     return db.scalar(query.with_for_update(read=True) if lock else query)
 
 
-def educator_level(db: Session, actor_id: UUID, learner_id: UUID, now: datetime) -> str | None:
-    return db.scalar(
+def educator_level(
+    db: Session, actor_id: UUID, learner_id: UUID, now: datetime, *, lock: bool = False
+) -> str | None:
+    query = (
         _educator_grants(actor_id, now)
         .with_only_columns(EducatorLearnerRelationship.access_level)
         .where(EducatorLearnerRelationship.learner_id == learner_id)
     )
+    return db.scalar(query.with_for_update(read=True) if lock else query)
+
+
+def has_active_instructor_learner(db: Session, actor_id: UUID) -> bool:
+    query = (
+        _educator_grants(actor_id, current_time(db))
+        .join(LearnerProfile, LearnerProfile.id == EducatorLearnerRelationship.learner_id)
+        .where(
+            LearnerProfile.archived_at.is_(None),
+            EducatorLearnerRelationship.access_level == "instructor",
+        )
+        .limit(1)
+    )
+    return db.execute(query).first() is not None
 
 
 def accessible_page(

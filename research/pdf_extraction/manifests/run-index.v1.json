@@ -1,0 +1,26 @@
+{
+  "development-final-v1": {
+    "artifacts/development-final-v1/environment.json": "ccbcbe408f7bcaa4201929d9100301d2cc0b5145108a0f410d1d2204d2a4370a",
+    "artifacts/development-final-v1/manifest.json": "ebcbb9a11b30ee34149e84dd08ea6a83cbad30912abd066b914610e7f1a728d1",
+    "artifacts/development-final-v1/report.md": "b3fbd7d659c66d62afdfb5c41e86820b5922012e114e7f931e0d6a5d351884dc",
+    "artifacts/development-final-v1/results.jsonl": "e28abd45e4df473a51845e64a266b9b6de3ee5c1600728d621b5e166f725596c",
+    "artifacts/development-final-v1/summary.csv": "d4e40c31e18a8cf9c2c64a71a28178b4c09549927d3a1ed84948ae0f3327bd13",
+    "artifacts/development-final-v1/summary.json": "ce1e86c2af8f51e17d2a2901972abb681e794b1c87dff34c0c28634600d2909a",
+    "artifacts/development-final-v1/timings.jsonl": "450c49072b28a363f9d42b49af2faaf3a868365f68b35bcf9706161f0194c97c"
+  },
+  "heldout-primary-v1": {
+    "artifacts/heldout-primary-v1/environment.json": "668e135326a8d278d4e1850fbf37df3d5dc0053e24577c152aa35ee523b76468",
+    "artifacts/heldout-primary-v1/manifest.json": "c50229244471a3ef9ab90e644f44000f279f0c6c5968850107b52b3396c6b43b",
+    "artifacts/heldout-primary-v1/report.md": "19237d9b9676d83a2a0262b64a724f458bfafaccd120cd89e9bca502c075200a",
+    "artifacts/heldout-primary-v1/results.jsonl": "c77a2e31b09442ea7109b7fd976b7c0ea0d4e783d67d15e70cd1afd3f9e82a28",
+    "artifacts/heldout-primary-v1/summary.csv": "9dfe5285eb614737cd279954a10444c20512f76be2546b06a6001a620f31410f",
+    "artifacts/heldout-primary-v1/summary.json": "4ee4968b91a85d014c7bfb28078d7f0f3554be7bec43019f29960183717b66b5",
+    "artifacts/heldout-primary-v1/timings.jsonl": "4630d0031ce53a348849bc5a01a66a67634155677cf331ede55cf711897ce0d4"
+  },
+  "performance-v1": {
+    "artifacts/performance-v1/environment.json": "8d1fe6a57fa115557b64acce3ec96e148339cce0c4cecdd66812614a00bd6205",
+    "artifacts/performance-v1/manifest.json": "c50229244471a3ef9ab90e644f44000f279f0c6c5968850107b52b3396c6b43b",
+    "artifacts/performance-v1/summary.json": "0b5676033a66b5f39a9431099f1f370d0d6873c65ed1e47afe5f96b581eda621",
+    "artifacts/performance-v1/timings.jsonl": "f16f38d43b2d0b765621134eb04c59b8e5d42ab9584dc2525d7f96a0d7634842"
+  }
+}

@@ -1,0 +1,312 @@
+{
+  "$defs": {
+    "Artifact": {
+      "additionalProperties": false,
+      "properties": {
+        "reference": {
+          "minLength": 1,
+          "title": "Reference",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reference",
+        "sha256"
+      ],
+      "title": "Artifact",
+      "type": "object"
+    },
+    "Fixture": {
+      "additionalProperties": false,
+      "properties": {
+        "fixture_id": {
+          "minLength": 1,
+          "title": "Fixture Id",
+          "type": "string"
+        },
+        "primary_category": {
+          "enum": [
+            "simple_single_column",
+            "multipage",
+            "headings_paragraphs",
+            "tables",
+            "two_column",
+            "headers_footers_page_numbers",
+            "unicode",
+            "punctuation_hyphenation",
+            "mixed_text_images",
+            "image_only_or_scanned_like",
+            "invalid_or_unsupported"
+          ],
+          "title": "Primary Category",
+          "type": "string"
+        },
+        "feature_tags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Feature Tags",
+          "type": "array"
+        },
+        "split": {
+          "enum": [
+            "development",
+            "heldout"
+          ],
+          "title": "Split",
+          "type": "string"
+        },
+        "template_family_id": {
+          "minLength": 1,
+          "title": "Template Family Id",
+          "type": "string"
+        },
+        "provenance_type": {
+          "enum": [
+            "original",
+            "public_domain",
+            "permission_cleared"
+          ],
+          "title": "Provenance Type",
+          "type": "string"
+        },
+        "creator_or_source_reference": {
+          "minLength": 1,
+          "title": "Creator Or Source Reference",
+          "type": "string"
+        },
+        "license_or_permission_reference": {
+          "minLength": 1,
+          "title": "License Or Permission Reference",
+          "type": "string"
+        },
+        "generator_name": {
+          "minLength": 1,
+          "title": "Generator Name",
+          "type": "string"
+        },
+        "generator_version": {
+          "minLength": 1,
+          "title": "Generator Version",
+          "type": "string"
+        },
+        "generator_configuration": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "title": "Generator Configuration",
+          "type": "object"
+        },
+        "generator_seed": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Generator Seed"
+        },
+        "source_artifact_reference": {
+          "minLength": 1,
+          "title": "Source Artifact Reference",
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "source_byte_count": {
+          "exclusiveMinimum": 0,
+          "title": "Source Byte Count",
+          "type": "integer"
+        },
+        "expected_page_count": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Page Count"
+        },
+        "expected_policy_outcome": {
+          "enum": [
+            "extracted",
+            "ocr_required",
+            "needs_review",
+            "failed"
+          ],
+          "title": "Expected Policy Outcome",
+          "type": "string"
+        },
+        "expected_outcome_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected Outcome Code"
+        },
+        "content_assessment": {
+          "enum": [
+            "complete",
+            "missing_visible_content",
+            "ordering_problem",
+            "unusable"
+          ],
+          "title": "Content Assessment",
+          "type": "string"
+        },
+        "reference_scope": {
+          "enum": [
+            "embedded_and_visible",
+            "embedded_only",
+            "not_applicable"
+          ],
+          "title": "Reference Scope",
+          "type": "string"
+        },
+        "page_ground_truth": {
+          "items": {
+            "$ref": "#/$defs/Artifact"
+          },
+          "title": "Page Ground Truth",
+          "type": "array"
+        },
+        "assembled_ground_truth": {
+          "$ref": "#/$defs/Artifact"
+        },
+        "structural_annotation": {
+          "$ref": "#/$defs/Artifact"
+        },
+        "authoring_source": {
+          "$ref": "#/$defs/Artifact"
+        },
+        "exact_match_required": {
+          "title": "Exact Match Required",
+          "type": "boolean"
+        },
+        "metric_eligibility": {
+          "title": "Metric Eligibility",
+          "type": "boolean"
+        },
+        "known_limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Known Limitations",
+          "type": "array"
+        },
+        "notes": {
+          "title": "Notes",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fixture_id",
+        "primary_category",
+        "feature_tags",
+        "split",
+        "template_family_id",
+        "provenance_type",
+        "creator_or_source_reference",
+        "license_or_permission_reference",
+        "generator_name",
+        "generator_version",
+        "generator_configuration",
+        "generator_seed",
+        "source_artifact_reference",
+        "source_sha256",
+        "source_byte_count",
+        "expected_policy_outcome",
+        "expected_outcome_code",
+        "content_assessment",
+        "reference_scope",
+        "page_ground_truth",
+        "assembled_ground_truth",
+        "structural_annotation",
+        "authoring_source",
+        "exact_match_required",
+        "metric_eligibility",
+        "known_limitations",
+        "notes"
+      ],
+      "title": "Fixture",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "1",
+      "default": "1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "benchmark_version": {
+      "const": "benchmark-v1",
+      "default": "benchmark-v1",
+      "title": "Benchmark Version",
+      "type": "string"
+    },
+    "protocol_version": {
+      "const": "protocol-v1",
+      "default": "protocol-v1",
+      "title": "Protocol Version",
+      "type": "string"
+    },
+    "corpus_id": {
+      "default": "original-pdf-66-v1",
+      "title": "Corpus Id",
+      "type": "string"
+    },
+    "split_seed": {
+      "default": 22081766,
+      "title": "Split Seed",
+      "type": "integer"
+    },
+    "production_commit": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Production Commit",
+      "type": "string"
+    },
+    "fixture_entries": {
+      "items": {
+        "$ref": "#/$defs/Fixture"
+      },
+      "title": "Fixture Entries",
+      "type": "array"
+    }
+  },
+  "required": [
+    "production_commit",
+    "fixture_entries"
+  ],
+  "title": "Manifest",
+  "type": "object"
+}

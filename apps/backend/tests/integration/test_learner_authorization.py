@@ -103,6 +103,26 @@ PERMISSIONS = {
 }
 
 
+for kind, actions in PERMISSIONS.items():
+    if kind != "administrator":
+        actions.add(Action.READ_READING_ASSESSMENT)
+        actions.add(Action.READ_READING_MATERIAL)
+PERMISSIONS["educator_instructor"].update(
+    {
+        Action.UPLOAD_PDF,
+        Action.EXTRACT_PDF,
+        Action.ARCHIVE_PDF,
+        Action.CREATE_READING_MATERIAL,
+        Action.REVISE_READING_MATERIAL,
+        Action.PROCESS_READING_MATERIAL,
+        Action.ARCHIVE_READING_MATERIAL,
+        Action.START_READING_ASSESSMENT,
+        Action.SUBMIT_READING_ASSESSMENT,
+        Action.ABANDON_READING_ASSESSMENT,
+    }
+)
+
+
 @pytest.mark.parametrize("kind", PERMISSIONS)
 @pytest.mark.parametrize("action", list(Action))
 def test_complete_policy_matrix(db_session, active_user, learner, kind, action):

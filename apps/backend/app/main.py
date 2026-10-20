@@ -10,6 +10,7 @@ from app.core.config import Settings
 from app.core.exceptions import register_exception_handlers
 from app.core.logging import configure_logging
 from app.db.session import create_db_engine, create_session_factory
+from app.modules.reading_materials.http import MaterialBodyLimit
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -34,6 +35,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         redoc_url=None,
         openapi_url="/openapi.json" if settings.app_env in {"development", "test"} else None,
     )
+    application.add_middleware(MaterialBodyLimit)
     application.state.settings = settings
     register_exception_handlers(application)
     application.include_router(router, prefix="/api/v1")
