@@ -83,7 +83,7 @@ def test_factory_returns_gemini_provider():
     )
     provider = get_simplification_provider(settings)
     assert isinstance(provider, GeminiSimplificationProvider)
-    assert provider.provider_name == "gemini-1.5-flash"
+    assert provider.provider_name == "gemini-3.5-flash-lite"
 
 
 def test_factory_configured_openai_reports_not_implemented():
@@ -118,7 +118,7 @@ def test_ai_model_resolution():
         simplification_ai_provider="gemini",
         simplification_ai_api_key=SecretStr("valid-key-for-testing"),
     )
-    assert settings_gemini.simplification_ai_model == "gemini-1.5-flash"
+    assert settings_gemini.simplification_ai_model == "gemini-3.5-flash-lite"
 
     # OpenAI default model
     settings_openai = _make_settings(
@@ -131,9 +131,9 @@ def test_ai_model_resolution():
     settings_custom = _make_settings(
         simplification_ai_provider="gemini",
         simplification_ai_api_key=SecretStr("valid-key-for-testing"),
-        simplification_ai_model="gemini-2.0-flash-exp",
+        simplification_ai_model="gemini-custom-test-model",
     )
-    assert settings_custom.simplification_ai_model == "gemini-2.0-flash-exp"
+    assert settings_custom.simplification_ai_model == "gemini-custom-test-model"
 
 
 def test_ai_provider_missing_key_rejected():

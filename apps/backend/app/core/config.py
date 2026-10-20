@@ -8,6 +8,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy.engine import make_url
 from sqlalchemy.exc import ArgumentError
 
+DEFAULT_GEMINI_MODEL = "gemini-3.5-flash-lite"
+
 
 class DatabaseSettings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -107,7 +109,7 @@ class Settings(DatabaseSettings):
                 )
             if self.simplification_ai_model is None or not self.simplification_ai_model.strip():
                 default_models = {
-                    "gemini": "gemini-1.5-flash",
+                    "gemini": DEFAULT_GEMINI_MODEL,
                     "openai": "gpt-4o-mini",
                 }
                 object.__setattr__(

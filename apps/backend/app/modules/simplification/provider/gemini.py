@@ -4,14 +4,14 @@ import json
 import logging
 import time
 from collections.abc import Callable
-from decimal import Decimal
-from typing import Any
+from typing import Annotated, Any
 
 import httpx
-from pydantic import Field, ValidationError
+from pydantic import Field, StringConstraints, ValidationError
 
-from app.core.config import Settings
+from app.core.config import DEFAULT_GEMINI_MODEL, Settings
 from app.core.schemas import Schema
+from app.modules.learners.schemas import LanguageTag
 from app.modules.simplification.provider.base import (
     ProviderError,
     ProviderRateLimitError,
@@ -21,6 +21,7 @@ from app.modules.simplification.provider.base import (
     VocabularyExplanationAIResult,
 )
 from app.modules.simplification.schemas import (
+    DifficultyScore,
     ReadingLevel,
     SimplificationRequest,
     SimplificationStrategy,
@@ -43,7 +44,12 @@ SIMPLIFICATION_RESPONSE_SCHEMA: dict[str, Any] = {
             "type": "STRING",
             "enum": [r.value for r in ReadingLevel],
         },
-        "output_difficulty": {"type": "NUMBER"},
+        "output_difficulty": {
+            "type": "NUMBER",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Normalized difficulty from 0.00 (easiest) to 1.00 (hardest).",
+        },
         "concepts_preserved": {
             "type": "ARRAY",
             "items": {"type": "STRING"},
@@ -96,30 +102,32 @@ WORD_EXPLANATION_RESPONSE_SCHEMA: dict[str, Any] = {
 
 # ── Internal Pydantic Validation Models for AI Output ─────────────────────────
 
+NonBlankText = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+
 
 class _GeminiVocabularyItemPayload(Schema):
-    term: str = Field(min_length=1)
-    simplified_definition: str = Field(min_length=1)
-    example_sentence: str | None = None
+    term: NonBlankText
+    simplified_definition: NonBlankText
+    example_sentence: NonBlankText | None = None
     synonyms: list[str] = Field(default_factory=list)
 
 
 class _GeminiSimplificationPayload(Schema):
-    simplified_text: str = Field(min_length=1)
+    simplified_text: Annotated[NonBlankText, Field(max_length=60_000)]
     strategy_applied: SimplificationStrategy = SimplificationStrategy.FULL_REWRITE
     target_reading_level: ReadingLevel = ReadingLevel.BEGINNER
-    output_difficulty: Decimal | None = None
+    output_difficulty: DifficultyScore | None = None
     concepts_preserved: list[str] = Field(default_factory=list)
     validation_warnings: list[str] = Field(default_factory=list)
     vocabulary_items: list[_GeminiVocabularyItemPayload] = Field(default_factory=list)
 
 
 class _GeminiWordExplanationPayload(Schema):
-    term: str = Field(min_length=1)
-    simplified_definition: str = Field(min_length=1)
-    example_sentence: str | None = None
+    term: NonBlankText
+    simplified_definition: NonBlankText
+    example_sentence: NonBlankText | None = None
     synonyms: list[str] = Field(default_factory=list)
-    language_tag: str = "en"
+    language_tag: LanguageTag = "en"
 
 
 # ── System Prompts ────────────────────────────────────────────────────────────
@@ -181,7 +189,7 @@ class GeminiSimplificationProvider:
             raise ValueError("A valid API key is required for GeminiSimplificationProvider")
 
         self._api_key = settings.simplification_ai_api_key.get_secret_value()
-        self._model = settings.simplification_ai_model or "gemini-1.5-flash"
+        self._model = settings.simplification_ai_model or DEFAULT_GEMINI_MODEL
         self._timeout = float(settings.simplification_ai_timeout_seconds)
         self._max_retries = settings.simplification_ai_max_retries
 
@@ -366,6 +374,10 @@ class GeminiSimplificationProvider:
                     raise ProviderRateLimitError(
                         "AI provider rate limit reached", retry_after=retry_after
                     )
+
+                # A retired, restricted, or misspelled model is unavailable to this key.
+                if response.status_code == 404:
+                    raise ProviderUnavailableError("Configured AI provider model is unavailable")
 
                 # Upstream server errors -> transient, eligible for retry
                 if response.status_code in {500, 502, 503, 504}:

@@ -6,6 +6,7 @@ using FastAPI dependency overrides and service-layer mocking.
 
 from collections.abc import Iterator
 from datetime import UTC, datetime
+from decimal import Decimal
 from unittest.mock import MagicMock, patch
 from uuid import UUID, uuid4
 
@@ -102,7 +103,7 @@ def test_simplify_success_mocked(auth_client: TestClient) -> None:
         simplified_text="Plants make food with sunlight.",
         strategy_applied=SimplificationStrategy.FULL_REWRITE,
         target_reading_level=ReadingLevel.BEGINNER,
-        estimated_output_difficulty=None,
+        estimated_output_difficulty=Decimal("0.25"),
         adaptation_attempt=1,
         vocabulary_items=[
             VocabularyItemResponse(
@@ -133,6 +134,7 @@ def test_simplify_success_mocked(auth_client: TestClient) -> None:
     assert data["learner_id"] == str(LEARNER_ID)
     assert data["simplified_text"] == "Plants make food with sunlight."
     assert data["strategy_applied"] == "full_rewrite"
+    assert data["estimated_output_difficulty"] == "0.25"
     assert len(data["vocabulary_items"]) == 1
     assert data["vocabulary_items"][0]["term"] == "photosynthesis"
     assert response.headers.get("Cache-Control") == "no-store"
@@ -450,7 +452,7 @@ def test_simplify_with_mock_provider_via_dependency_injection(
         target_reading_level=ReadingLevel.BEGINNER,
         adaptation_attempt=1,
         output_length=23,
-        ai_provider="gemini-1.5-flash",
+        ai_provider="gemini-3.5-flash-lite",
         ai_latency_ms=90,
     )
 

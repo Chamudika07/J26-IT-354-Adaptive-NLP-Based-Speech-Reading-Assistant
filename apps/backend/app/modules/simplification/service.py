@@ -186,7 +186,9 @@ def simplify_text(
             simplified_text=ai_dict["simplified_text"],
             output_length=ai_dict["output_length"],
             output_difficulty=ai_dict.get("output_difficulty"),
-            concepts_preserved=ai_dict.get("concepts_preserved"),
+            # Provider concept labels are not a boolean assessment. Leave the
+            # nullable assessment unset until a reviewed evaluator exists.
+            concepts_preserved=None,
             ai_provider=ai_dict["ai_provider"],
             ai_latency_ms=ai_dict["ai_latency_ms"],
             validation_warnings=ai_dict.get("validation_warnings", []),

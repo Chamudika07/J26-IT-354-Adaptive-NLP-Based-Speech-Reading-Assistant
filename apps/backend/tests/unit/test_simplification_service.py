@@ -26,6 +26,7 @@ from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
 import pytest
+from sqlalchemy.dialects import postgresql
 
 from app.core.exceptions import SecurityError
 from app.modules.auth.contracts import Principal
@@ -576,7 +577,7 @@ def test_simplify_text_success_with_injected_provider(mock_auth, mock_create_ses
         target_reading_level=ReadingLevel.BEGINNER,
         adaptation_attempt=1,
         output_length=31,
-        ai_provider="gemini-1.5-flash",
+        ai_provider="gemini-3.5-flash-lite",
         ai_latency_ms=120,
         output_difficulty=None,
         concepts_preserved=["photosynthesis"],
@@ -608,6 +609,45 @@ def test_simplify_text_success_with_injected_provider(mock_auth, mock_create_ses
     assert len(response.vocabulary_items) == 1
 
 
+@pytest.mark.parametrize("concepts", [[], ["photosynthesis"]])
+@patch("app.modules.simplification.service.repo.create_session")
+@patch("app.modules.simplification.service.authorize_learner_action")
+def test_provider_concepts_are_not_written_as_a_database_boolean(
+    mock_auth, mock_create_sess, concepts
+):
+    """Exercise the real PostgreSQL boolean binder without connecting to a database."""
+    db = _mock_db()
+    column = SimplificationSession.__table__.c.concepts_preserved
+    bind = column.type.bind_processor(postgresql.dialect())
+
+    def create_session(*args, **kwargs):
+        value = kwargs["concepts_preserved"]
+        assert bind(value) is None
+        return _mock_session()
+
+    mock_create_sess.side_effect = create_session
+    provider = MagicMock()
+    provider.simplify.return_value = SimplificationAIResult(
+        simplified_text="Plants make food.",
+        strategy_applied=SimplificationStrategy.COMBINED,
+        target_reading_level=ReadingLevel.BEGINNER,
+        adaptation_attempt=1,
+        output_length=17,
+        ai_provider="synthetic",
+        ai_latency_ms=1,
+        concepts_preserved=concepts,
+    )
+    service.simplify_text(
+        db,
+        _principal(),
+        LEARNER_ID,
+        SimplificationRequest(source_text="Plants."),
+        provider=provider,
+    )
+    db.commit.assert_called_once()
+    db.rollback.assert_not_called()
+
+
 @patch("app.modules.simplification.service.repo.create_vocabulary")
 @patch("app.modules.simplification.service.authorize_learner_action")
 def test_explain_word_success_with_injected_provider(mock_auth, mock_create_voc):
@@ -628,7 +668,7 @@ def test_explain_word_success_with_injected_provider(mock_auth, mock_create_voc)
         simplified_definition="A natural home for an animal.",
         example_sentence="The ocean is a whale's habitat.",
         synonyms=["home"],
-        ai_provider="gemini-1.5-flash",
+        ai_provider="gemini-3.5-flash-lite",
         ai_latency_ms=85,
     )
 
@@ -731,7 +771,7 @@ def test_source_text_retention_persists_none_and_stores_hash(mock_auth, mock_cre
         target_reading_level=ReadingLevel.BEGINNER,
         adaptation_attempt=1,
         output_length=12,
-        ai_provider="gemini-1.5-flash",
+        ai_provider="gemini-3.5-flash-lite",
         ai_latency_ms=100,
     )
 
@@ -807,7 +847,7 @@ def test_simplify_text_vocabulary_creation_failure_rolls_back(
         target_reading_level=ReadingLevel.BEGINNER,
         adaptation_attempt=1,
         output_length=12,
-        ai_provider="gemini-1.5-flash",
+        ai_provider="gemini-3.5-flash-lite",
         ai_latency_ms=100,
         vocabulary_items=[
             {
@@ -844,7 +884,7 @@ def test_simplify_text_skips_empty_or_invalid_vocabulary_items(
         target_reading_level=ReadingLevel.BEGINNER,
         adaptation_attempt=1,
         output_length=12,
-        ai_provider="gemini-1.5-flash",
+        ai_provider="gemini-3.5-flash-lite",
         ai_latency_ms=100,
         vocabulary_items=[
             {"term": "", "simplified_definition": "Has no term"},
@@ -876,7 +916,7 @@ def test_explain_word_creation_failure_rolls_back(mock_auth, mock_create_voc):
         simplified_definition="A community of living organisms.",
         example_sentence="The forest is an ecosystem.",
         synonyms=["environment"],
-        ai_provider="gemini-1.5-flash",
+        ai_provider="gemini-3.5-flash-lite",
         ai_latency_ms=90,
     )
     mock_provider = MagicMock()

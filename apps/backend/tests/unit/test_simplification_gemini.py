@@ -39,7 +39,7 @@ def _make_settings(**overrides: object) -> Settings:
         "app_env": "test",
         "simplification_ai_provider": "gemini",
         "simplification_ai_api_key": SecretStr(API_KEY),
-        "simplification_ai_model": "gemini-1.5-flash",
+        "simplification_ai_model": "gemini-3.5-flash-lite",
         "simplification_ai_timeout_seconds": 30,
         "simplification_ai_max_retries": 1,
     }
@@ -116,13 +116,52 @@ def test_simplify_success():
     assert result.output_difficulty == Decimal("0.25")
     assert result.concepts_preserved == ["photosynthesis"]
     assert result.output_length == len("Plants use sunlight to make food.")
-    assert result.ai_provider == "gemini-1.5-flash"
+    assert result.ai_provider == "gemini-3.5-flash-lite"
     assert result.ai_latency_ms >= 1
     assert len(result.vocabulary_items) == 1
     assert result.vocabulary_items[0]["term"] == "photosynthesis"
 
 
 # ── Test 2: Successful Vocabulary Explanation Response ─────────────────────────
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"simplified_text": " "},
+        {"simplified_text": "x" * 60_001},
+        {"output_difficulty": 1.5},
+        {"output_difficulty": 0.123},
+        {"vocabulary_items": [{"term": " ", "simplified_definition": "A definition."}]},
+    ],
+)
+def test_invalid_simplification_content_is_a_provider_error(overrides):
+    payload = {"simplified_text": "Synthetic output.", **overrides}
+    with httpx.Client(
+        transport=httpx.MockTransport(lambda _: _gemini_response(json.dumps(payload)))
+    ) as client:
+        provider = GeminiSimplificationProvider(_make_settings(), client=client)
+        with pytest.raises(ProviderResponseError, match="Malformed or invalid AI response"):
+            provider.simplify(SimplificationRequest(source_text="Synthetic input."))
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"term": " "},
+        {"simplified_definition": " "},
+        {"example_sentence": " "},
+        {"language_tag": " "},
+    ],
+)
+def test_invalid_explanation_content_is_a_provider_error(overrides):
+    payload = {"term": "habitat", "simplified_definition": "A home.", **overrides}
+    with httpx.Client(
+        transport=httpx.MockTransport(lambda _: _gemini_response(json.dumps(payload)))
+    ) as client:
+        provider = GeminiSimplificationProvider(_make_settings(), client=client)
+        with pytest.raises(ProviderResponseError, match="Malformed or invalid AI response"):
+            provider.explain_word(WordExplanationRequest(term="habitat"))
 
 
 def test_explain_word_success():
@@ -153,7 +192,7 @@ def test_explain_word_success():
     assert result.example_sentence == "Leaves look green because of chlorophyll."
     assert result.synonyms == ["green plant pigment"]
     assert result.language_tag == "en"
-    assert result.ai_provider == "gemini-1.5-flash"
+    assert result.ai_provider == "gemini-3.5-flash-lite"
 
 
 # ── Test 3: Correct Request URL, Authentication, Model, Headers, and Payload ───
@@ -174,7 +213,7 @@ def test_request_structure_and_headers():
 
     client = httpx.Client(transport=httpx.MockTransport(handler))
     settings = _make_settings(
-        simplification_ai_model="gemini-1.5-flash",
+        simplification_ai_model="gemini-3.5-flash-lite",
         simplification_ai_base_url="https://custom.endpoint.example/v1beta",
     )
     provider = GeminiSimplificationProvider(settings, client=client)
@@ -185,7 +224,7 @@ def test_request_structure_and_headers():
     assert captured_request.method == "POST"
     assert (
         str(captured_request.url)
-        == "https://custom.endpoint.example/v1beta/models/gemini-1.5-flash:generateContent"
+        == "https://custom.endpoint.example/v1beta/models/gemini-3.5-flash-lite:generateContent"
     )
     assert captured_request.headers["x-goog-api-key"] == API_KEY
     assert captured_request.headers["content-type"] == "application/json"
@@ -195,6 +234,27 @@ def test_request_structure_and_headers():
     assert "contents" in body
     assert body["generationConfig"]["responseMimeType"] == "application/json"
     assert body["generationConfig"]["temperature"] == 0.2
+
+
+def test_simplification_request_constrains_normalized_difficulty():
+    captured_request: httpx.Request | None = None
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal captured_request
+        captured_request = request
+        return _gemini_response(json.dumps({"simplified_text": "Synthetic output."}))
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    provider = GeminiSimplificationProvider(_make_settings(), client=client)
+    provider.simplify(SimplificationRequest(source_text="Synthetic input."))
+
+    assert captured_request is not None
+    body = json.loads(captured_request.content.decode("utf-8"))
+    difficulty_schema = body["generationConfig"]["responseSchema"]["properties"][
+        "output_difficulty"
+    ]
+    assert difficulty_schema["minimum"] == 0
+    assert difficulty_schema["maximum"] == 1
 
 
 # ── Test 4: Missing or Invalid Response Fields ──────────────────────────────────
@@ -310,6 +370,34 @@ def test_rate_limit_raises_provider_rate_limit_error():
 
     assert exc_info.value.retry_after == 30
     assert "rate limit reached" in str(exc_info.value)
+
+
+def test_model_not_found_raises_unavailable_without_retry_or_leaking_response():
+    call_count = 0
+    upstream_detail = "Requested model and sensitive upstream details"
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal call_count
+        call_count += 1
+        return httpx.Response(
+            status_code=404,
+            json={"error": {"message": upstream_detail}},
+        )
+
+    client = httpx.Client(transport=httpx.MockTransport(handler))
+    sleep_mock = MagicMock()
+    provider = GeminiSimplificationProvider(
+        _make_settings(simplification_ai_max_retries=2),
+        client=client,
+        sleep_fn=sleep_mock,
+    )
+
+    with pytest.raises(ProviderUnavailableError, match="model is unavailable") as exc_info:
+        provider.simplify(SimplificationRequest(source_text="Synthetic text."))
+
+    assert call_count == 1
+    sleep_mock.assert_not_called()
+    assert upstream_detail not in str(exc_info.value)
 
 
 # ── Test 9: HTTP 5xx Transient Retry and Ultimate Failure ──────────────────────
