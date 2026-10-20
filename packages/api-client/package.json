@@ -1,0 +1,21 @@
+{
+  "name": "@readbuddy/api-client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TypeScript contracts and client for the Adaptive NLP-Based Speech & Reading Assistant",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3"
+  }
+}

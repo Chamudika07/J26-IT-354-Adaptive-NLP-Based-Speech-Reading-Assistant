@@ -1,0 +1,14 @@
+{
+  "name": "j26-it-354-adaptive-speech-reading-assistant",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Adaptive NLP-Based Speech & Reading Assistant for Children with Dyslexia",
+  "scripts": {
+    "typecheck": "pnpm -r --parallel run typecheck",
+    "typecheck:api-client": "pnpm --filter @readbuddy/api-client run typecheck",
+    "typecheck:mobile": "pnpm --filter @readbuddy/mobile run typecheck"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.3"
+  }
+}
