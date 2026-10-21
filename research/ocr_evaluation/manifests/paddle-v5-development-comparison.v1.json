@@ -1,0 +1,65 @@
+{
+  "version": "ocr-paddle-v5-development-comparison-v1",
+  "corpus_index_sha256": "d64b42916bf99c3d8794a5b77179e7da956b0c09059ac5542b1933d30797fafe",
+  "model_manifest_sha256": "0c7373553254ac54b947d473dd99c53ac884a4b1b6fbe67229b9525c9ee0b791",
+  "heldout_executions": 0,
+  "runs": [
+    {
+      "recognizer_generation": "v4",
+      "condition": "baseline",
+      "directory": "artifacts/ao-v3-paddle-baseline-measured",
+      "page_count": 30,
+      "failures": 0,
+      "configuration_fingerprint": "a06d12cb41e6118cf0084b3cc3aaffe915ee9b814aa7ae5e5be19d4beb7f8913",
+      "sha256": {
+        "config.json": "a06d12cb41e6118cf0084b3cc3aaffe915ee9b814aa7ae5e5be19d4beb7f8913",
+        "pages.jsonl": "0661babaf4987d10ae590f02e5cc8079daaafbeca2dfd02349d1313437656b84",
+        "summary.json": "8aa6920db4934da35b2e9bb1cc909223586c40ff8cf170bb304416be8bd362f7",
+        "diagnostics.json": "35ae80de8470123e160f3fbf313e77ea2239853cd9ada384cf7d851b7e2baf90"
+      }
+    },
+    {
+      "recognizer_generation": "v4",
+      "condition": "grayscale",
+      "directory": "artifacts/ao-v3-paddle-grayscale-measured",
+      "page_count": 30,
+      "failures": 0,
+      "configuration_fingerprint": "448061a0d4ac491463d1918c14d95e5209d7665463f7973c2e8244a425399b16",
+      "sha256": {
+        "config.json": "448061a0d4ac491463d1918c14d95e5209d7665463f7973c2e8244a425399b16",
+        "pages.jsonl": "ed854210fd3e9709eae9eb29e6c7c039d0f4f4ac5217f5b12f9b8b57c5a6ed31",
+        "summary.json": "aed19f9460e080be9678e13ea2d9a4dc13fa19bc06c3b50bb95630f65493ffff",
+        "diagnostics.json": "83d095c233f4b05316ab67d0738067f8f587acc7a4b8053aa807de8ed5f691f8"
+      }
+    },
+    {
+      "recognizer_generation": "v5",
+      "condition": "baseline",
+      "directory": "artifacts/ao-v3-paddle-v5rec-baseline-measured",
+      "page_count": 30,
+      "failures": 0,
+      "configuration_fingerprint": "0f99f43a6e549b5ba3115a322f7a7914aab887412b13b93aeb0c0a2b6474b72a",
+      "sha256": {
+        "config.json": "0f99f43a6e549b5ba3115a322f7a7914aab887412b13b93aeb0c0a2b6474b72a",
+        "pages.jsonl": "136c4711c390571b560addfea98e28c97b5e7a039fb391a402b15bf6a63bf043",
+        "summary.json": "9e7d9c1b383abe07408c3847d51cf827da810985c2e31acfb5926aff5b196e3c",
+        "diagnostics.json": "e1887102838f8f03a28f8bbe9893da3ccfa2e947d693179b58888362ba62988f"
+      }
+    },
+    {
+      "recognizer_generation": "v5",
+      "condition": "grayscale",
+      "directory": "artifacts/ao-v3-paddle-v5rec-grayscale-measured",
+      "page_count": 30,
+      "failures": 0,
+      "configuration_fingerprint": "cf2bf50f9b76bf3ae805c7ba80c60568e416e4682fb2c5a97e4334a7a7149e80",
+      "sha256": {
+        "config.json": "cf2bf50f9b76bf3ae805c7ba80c60568e416e4682fb2c5a97e4334a7a7149e80",
+        "pages.jsonl": "66c86a2c6fa98e103a1f2b9a35c1f78f3114f3a78e242a9821bd366d12ab9491",
+        "summary.json": "9e7d9c1b383abe07408c3847d51cf827da810985c2e31acfb5926aff5b196e3c",
+        "diagnostics.json": "1ee0311dcad6fde53042a507b2d72d3a8be0a754418b642ee82d97a080d2fb98"
+      }
+    }
+  ],
+  "note": "Existing v4 runs preserved; new v5-recognizer runs use only 30 A\u2013O development pages. Final freeze remains pending Category P photographs."
+}

@@ -1,0 +1,97 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "identifier": {
+      "minLength": 1,
+      "title": "Identifier",
+      "type": "string"
+    },
+    "path": {
+      "minLength": 1,
+      "title": "Path",
+      "type": "string"
+    },
+    "engine": {
+      "enum": [
+        "tesseract",
+        "paddle"
+      ],
+      "title": "Engine",
+      "type": "string"
+    },
+    "engine_version": {
+      "minLength": 1,
+      "title": "Engine Version",
+      "type": "string"
+    },
+    "runtime_version": {
+      "minLength": 1,
+      "title": "Runtime Version",
+      "type": "string"
+    },
+    "model_name": {
+      "minLength": 1,
+      "title": "Model Name",
+      "type": "string"
+    },
+    "revision": {
+      "minLength": 1,
+      "title": "Revision",
+      "type": "string"
+    },
+    "source": {
+      "minLength": 1,
+      "title": "Source",
+      "type": "string"
+    },
+    "licence": {
+      "minLength": 1,
+      "title": "Licence",
+      "type": "string"
+    },
+    "byte_size": {
+      "exclusiveMinimum": 0,
+      "title": "Byte Size",
+      "type": "integer"
+    },
+    "sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Sha256",
+      "type": "string"
+    },
+    "language": {
+      "const": "en",
+      "title": "Language",
+      "type": "string"
+    },
+    "role": {
+      "enum": [
+        "recognition",
+        "detection",
+        "dictionary",
+        "orientation",
+        "layout",
+        "runtime"
+      ],
+      "title": "Role",
+      "type": "string"
+    }
+  },
+  "required": [
+    "identifier",
+    "path",
+    "engine",
+    "engine_version",
+    "runtime_version",
+    "model_name",
+    "revision",
+    "source",
+    "licence",
+    "byte_size",
+    "sha256",
+    "language",
+    "role"
+  ],
+  "title": "Artifact",
+  "type": "object"
+}

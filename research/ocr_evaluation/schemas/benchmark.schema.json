@@ -1,0 +1,122 @@
+{
+  "$defs": {
+    "Case": {
+      "additionalProperties": false,
+      "properties": {
+        "fixture_id": {
+          "minLength": 1,
+          "title": "Fixture Id",
+          "type": "string"
+        },
+        "source_family_id": {
+          "minLength": 1,
+          "title": "Source Family Id",
+          "type": "string"
+        },
+        "category": {
+          "title": "Category",
+          "type": "string"
+        },
+        "feature_tags": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Feature Tags",
+          "type": "array"
+        },
+        "split": {
+          "enum": [
+            "development",
+            "heldout"
+          ],
+          "title": "Split",
+          "type": "string"
+        },
+        "provenance": {
+          "minLength": 1,
+          "title": "Provenance",
+          "type": "string"
+        },
+        "parent_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Id"
+        },
+        "status": {
+          "default": "planned",
+          "enum": [
+            "planned",
+            "authored",
+            "verified"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "source_digest": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Digest"
+        },
+        "ground_truth_digest": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ground Truth Digest"
+        }
+      },
+      "required": [
+        "fixture_id",
+        "source_family_id",
+        "category",
+        "feature_tags",
+        "split",
+        "provenance"
+      ],
+      "title": "Case",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": "ocr-corpus-v1",
+      "title": "Version",
+      "type": "string"
+    },
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/Case"
+      },
+      "title": "Cases",
+      "type": "array"
+    }
+  },
+  "required": [
+    "version",
+    "cases"
+  ],
+  "title": "Manifest",
+  "type": "object"
+}

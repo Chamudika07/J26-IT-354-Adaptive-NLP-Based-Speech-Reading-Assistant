@@ -1,0 +1,58 @@
+{
+  "version": "ocr-phone-development-v1",
+  "records": [
+    {
+      "fixture_id": "phone_camera_photo-development-01",
+      "source_family_id": "phone_camera_photo-development-01",
+      "split": "development",
+      "category": "phone_camera_photo",
+      "capture_type": "genuine_phone_camera_user_attested",
+      "source_path": "artifacts/phone_photos/development/phone_camera_photo-development-01.jpg",
+      "source_digest": "75d5bec373b3a15e8ca6bf33e747e347fcac2bfafc24443bc0727a46fd2b2743",
+      "source_byte_size": 32884,
+      "mime_type": "image/jpeg",
+      "dimensions": [
+        959,
+        1280
+      ],
+      "decoded_pixel_count": 1227520,
+      "normalized_pixel_digest": "6e00393378bc2f30db3e4fd5f6b46832c4001f66500bcd15e253acb1835818e9",
+      "exif_orientation": null,
+      "metadata_propagated": false,
+      "master_path": "artifacts/development-drafts-v1/phone_camera_photo-development-01.png",
+      "master_digest": "9b089ab1add14b4dd68cc9a994cea9b8514399c6fb12a2b9e228dc4c665146b4",
+      "ground_truth_path": "artifacts/development-drafts-v1/phone_camera_photo-development-01.truth.json",
+      "ground_truth_digest": "afe8210e1c638e4cb0bfc618eca95bbcc1d4970b237db87847b75c770db5828e",
+      "source_review": "visual inspection confirms exact two-line title/body match; genuine capture attested by user; short simple text",
+      "private_or_child_data_observed": false,
+      "status": "development_photo_validated"
+    },
+    {
+      "fixture_id": "phone_camera_photo-development-02",
+      "source_family_id": "phone_camera_photo-development-02",
+      "split": "development",
+      "category": "phone_camera_photo",
+      "capture_type": "genuine_phone_camera_user_attested",
+      "source_path": "artifacts/phone_photos/development/phone_camera_photo-development-02.jpg",
+      "source_digest": "e70ea27c0e97c91969263d4c7d9ddf4e16306c2317586a14b3cb98594d4700bb",
+      "source_byte_size": 31088,
+      "mime_type": "image/jpeg",
+      "dimensions": [
+        960,
+        1280
+      ],
+      "decoded_pixel_count": 1228800,
+      "normalized_pixel_digest": "515e00b510dac6494babf95b9e7fd538adec8fb7d8a829436069381df1601402",
+      "exif_orientation": null,
+      "metadata_propagated": false,
+      "master_path": "artifacts/development-drafts-v1/phone_camera_photo-development-02.png",
+      "master_digest": "dab9e2314570889b4ab764bfbfccfc5ee57382a4b57979d732fe1600d7472ca5",
+      "ground_truth_path": "artifacts/development-drafts-v1/phone_camera_photo-development-02.truth.json",
+      "ground_truth_digest": "c94c7dd7c390864a7a5e3884217cbebd1804e82fad67ec452207ed74291aab8e",
+      "source_review": "visual inspection confirms exact two-line title/body match; genuine capture attested by user; short simple text",
+      "private_or_child_data_observed": false,
+      "status": "development_photo_validated"
+    }
+  ],
+  "limitation": "Two photographed two-line draft masters, so Category P development sample is not representative of longer pages."
+}

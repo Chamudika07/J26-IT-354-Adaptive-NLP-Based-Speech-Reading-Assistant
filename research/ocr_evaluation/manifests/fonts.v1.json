@@ -1,0 +1,20 @@
+{
+  "version": "ocr-fonts-v1",
+  "fonts": [
+    {
+      "name": "Bitstream Vera",
+      "package": "reportlab==4.5.1",
+      "relative_path": "reportlab/fonts/Vera.ttf",
+      "sha256": "c4c45690b345435b2cba52ecabe275f05e49b389b39fe68ad03afbb551288d3d",
+      "byte_size": 65932,
+      "licence": "Bitstream Vera license bundled with ReportLab",
+      "licence_sha256": "3361d054759a2fc686a2c058be82deaf9c2e6fe549be9004d7935a6c1736315d"
+    },
+    {
+      "name": "Aileron and PIL bitmap",
+      "package": "pillow==13.0.0",
+      "licence": "Aileron No Rights Reserved; PIL bitmap under Pillow distribution licence",
+      "source_reference": "PIL/ImageFont.py in locked Pillow wheel"
+    }
+  ]
+}

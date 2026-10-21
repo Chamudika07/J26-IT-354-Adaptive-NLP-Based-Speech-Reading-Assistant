@@ -1,0 +1,160 @@
+{
+  "version": "ocr-development-run-index-v1",
+  "corpus_index_sha256": "d64b42916bf99c3d8794a5b77179e7da956b0c09059ac5542b1933d30797fafe",
+  "corpus_validation_sha256": "5395e0a72936ef87bc2beedca4b4e46a23223722d6f1165319a78eea6fd2d4d8",
+  "valid_cases": 30,
+  "category_p_development_pending": [
+    "phone_camera_photo-development-01",
+    "phone_camera_photo-development-02"
+  ],
+  "heldout_executions": 0,
+  "corrected_runs": [
+    {
+      "engine": "tesseract",
+      "condition": "baseline",
+      "run_directory": "artifacts/ao-v3-tesseract-baseline-measured",
+      "cases": 30,
+      "failures": 0,
+      "configuration_fingerprint": "9654097131f1ccc4a8757be095733c7131361cb4f2b3264db1693d98718f814a",
+      "file_sha256": {
+        "config.json": "9654097131f1ccc4a8757be095733c7131361cb4f2b3264db1693d98718f814a",
+        "pages.jsonl": "c8bc00b464b3872273e08313397e7cbf531bb8e08a70df284266bee42d61782c",
+        "summary.json": "723c1e13b506ab41a669b478f3ea24763c74a24d292f1eaafde616fbf1346873",
+        "diagnostics.json": "3250e5ad7fbae36d0414e1be2debfe16da3d0e8f281307d955421c8d3534cc38"
+      }
+    },
+    {
+      "engine": "tesseract",
+      "condition": "grayscale",
+      "run_directory": "artifacts/ao-v3-tesseract-grayscale-measured",
+      "cases": 30,
+      "failures": 0,
+      "configuration_fingerprint": "dd491dd718dfb2b98fb8d7a537b670e92d65cdb564f1615fce85976ace173cdf",
+      "file_sha256": {
+        "config.json": "dd491dd718dfb2b98fb8d7a537b670e92d65cdb564f1615fce85976ace173cdf",
+        "pages.jsonl": "8c581eba33533d7f686071c48fd3b037e0e9325054db9d3789ae1c91c0d392e2",
+        "summary.json": "723c1e13b506ab41a669b478f3ea24763c74a24d292f1eaafde616fbf1346873",
+        "diagnostics.json": "87c8b34f41343cf6646cb1db9e0c369328879481f24806e771b0bdd23b0e2b87"
+      }
+    },
+    {
+      "engine": "tesseract",
+      "condition": "contrast",
+      "run_directory": "artifacts/ao-v3-tesseract-contrast-measured",
+      "cases": 30,
+      "failures": 0,
+      "configuration_fingerprint": "e72f33a4f65f79a49930e71bd09aa7268fd3cba2ddc12b573661038498023091",
+      "file_sha256": {
+        "config.json": "e72f33a4f65f79a49930e71bd09aa7268fd3cba2ddc12b573661038498023091",
+        "pages.jsonl": "b14656fdd70de2681f7bf01f7a790140363280d0d9d39942675c3cf954941119",
+        "summary.json": "9fda0649b5384ee4c68aae1613c039d8d8d567b2eb8e5c67c6d676fb9dbba557",
+        "diagnostics.json": "991d1c6789bdae7702b3fb97aad7dc83b7cf8748926a204e796c00f588d3d452"
+      }
+    },
+    {
+      "engine": "paddle",
+      "condition": "baseline",
+      "run_directory": "artifacts/ao-v3-paddle-baseline-measured",
+      "cases": 30,
+      "failures": 0,
+      "configuration_fingerprint": "a06d12cb41e6118cf0084b3cc3aaffe915ee9b814aa7ae5e5be19d4beb7f8913",
+      "file_sha256": {
+        "config.json": "a06d12cb41e6118cf0084b3cc3aaffe915ee9b814aa7ae5e5be19d4beb7f8913",
+        "pages.jsonl": "0661babaf4987d10ae590f02e5cc8079daaafbeca2dfd02349d1313437656b84",
+        "summary.json": "8aa6920db4934da35b2e9bb1cc909223586c40ff8cf170bb304416be8bd362f7",
+        "diagnostics.json": "35ae80de8470123e160f3fbf313e77ea2239853cd9ada384cf7d851b7e2baf90"
+      }
+    },
+    {
+      "engine": "paddle",
+      "condition": "grayscale",
+      "run_directory": "artifacts/ao-v3-paddle-grayscale-measured",
+      "cases": 30,
+      "failures": 0,
+      "configuration_fingerprint": "448061a0d4ac491463d1918c14d95e5209d7665463f7973c2e8244a425399b16",
+      "file_sha256": {
+        "config.json": "448061a0d4ac491463d1918c14d95e5209d7665463f7973c2e8244a425399b16",
+        "pages.jsonl": "ed854210fd3e9709eae9eb29e6c7c039d0f4f4ac5217f5b12f9b8b57c5a6ed31",
+        "summary.json": "aed19f9460e080be9678e13ea2d9a4dc13fa19bc06c3b50bb95630f65493ffff",
+        "diagnostics.json": "83d095c233f4b05316ab67d0738067f8f587acc7a4b8053aa807de8ed5f691f8"
+      }
+    },
+    {
+      "engine": "paddle",
+      "condition": "contrast",
+      "run_directory": "artifacts/ao-v3-paddle-contrast-measured",
+      "cases": 30,
+      "failures": 0,
+      "configuration_fingerprint": "4fdc598e3e8c56b91c3ff2cd11a5a7e3fb2f4834c04a31f2318073a97f536d17",
+      "file_sha256": {
+        "config.json": "4fdc598e3e8c56b91c3ff2cd11a5a7e3fb2f4834c04a31f2318073a97f536d17",
+        "pages.jsonl": "5c92c2ef770b550da1f300fc437ccbeb1f23f6bfa9d4ed58d34186c359e20431",
+        "summary.json": "49d8c31a5a42ae8ce7373fa95adaca8b2c9a1e80f9ba29b0a9eb9b966fa48bbb",
+        "diagnostics.json": "d4099e8d73f7cac24de59080251d16cdd9d7149499c8b8851fe591618bafc5ce"
+      }
+    }
+  ],
+  "excluded_preliminary_runs": [
+    {
+      "directory": "artifacts/ao-paddle-baseline-measured",
+      "rows": 21,
+      "successes": 21,
+      "failures": 0,
+      "reason": "invalid accented v1/v2 corpus; excluded"
+    },
+    {
+      "directory": "artifacts/ao-tesseract-baseline",
+      "rows": 30,
+      "successes": 0,
+      "failures": 30,
+      "reason": "pre-fix adapter failure"
+    },
+    {
+      "directory": "artifacts/ao-tesseract-baseline-measured",
+      "rows": 30,
+      "successes": 30,
+      "failures": 0,
+      "reason": "invalid accented v1/v2 corpus; excluded"
+    },
+    {
+      "directory": "artifacts/ao-tesseract-baseline-v2",
+      "rows": 30,
+      "successes": 30,
+      "failures": 0,
+      "reason": "invalid accented v1/v2 corpus; excluded"
+    },
+    {
+      "directory": "artifacts/ao-tesseract-contrast-measured",
+      "rows": 30,
+      "successes": 30,
+      "failures": 0,
+      "reason": "invalid accented v1/v2 corpus; excluded"
+    },
+    {
+      "directory": "artifacts/ao-tesseract-grayscale-measured",
+      "rows": 30,
+      "successes": 30,
+      "failures": 0,
+      "reason": "invalid accented v1/v2 corpus; excluded"
+    }
+  ],
+  "performance_runs": [
+    {
+      "engine": "tesseract",
+      "directory": "artifacts/performance-tesseract-v3",
+      "file_sha256": {
+        "timings.jsonl": "8ea0cd18b4b802e2ff8d718ea92293bfab0f9253cf3a1b908c9f02d72ee9ecff",
+        "summary.json": "0e8aa8d721eb441a4f0b4234ae99fab724b75927321e1800db8a608a854942db"
+      }
+    },
+    {
+      "engine": "paddle",
+      "directory": "artifacts/performance-paddle-v3",
+      "file_sha256": {
+        "timings.jsonl": "e57edeb84c74b015d1b74edb696dfadf36a68f4eb8e8e756648684d15adcd646",
+        "summary.json": "86b482818d6cd9dfeb5c58fa6e78bb9b032041b36d4fa74a001b09c0dbdbc754"
+      }
+    }
+  ],
+  "note": "Corrected evidence is under ignored artifacts; this small index identifies bytes and does not freeze a final configuration."
+}

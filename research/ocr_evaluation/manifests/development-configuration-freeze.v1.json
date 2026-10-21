@@ -1,0 +1,172 @@
+{
+  "version": "ocr-development-configuration-freeze-v1",
+  "status": "development_configuration_frozen",
+  "scope": "32 development bases only; not production engine selection and not held-out authorization",
+  "selected": {
+    "tesseract": {
+      "engine_version": "5.5.3",
+      "runtime_version": "5.5.3",
+      "model_name": "eng.traineddata (Homebrew tessdata_fast)",
+      "model_version": "tessdata_fast 4.1.0",
+      "model_digest": "b45ce5760093d57cfd09456ffdec37b5356522e8ea4c1375b0e89aec49b55b67",
+      "model_artifacts": [
+        {
+          "path": "tesseract/eng.traineddata",
+          "sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2",
+          "revision": "tessdata_fast 4.1.0",
+          "role": "recognition"
+        }
+      ],
+      "preprocessing_recipe": "contrast",
+      "preprocessing_parameters": {
+        "factor": 1.3
+      },
+      "ao_run": "ao-v3-tesseract-contrast-measured",
+      "ao_config_sha256": "e72f33a4f65f79a49930e71bd09aa7268fd3cba2ddc12b573661038498023091",
+      "ao_configuration_fingerprint": "e72f33a4f65f79a49930e71bd09aa7268fd3cba2ddc12b573661038498023091",
+      "photo_run": "photo-development-v1-tesseract-contrast",
+      "photo_config_sha256": "2fcc5f04e57bb5607592df8cdaa8dc5fa5230eec23c1882fe1cbe6184459d458",
+      "photo_configuration_fingerprint": "2fcc5f04e57bb5607592df8cdaa8dc5fa5230eec23c1882fe1cbe6184459d458",
+      "psm": 3,
+      "threads": 1
+    },
+    "paddle": {
+      "engine_version": "3.2.0",
+      "runtime_version": "3.2.0",
+      "model_name": "PP-OCRv5_mobile_det,en_PP-OCRv4_mobile_rec",
+      "model_version": "0d63e78e2b680928f6b1747d76a08db6e645efb7,f97b62fdc0eb71c689393a19a4b21baa1795c9ab",
+      "model_digest": "475353cec1f26e7558078977f73f269dd40ab370bd1de57ef82f0bc891f93286",
+      "model_artifacts": [
+        {
+          "path": "PP-OCRv5_mobile_det/config.json",
+          "sha256": "7ac1c33f377ba58561f4b89d3180b6add2b7c5c60a4edac90fa4e0ceccdc6665",
+          "revision": "0d63e78e2b680928f6b1747d76a08db6e645efb7",
+          "role": "detection"
+        },
+        {
+          "path": "PP-OCRv5_mobile_det/inference.json",
+          "sha256": "05feef1acb00aa4cd7362b15f7f501fc4f99d7b1fa73c1c871e0c7b1504b0f5c",
+          "revision": "0d63e78e2b680928f6b1747d76a08db6e645efb7",
+          "role": "detection"
+        },
+        {
+          "path": "PP-OCRv5_mobile_det/inference.pdiparams",
+          "sha256": "afa1820cb16c1fd0dad589d0f8b389139061c1ef6d68019685fd07be997dda5b",
+          "revision": "0d63e78e2b680928f6b1747d76a08db6e645efb7",
+          "role": "detection"
+        },
+        {
+          "path": "PP-OCRv5_mobile_det/inference.yml",
+          "sha256": "98069072e1b6b37d727fd9d9f11725faa46d6ea0de012f2ed26caea011c37699",
+          "revision": "0d63e78e2b680928f6b1747d76a08db6e645efb7",
+          "role": "detection"
+        },
+        {
+          "path": "en_PP-OCRv4_mobile_rec/config.json",
+          "sha256": "c1ebffdece1c8eb30515cc3df9bed55c8806fbc57e4231ec7be83f43c57a3660",
+          "revision": "f97b62fdc0eb71c689393a19a4b21baa1795c9ab",
+          "role": "recognition"
+        },
+        {
+          "path": "en_PP-OCRv4_mobile_rec/inference.json",
+          "sha256": "7a2302e09f0d501458db082cbcf21cdcb3a8d6dc9a143f73b17e297505f922f9",
+          "revision": "f97b62fdc0eb71c689393a19a4b21baa1795c9ab",
+          "role": "recognition"
+        },
+        {
+          "path": "en_PP-OCRv4_mobile_rec/inference.pdiparams",
+          "sha256": "75f64a1ffb70c56b7a25655963ca16f5bf3286202e3f52ac972bee05cdee2f56",
+          "revision": "f97b62fdc0eb71c689393a19a4b21baa1795c9ab",
+          "role": "recognition"
+        },
+        {
+          "path": "en_PP-OCRv4_mobile_rec/inference.yml",
+          "sha256": "5f6b19b6b09b6b6f7924de6c25076d0b3528b6f641e64d4f12e6e6207ec33200",
+          "revision": "f97b62fdc0eb71c689393a19a4b21baa1795c9ab",
+          "role": "dictionary"
+        }
+      ],
+      "preprocessing_recipe": "grayscale",
+      "preprocessing_parameters": {},
+      "ao_run": "ao-v3-paddle-grayscale-measured",
+      "ao_config_sha256": "448061a0d4ac491463d1918c14d95e5209d7665463f7973c2e8244a425399b16",
+      "ao_configuration_fingerprint": "448061a0d4ac491463d1918c14d95e5209d7665463f7973c2e8244a425399b16",
+      "photo_run": "photo-development-v1-paddle-v4rec-grayscale",
+      "photo_config_sha256": "8271f9e2f19f31fcf796f25cc2ad8d9ac50d7019fca26240cf1dc65b63801598",
+      "photo_configuration_fingerprint": "8271f9e2f19f31fcf796f25cc2ad8d9ac50d7019fca26240cf1dc65b63801598",
+      "device": "cpu",
+      "threads": 1,
+      "mkldnn": false,
+      "detector": "PP-OCRv5_mobile_det",
+      "recognizer": "en_PP-OCRv4_mobile_rec"
+    }
+  },
+  "model_candidate_rejected_for_development": "en_PP-OCRv5_mobile_rec: severe body-line omissions on the two genuine phone photos despite lower A-O WER",
+  "corpus": {
+    "manifest_version": "ocr-corpus-v1",
+    "ao_index_version": "ocr-development-drafts-v3",
+    "photo_registry_version": "ocr-phone-development-v1",
+    "validated_cases": 32,
+    "categories": 16,
+    "photo_cases": 2,
+    "photo_master_version": "archived development-drafts-v1 two-line print masters",
+    "photo_source_sha256": {
+      "phone_camera_photo-development-01": "75d5bec373b3a15e8ca6bf33e747e347fcac2bfafc24443bc0727a46fd2b2743",
+      "phone_camera_photo-development-02": "e70ea27c0e97c91969263d4c7d9ddf4e16306c2317586a14b3cb98594d4700bb"
+    }
+  },
+  "metrics": {
+    "character_error_rate": "raw Unicode Levenshtein S+D+I divided by reference characters",
+    "word_error_rate": "maximal non-whitespace token Levenshtein S+D+I divided by reference words",
+    "exact_match": "unmodified assembled string equals authored transcription",
+    "normalization": "none in primary metrics"
+  },
+  "rasterizer": {
+    "input_policy": "direct PNG/JPEG; no PDF rasterization in this comparison",
+    "pypdfium2": "4.30.0",
+    "pdfium": "126.0.6462.0"
+  },
+  "research_versions": {
+    "adapter": "ocr-adapter-v1",
+    "preprocessing": "ocr-preprocessing-v1",
+    "result_schema": "ocr-result-v1"
+  },
+  "heldout_executions": 0,
+  "production_engine_selected": false,
+  "limitations": [
+    "Two genuine phone development samples contain only two short lines each.",
+    "Capture provenance is user-attested and visually matched; device origin cannot be independently established from absent EXIF.",
+    "Neither adapter demonstrates semantic table association or reliable two-column order.",
+    "Linux deployment qualification and independent corpus review remain outstanding."
+  ],
+  "file_sha256": {
+    "uv.lock": "8f24252993ca8316233f32315ddc207b98ca66a1ab8fee36af305eccd0ffa98d",
+    "metrics.py": "319325adbdcf4aa518bd28b27a76fccc585d0cd6e4aaa09dca269c99e0f1a8bb",
+    "development.py": "9bdb6c956e8f1ac956f57d3a69b56b1ef4a83cd4000171b751050002964c6400",
+    "photo_development.py": "40b1dab120aa597a3484f458be96bd598ec35b6ce55c992a9c7e6491d9b8a1cc",
+    "preprocessing/recipes.py": "2ab56f89250d270006aefdf2d18183ea6771ab023fe8161b52c4a66b9da86976",
+    "engines/base.py": "f67dad84656f504d3615b2f4ad80dae95b252a11fb901927a3042f1c6d440368",
+    "engines/tesseract.py": "ace676bbd72fe4180f95d9068887eca85a214334c7dac575f31b9f6dd2d2bebd",
+    "engines/paddle.py": "c03851152d4a09156c8794972945ce27d632a784b07a61ce40ecbc7de05683db",
+    "engines/paddle_worker.py": "3e8c7af0ae022c94d2508b18884e7139abce9d8859b18eebf4bd38c23f835445",
+    "rasterizers/pdfium.py": "aab0fdef43b5ed8124878914908fb0a4930c13bb109b7e6bb7ac53da93945700",
+    "manifests/benchmark.v1.json": "f64afc7507ae4fc7432b38c425c3485d4227802bf89c287103c0bb35ebdd6e3b",
+    "manifests/artifacts.v1.json": "f29bd213a6ccbc6e37aa03d403762918a2420ca3427480f7497932666a0104b5",
+    "manifests/artifacts-paddle-v5-development.v1.json": "0c7373553254ac54b947d473dd99c53ac884a4b1b6fbe67229b9525c9ee0b791",
+    "manifests/environment.v1.json": "5b6048cccd0a9379a136514cd5e1fe3a9807c5c9463f9b01ab1063ba0428e34c",
+    "manifests/phone-development.v1.json": "958da7fa1e8dfe9c5a2ab71c65702e4cf1d01734b9bb5b45cbdcba471d0b0ccb",
+    "manifests/development-run-index.v1.json": "1251e06afc26462ffe5e9a9064195f9bcfdba3a11dd1967fdacf9ba58ba78338",
+    "manifests/paddle-v5-development-comparison.v1.json": "6c9cc0700350090d6dc740e401ecae7f0bff75dfbc432a1c5282f6f72dbc247f",
+    "manifests/photo-development-run-index.v1.json": "5b8199e5338548612a99dbb548da60a8e98d43430160d67005a869328dc9e384",
+    "artifacts/development-drafts-v3/index.json": "d64b42916bf99c3d8794a5b77179e7da956b0c09059ac5542b1933d30797fafe",
+    "artifacts/development-drafts-v1/index.json": "50117453291e4e8fd9d95ae9524940bf477b31e2575fc640036d17855f218cdc",
+    "artifacts/validation-development-32-v1/validation.json": "c6bcf02c94e406cea285ce7871bb81d8573385769c679b19a3713cc3d92e1b90",
+    "validate_development_32.py": "77b6e1fd040da59462b0ddd9cea8195ed6a3b82112912bdcc863870dafd49311",
+    "verify_development_freeze.py": "774e2822aa4a6326f4e85795f02b2665ab5499b82fee50bcd787cfa498579e8c",
+    "PADDLE_V4_V5_32_DEVELOPMENT.md": "c504380dbef3983db9927a0c967ceb0971cf271f3c327dee87ed2bd2020baebd",
+    "protocol.md": "9630dec8f66106b48ef18572cc9db74e7a12fbb62d987b738aeb673c020758d5",
+    "schemas/result.schema.json": "8205c6419e5af3f93b0db90f1f96664eb33c6be98478b681ebc278ab6cfa3cc8",
+    "schemas/benchmark.schema.json": "bee83e9f247725e47c20b43acb1619c31d351fd0ec7b1548bed078a55c00b40e",
+    "schemas/artifact.schema.json": "4c058090eeb8a5616a6811fdeb2d3d06876414bbbadf08e462acda047fdd8b7e"
+  }
+}
