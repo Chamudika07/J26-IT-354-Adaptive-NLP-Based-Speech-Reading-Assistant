@@ -135,7 +135,7 @@ describe("Component 4 dashboard providers", () => {
     const provider = createTestProvider();
     render(<GuardianSummaryScreen periodDays={30} provider={provider} />);
 
-    expect(await screen.findByText("Guardian progress summary")).toBeTruthy();
+    expect(await screen.findByText("Parent Dashboard")).toBeTruthy();
     expect(provider.loadGuardianSummary).toHaveBeenCalledWith(30);
     expect(provider.loadLearnerProgress).not.toHaveBeenCalled();
     expect(provider.loadEducatorAnalytics).not.toHaveBeenCalled();

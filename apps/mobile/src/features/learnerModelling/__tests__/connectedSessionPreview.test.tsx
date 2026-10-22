@@ -261,8 +261,9 @@ it("labels the same sample identity in role demos without carrying learner draft
   for (const role of ["Guardian", "Educator"]) {
     fireEvent.press(screen.getByRole("tab", { name: `${role} sample preview` }));
     if (role === "Educator") fireEvent.press(await screen.findByRole("button", { name: "View separate example" }));
-  await screen.findByText(role === "Guardian" ? "Guardian progress summary" : "Educator reading analytics");
-    expect(screen.getByText("Demo Learner")).toBeTruthy();
+  await screen.findByText(role === "Guardian" ? "Parent Dashboard" : "Educator reading analytics");
+    if (role === "Educator") expect(screen.getByText("Demo Learner")).toBeTruthy();
+    else expect(screen.getByText("Demo \u00b7 Fictional data")).toBeTruthy();
     expect(screen.queryByText("Your demo reading preferences")).toBeNull();
   }
 });

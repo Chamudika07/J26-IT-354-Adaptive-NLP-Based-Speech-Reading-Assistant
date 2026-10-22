@@ -1,3 +1,4 @@
+import { ParentDashboard } from "./ParentDashboard";
 import { EducatorReadingOverview } from "./EducatorReadingOverview";
 import { useState, type ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
@@ -24,6 +25,7 @@ export function RoleScenarioView({ role, children }: { role: "guardian" | "educa
   const heading = role === "guardian" ? "Parent Dashboard" : "Teacher Dashboard";
   let label = "Selected sample";
   try { const index: unknown = JSON.parse(id)[0]; label = typeof index === "number" && index >= 0 ? `Sample ${index}` : "Imported sample results"; } catch { /* Unavailable below. */ }
+  if (role === "guardian") return <ParentDashboard projection={projection} selection={label} onSeparate={() => setSeparate(id)} />;
   return <LocalPreviewLayout title={heading} disclosure="" introduction="Reading progress from the selected example.">
     <Text accessibilityLiveRegion="polite" style={s.period}>Selected reading scenario: {label}</Text>
     {!projection ? <Text accessibilityRole="alert" style={s.body}>These sample results are unavailable. Select a matching sample in Learner view or choose a separate example.</Text> : <>

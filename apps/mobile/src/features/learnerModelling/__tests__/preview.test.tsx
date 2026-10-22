@@ -24,7 +24,7 @@ describe("Component 4 synthetic mobile preview", () => {
     await screen.findByText("Hi, Reader!");
 
     fireEvent.press(screen.getByRole("tab", { name: "Guardian sample preview" }));
-    expect(await screen.findByText("Guardian progress summary")).toBeTruthy();
+    expect(await screen.findByText("Parent Dashboard")).toBeTruthy();
     expect(screen.queryByText("Hi, Reader!")).toBeNull();
 
     fireEvent.press(screen.getByRole("tab", { name: "Educator sample preview" }));

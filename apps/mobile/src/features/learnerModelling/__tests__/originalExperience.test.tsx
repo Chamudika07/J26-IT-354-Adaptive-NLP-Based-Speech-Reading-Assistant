@@ -50,9 +50,10 @@ it("discovers all original areas without adding secondary bottom tabs", async ()
   expect(navigation.getAllByRole("tab")).toHaveLength(4);
   expect(screen.getByText("Parent / Teacher Dashboard")).toBeTruthy();
   fireEvent.press(screen.getByRole("tab", { name: "Guardian sample preview" }));
-  await screen.findByText("Guardian progress summary");
+  await screen.findByText("Parent Dashboard");
+  fireEvent.press(screen.getByRole("button", { name: "About these results" }));
   for (const metric of buildSyntheticDashboard("guardian", 30).metrics) {
-    expect(within(screen.getByTestId(`${metric.key}-card`)).getByText(metric.detail!)).toBeTruthy();
+    expect(screen.getAllByText(metric.detail!).length).toBeGreaterThan(0);
   }
   fireEvent.press(screen.getByRole("tab", { name: "Educator sample preview" }));
   fireEvent.press(await screen.findByRole("button", { name: "View separate example" }));

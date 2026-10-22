@@ -40,18 +40,19 @@ it.each(["guardian", "educator"] as const)("updates the permitted %s view and fa
   await screen.findByText(role === "guardian" ? "Parent Dashboard" : "Teacher Dashboard");
   if (role === "educator") fireEvent.press(screen.getByRole("button", { name: "View Alex Storybook" }));
   expect(screen.getByText(role === "guardian" ? "Selected reading scenario: Sample 3" : /^Scenario 3/)).toBeTruthy();
-  expect(screen.getByText(role === "guardian" ? "3 completed sample sessions" : "3 completed sessions")).toBeTruthy();
+  expect(screen.getByText(role === "guardian" ? "3 sessions completed" : "3 completed sessions")).toBeTruthy();
   expect(screen.queryByText(sample(3).recommendation!.action)).toBeNull();
   expect(screen.queryByText(/Experimental engagement/)).toBeNull();
   expect(screen.queryByRole("button", { name: "Download AI Report PDF" })).toBeNull();
   act(() => publishScenario(4, sample(4)));
-  expect(screen.getByText(role === "guardian" ? "4 completed sample sessions" : "4 completed sessions")).toBeTruthy();
+  expect(screen.getByText(role === "guardian" ? "4 sessions completed" : "4 completed sessions")).toBeTruthy();
   act(() => publishScenario(999, sample(4)));
   expect(screen.getByText(/These sample results are unavailable/)).toBeTruthy();
-  expect(screen.queryByText(role === "guardian" ? "Guardian progress summary" : "Educator reading analytics")).toBeNull();
+  if (role === "guardian") expect(screen.queryByTestId("parent-reading_accuracy")).toBeNull();
+  else expect(screen.queryByText("Educator reading analytics")).toBeNull();
   fireEvent.press(screen.getByRole("button", { name: "View separate example" }));
-  expect(screen.getByText(role === "guardian" ? "Guardian progress summary" : "Educator reading analytics")).toBeTruthy();
-  expect(screen.getByText(/This view uses its own sample data/)).toBeTruthy();
+  expect(screen.getByText(role === "guardian" ? "Parent Dashboard" : "Educator reading analytics")).toBeTruthy();
+  expect(screen.getByText(role === "guardian" ? /Independent example/ : /This view uses its own sample data/)).toBeTruthy();
 });
 
 it("shares only selection through role switching, preserving learner history and report boundaries", async () => {

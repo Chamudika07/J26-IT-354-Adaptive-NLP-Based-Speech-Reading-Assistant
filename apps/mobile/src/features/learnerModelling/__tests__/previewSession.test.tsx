@@ -67,7 +67,7 @@ it.each(["Guardian", "Educator"])("discards Learner drafts when switching to %s"
   open("Session Feedback"); chooseFeedback();
   fireEvent.press(screen.getByRole("tab", { name: `${role} sample preview` }));
   if (role === "Educator") fireEvent.press(await screen.findByRole("button", { name: "View separate example" }));
-  await screen.findByText(role === "Guardian" ? "Guardian progress summary" : "Educator reading analytics");
+  await screen.findByText(role === "Guardian" ? "Parent Dashboard" : "Educator reading analytics");
   expect(screen.queryByText(answers)).toBeNull();
   expect(screen.queryByTestId("support-sample-text")).toBeNull();
   fireEvent.press(screen.getByRole("tab", { name: "Learner sample preview" }));
@@ -154,7 +154,7 @@ it("never shares edited identity with role demos and clears it on role change", 
   fireEvent.changeText(screen.getByLabelText("Demo display name"), "Sample Fox");
   fireEvent.press(screen.getByRole("button", { name: "Save demo profile" }));
   fireEvent.press(screen.getByRole("tab", { name: "Guardian sample preview" }));
-  await screen.findByText("Guardian progress summary");
+  await screen.findByText("Parent Dashboard");
   expect(screen.queryByText("Sample Fox")).toBeNull();
   expect(screen.queryByRole("button", { name: "Edit Profile" })).toBeNull();
   fireEvent.press(screen.getByRole("tab", { name: "Learner sample preview" }));

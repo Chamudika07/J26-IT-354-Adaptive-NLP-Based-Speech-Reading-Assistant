@@ -114,7 +114,7 @@ it.each(["Guardian", "Educator"])("isolates live mode and %s role switches and r
   const reads = jest.mocked(fs.readAsStringAsync).mock.calls.length;
   fireEvent.press(screen.getByRole("tab", { name: `${role} sample preview` }));
   if (role === "Educator") fireEvent.press(await screen.findByRole("button", { name: "View separate example" }));
-  await screen.findByText(role === "Guardian" ? "Guardian progress summary" : "Educator reading analytics");
+  await screen.findByText(role === "Guardian" ? "Parent Dashboard" : "Educator reading analytics");
   expect(screen.queryByRole("button", { name: "Open Reading Session Test" })).toBeNull();
   expect(jest.mocked(fs.readAsStringAsync).mock.calls.length).toBe(reads);
   fireEvent.press(screen.getByRole("tab", { name: "Learner sample preview" })); await openTest();

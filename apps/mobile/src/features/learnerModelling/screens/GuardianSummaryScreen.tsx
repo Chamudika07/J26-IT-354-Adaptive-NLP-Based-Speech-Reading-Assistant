@@ -1,3 +1,4 @@
+import { ParentDashboard } from "../components/ParentDashboard";
 import { RoleScenarioView } from "../components/RoleScenarioView";
 import { useCallback } from "react";
 import { DashboardModeBoundary, type LiveScreenProps } from "../components/DashboardModeBoundary";
@@ -31,5 +32,5 @@ function DemoGuardianSummaryScreen({
 
   const fallback = <DashboardStateView state={state} />;
   return state.status === "ready" && state.provenance === "demo" && state.dashboard.role === "guardian"
-    ? <RoleScenarioView role="guardian">{fallback}</RoleScenarioView> : fallback;
+    ? <RoleScenarioView role="guardian"><ParentDashboard dashboard={state.dashboard} /></RoleScenarioView> : fallback;
 }
