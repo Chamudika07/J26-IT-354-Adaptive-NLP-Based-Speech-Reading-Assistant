@@ -138,15 +138,21 @@ function harness(initialSession = {
       .props.onChangeText(passage);
     render();
   }
-  async function simplify(textValue, vocabularyItems) {
-    enter();
+  async function simplify(textValue, vocabularyItems, sourceText = "Synthetic passage.") {
+    enter(sourceText);
     const pending = press("Simplify my text");
     calls.at(-1).resolve(result(textValue, vocabularyItems));
     await pending;
     render();
   }
+  function textByAccessibilityLabel(label) {
+    render();
+    const node = nodes().find((candidate) => candidate.props.accessibilityLabel === label);
+    assert.ok(node, `Node not found: ${label}`);
+    return text(node);
+  }
   render();
-  return { calls, press, enter, render, simplify, text,
+  return { calls, press, enter, render, simplify, text, textByAccessibilityLabel,
     setSession: (next) => { session = next; sessionListener?.(next); render(); },
     unmount: () => cleanups.forEach((cleanup) => cleanup?.()) };
 }
@@ -166,6 +172,104 @@ test("simplification uses selected values and renders vocabulary", async () => {
   assert.match(app.text(), /Synthetic simplified passage/);
   assert.match(app.text(), /Simple habitat/);
   assert.match(app.text(), /Synthetic context/);
+});
+
+test("simplified-only is the default and compare preserves exact source whitespace", async () => {
+  const app = harness();
+  const original = "  First line.\n\nSecond line.  \n";
+  await app.simplify("A simpler version.", undefined, original);
+
+  assert.equal(app.calls[0].args[1].source_text, "First line.\n\nSecond line.");
+  assert.equal(app.textByAccessibilityLabel("Simplified passage"), "A simpler version.");
+  assert.doesNotMatch(app.text(), /First line/);
+  assert.equal((app.text().match(/Word Detective Helpers/g) || []).length, 1);
+
+  await app.press("Compare");
+  assert.equal(app.textByAccessibilityLabel("Original passage"), original);
+  assert.equal(app.textByAccessibilityLabel("Simplified passage"), "A simpler version.");
+  assert.equal((app.text().match(/Word Detective Helpers/g) || []).length, 1);
+});
+
+test("switching result views does not make another API request", async () => {
+  const app = harness();
+  await app.simplify("A simpler version.");
+  const requestCount = app.calls.length;
+
+  await app.press("Compare");
+  assert.match(app.text(), /ORIGINAL TEXT/);
+  await app.press("Simplified Only");
+
+  assert.equal(app.calls.length, requestCount);
+  assert.doesNotMatch(app.text(), /ORIGINAL TEXT/);
+  assert.match(app.text(), /A simpler version/);
+});
+
+test("a later successful simplification replaces the matching original passage", async () => {
+  const app = harness();
+  await app.simplify("First simpler result.", [], "  First original.  ");
+  await app.press("Compare");
+  assert.equal(app.textByAccessibilityLabel("Original passage"), "  First original.  ");
+
+  await app.press("Reset");
+  await app.simplify("Second simpler result.", [], "\nSecond original.\n");
+  assert.doesNotMatch(app.text(), /First original|Second original/);
+  await app.press("Compare");
+
+  assert.equal(app.textByAccessibilityLabel("Original passage"), "\nSecond original.\n");
+  assert.doesNotMatch(app.text(), /First original|First simpler result/);
+});
+
+test("reset and failed attempts clear comparison state", async () => {
+  const app = harness();
+  await app.simplify("Old simpler result.", [], "Old original passage.");
+  await app.press("Compare");
+  assert.match(app.text(), /Old original passage/);
+
+  await app.press("Reset");
+  assert.doesNotMatch(app.text(), /Old original passage|Old simpler result|Simplified Only/);
+
+  app.enter("  New passage that will fail.  ");
+  const pending = app.press("Simplify my text");
+  app.calls.at(-1).reject(
+    new client.SimplificationApiError(503, "service_unavailable", "Unavailable"),
+  );
+  await pending;
+  app.render();
+
+  assert.match(app.text(), /Service Unavailable/);
+  assert.doesNotMatch(app.text(), /Old original passage|New passage that will fail|Simplified Only/);
+});
+
+test("vocabulary and feedback keep their request contracts after switching views", async () => {
+  const app = harness();
+  await app.simplify();
+  await app.press("Compare");
+
+  const explanation = app.press("Word: habitat. Tap to explain.");
+  const explanationCall = app.calls.at(-1);
+  assert.equal(explanationCall.method, "explainWord");
+  assert.equal(explanationCall.args[0], learnerId);
+  assert.equal(explanationCall.args[1].session_id, sessionId);
+  assert.equal(explanationCall.args[1].context_sentence, "Synthetic context.");
+  explanationCall.resolve({
+    learner_id: learnerId,
+    session_id: sessionId,
+    language_tag: "en",
+    item: vocab("habitat"),
+    created_at: "2026-01-01T00:00:00Z",
+  });
+  await explanation;
+  app.render();
+
+  const feedback = app.press("Feedback: Just Right");
+  const feedbackCall = app.calls.at(-1);
+  assert.equal(feedbackCall.method, "submitReadingFeedback");
+  assert.equal(feedbackCall.args[0], learnerId);
+  assert.equal(feedbackCall.args[1], sessionId);
+  assert.equal(feedbackCall.args[2].feedback_signal, "just_right");
+  assert.equal(feedbackCall.args[2].completed_reading, true);
+  feedbackCall.resolve({ feedback_recorded: true });
+  await feedback;
 });
 
 test("empty vocabulary response shows a friendly state without internal session ID", async () => {

@@ -85,6 +85,8 @@ interface SampleStory {
   text: string;
 }
 
+type ResultTextView = "simplified" | "compare";
+
 const SAMPLE_STORIES: SampleStory[] = [
   {
     id: "dragon",
@@ -274,6 +276,11 @@ export default function App() {
   const [apiError, setApiError] = useState<ApiErrorMessage | null>(null);
   const [simplifiedResult, setSimplifiedResult] =
     useState<SimplificationResponse | null>(null);
+  const [submittedSourceText, setSubmittedSourceText] = useState<string | null>(
+    null
+  );
+  const [resultTextView, setResultTextView] =
+    useState<ResultTextView>("simplified");
   const activeSimplifyAbortRef = useRef<AbortController | null>(null);
   const activeFeedbackAbortRef = useRef<AbortController | null>(null);
 
@@ -337,6 +344,8 @@ export default function App() {
     activeFeedbackAbortRef.current = null;
     setIsLoading(false);
     setSimplifiedResult(null);
+    setSubmittedSourceText(null);
+    setResultTextView("simplified");
     setApiError(null);
     setValidationError(null);
     setExplainTerm(null);
@@ -353,6 +362,8 @@ export default function App() {
 
   const handlePassageChange = (text: string) => {
     setPassage(text);
+    setSubmittedSourceText(null);
+    setResultTextView("simplified");
     if (validationError) {
       setValidationError(null);
     }
@@ -631,6 +642,7 @@ export default function App() {
       return;
     }
 
+    const sourceTextForDisplay = passage;
     const trimmed = passage.trim();
 
     if (!trimmed) {
@@ -649,6 +661,15 @@ export default function App() {
 
     setValidationError(null);
     setApiError(null);
+    setSimplifiedResult(null);
+    setSubmittedSourceText(null);
+    setResultTextView("simplified");
+    setExplainTerm(null);
+    setExplainResult(null);
+    setExplainError(null);
+    setSelectedFeedback(null);
+    setFeedbackResult(null);
+    setFeedbackError(null);
 
     if (
       !authSession.learnerId ||
@@ -662,14 +683,6 @@ export default function App() {
       });
       return;
     }
-
-    setSimplifiedResult(null);
-    setExplainTerm(null);
-    setExplainResult(null);
-    setExplainError(null);
-    setSelectedFeedback(null);
-    setFeedbackResult(null);
-    setFeedbackError(null);
 
     const controller = new AbortController();
     activeSimplifyAbortRef.current = controller;
@@ -690,6 +703,8 @@ export default function App() {
 
       if (!controller.signal.aborted) {
         setSimplifiedResult(result);
+        setSubmittedSourceText(sourceTextForDisplay);
+        setResultTextView("simplified");
         setApiError(null);
       }
     } catch (err: unknown) {
@@ -1730,15 +1745,100 @@ export default function App() {
                 </TouchableOpacity>
               </View>
 
-              {/* Simplified text card */}
-              <View style={styles.textResultCard}>
-                <View style={styles.textResultHeader}>
-                  <Text style={styles.textResultHeaderTitle}>📖 YOUR ADAPTED STORY</Text>
-                  <Text style={styles.textResultHeaderHint}>Comfortable Reading Font</Text>
+              {submittedSourceText !== null && (
+                <View
+                  style={styles.resultViewSelector}
+                  accessibilityRole="tablist"
+                  accessibilityLabel="Choose how to view your reading"
+                >
+                  <TouchableOpacity
+                    style={[
+                      styles.resultViewOption,
+                      resultTextView === "simplified" && styles.resultViewOptionSelected,
+                    ]}
+                    onPress={() => setResultTextView("simplified")}
+                    accessibilityRole="tab"
+                    accessibilityLabel="Simplified Only"
+                    accessibilityState={{ selected: resultTextView === "simplified" }}
+                  >
+                    <Text
+                      style={[
+                        styles.resultViewOptionText,
+                        resultTextView === "simplified" &&
+                          styles.resultViewOptionTextSelected,
+                      ]}
+                    >
+                      📖 Simplified Only
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.resultViewOption,
+                      resultTextView === "compare" && styles.resultViewOptionSelected,
+                    ]}
+                    onPress={() => setResultTextView("compare")}
+                    accessibilityRole="tab"
+                    accessibilityLabel="Compare"
+                    accessibilityState={{ selected: resultTextView === "compare" }}
+                  >
+                    <Text
+                      style={[
+                        styles.resultViewOptionText,
+                        resultTextView === "compare" && styles.resultViewOptionTextSelected,
+                      ]}
+                    >
+                      🔎 Compare
+                    </Text>
+                  </TouchableOpacity>
                 </View>
-                <Text style={styles.simplifiedText} selectable>
-                  {simplifiedResult.simplified_text}
-                </Text>
+              )}
+
+              {/* Reading text and vocabulary card */}
+              <View style={styles.textResultCard}>
+                {resultTextView === "compare" && submittedSourceText !== null ? (
+                  <View style={styles.comparisonStack}>
+                    <View style={[styles.comparisonCard, styles.originalTextCard]}>
+                      <View style={styles.comparisonCardHeader}>
+                        <Text style={styles.originalTextCardTitle}>📝 ORIGINAL TEXT</Text>
+                      </View>
+                      <Text
+                        style={styles.comparisonText}
+                        selectable
+                        accessibilityLabel="Original passage"
+                      >
+                        {submittedSourceText}
+                      </Text>
+                    </View>
+                    <View style={[styles.comparisonCard, styles.simplifiedTextCard]}>
+                      <View style={styles.comparisonCardHeader}>
+                        <Text style={styles.simplifiedTextCardTitle}>
+                          📖 SIMPLIFIED TEXT
+                        </Text>
+                      </View>
+                      <Text
+                        style={styles.comparisonText}
+                        selectable
+                        accessibilityLabel="Simplified passage"
+                      >
+                        {simplifiedResult.simplified_text}
+                      </Text>
+                    </View>
+                  </View>
+                ) : (
+                  <View>
+                    <View style={styles.textResultHeader}>
+                      <Text style={styles.textResultHeaderTitle}>📖 YOUR ADAPTED STORY</Text>
+                      <Text style={styles.textResultHeaderHint}>Comfortable Reading Font</Text>
+                    </View>
+                    <Text
+                      style={styles.simplifiedText}
+                      selectable
+                      accessibilityLabel="Simplified passage"
+                    >
+                      {simplifiedResult.simplified_text}
+                    </Text>
+                  </View>
+                )}
 
                 {/* ── VOCABULARY DISCOVERY ── */}
                 <View style={styles.vocabSection}>
@@ -3819,7 +3919,42 @@ const styles = StyleSheet.create({
     color: "#E11D48",
   },
 
-  // simplified text card
+  // result view selector and reading cards
+  resultViewSelector: {
+    flexDirection: "row",
+    marginHorizontal: 16,
+    marginTop: 12,
+    padding: 4,
+    backgroundColor: "#EDE9FE",
+    borderRadius: 18,
+    gap: 4,
+  },
+  resultViewOption: {
+    flex: 1,
+    minHeight: 48,
+    paddingHorizontal: 10,
+    paddingVertical: 12,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  resultViewOptionSelected: {
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#7C3AED",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  resultViewOptionText: {
+    fontSize: 14,
+    fontWeight: "800",
+    color: "#64748B",
+    textAlign: "center",
+  },
+  resultViewOptionTextSelected: {
+    color: "#6D28D9",
+  },
   textResultCard: {
     marginHorizontal: 16,
     marginTop: 12,
@@ -3859,6 +3994,47 @@ const styles = StyleSheet.create({
     lineHeight: 26,
     fontWeight: "500",
     marginBottom: 16,
+  },
+  comparisonStack: {
+    gap: 12,
+    marginBottom: 16,
+  },
+  comparisonCard: {
+    borderRadius: 18,
+    padding: 16,
+    borderWidth: 1.5,
+  },
+  originalTextCard: {
+    backgroundColor: "#FFFBEB",
+    borderColor: "#FDE68A",
+  },
+  simplifiedTextCard: {
+    backgroundColor: "#F5F3FF",
+    borderColor: "#C4B5FD",
+  },
+  comparisonCardHeader: {
+    paddingBottom: 9,
+    marginBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(100, 116, 139, 0.18)",
+  },
+  originalTextCardTitle: {
+    fontSize: 12,
+    fontWeight: "900",
+    color: "#B45309",
+    letterSpacing: 0.5,
+  },
+  simplifiedTextCardTitle: {
+    fontSize: 12,
+    fontWeight: "900",
+    color: "#7C3AED",
+    letterSpacing: 0.5,
+  },
+  comparisonText: {
+    fontSize: 16,
+    color: "#1E293B",
+    lineHeight: 26,
+    fontWeight: "500",
   },
 
   // vocabulary section
