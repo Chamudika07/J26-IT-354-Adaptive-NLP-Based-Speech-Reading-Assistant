@@ -29,9 +29,9 @@ from app.modules.reading_materials.pdf.schemas import (
 )
 from app.modules.reading_materials.pdf.storage import LocalStorage, StoredObject
 from app.modules.reading_materials.profiles import ratio
-from app.modules.reading_materials.schemas import Page
+from app.modules.reading_materials.schemas import MaterialCreate, Page
 from app.modules.reading_materials.segmentation import words
-from app.modules.reading_materials.service import cursor_pair, protect, recheck
+from app.modules.reading_materials.service import add_revision, cursor_pair, protect, recheck
 
 
 def error(status: int, code: str) -> SecurityError:
@@ -294,19 +294,16 @@ def publish(
                 number = materials.latest(db, material.id).revision_number + 1
                 material.updated_at = row.finished_at
                 flag_modified(material, "updated_at")
-            db.add(
-                Revision(
-                    material_id=material.id,
-                    revision_number=number,
-                    title=source.title,
-                    language_tag="en",
-                    source_kind="pdf_text",
-                    original_text=row.assembled_text,
-                    source_sha256=row.assembled_text_sha256,
-                    created_by_user_id=principal.user_id,
-                    created_at=row.finished_at,
-                    extraction_run_id=row.id,
-                )
+            assert row.assembled_text is not None
+            add_revision(
+                db,
+                material.id,
+                number,
+                principal.user_id,
+                MaterialCreate(title=source.title, language_tag="en", text=row.assembled_text),
+                row.finished_at,
+                source_kind="pdf_text",
+                extraction_run_id=row.id,
             )
         recheck(db, principal, learner, Action.EXTRACT_PDF)
         if row.lease_expires_at <= materials.now(db):

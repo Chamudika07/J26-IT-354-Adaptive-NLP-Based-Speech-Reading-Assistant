@@ -10,6 +10,7 @@ from app.modules.reading_materials import repository as materials
 from app.modules.reading_materials.ocr.models import ExtractionReview, ExtractionReviewPage
 from app.modules.reading_materials.pdf import contracts
 from app.modules.reading_materials.pdf.models import ExtractionPage, ExtractionRun, Source
+from tests.reading_materials.test_concurrency import context  # noqa: F401
 
 
 def sha(value):

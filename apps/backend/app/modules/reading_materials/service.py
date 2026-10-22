@@ -188,13 +188,18 @@ def add_revision(
     actor_id: UUID,
     payload: MaterialCreate,
     now: datetime,
+    *,
+    source_kind: str = "plain_text",
+    extraction_run_id: UUID | None = None,
 ) -> Revision:
+    """Append in the caller transaction; caller locks material and owns version/commit."""
     row = Revision(
         material_id=material_id,
         revision_number=number,
         title=payload.title,
         language_tag="en",
-        source_kind="plain_text",
+        source_kind=source_kind,
+        extraction_run_id=extraction_run_id,
         original_text=payload.text,
         source_sha256=hashlib.sha256(payload.text.encode("utf-8")).hexdigest(),
         created_by_user_id=actor_id,

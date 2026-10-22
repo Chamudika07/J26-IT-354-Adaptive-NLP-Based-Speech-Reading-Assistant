@@ -111,3 +111,49 @@ includes direct SQL bypass attempts, every direct failure outcome, immutable ter
 evidence/decisions, reviewed-text publication, page coverage, migration backfill,
 schema parity, safe downgrade, and refusal to downgrade OCR history. Existing PDF
 tests remain part of the full backend suite.
+
+
+## Phase 2 — transaction-safe instructor review and acceptance
+
+Phase 2 adds an internal service/repository contract only. OCR remains
+unavailable through HTTP, and no OCR engine, rasterizer, Tesseract/Paddle
+dependency, or automatic processing is enabled.
+
+An authorized instructor obtains the single review aggregate for a
+`review_required` OCR run, submits complete page-ordered reviewed text,
+and then explicitly accepts or rejects it.
+
+Review submission requires the current optimistic `row_version`, exact
+source-page coverage, explicit acknowledgement of every page (including
+intentionally blank pages), and the current material version when the
+source is already bound. Submission records reviewed text, page offsets,
+and SHA-256 evidence and creates zero revisions.
+
+Acceptance and rejection run inside one caller-owned database transaction.
+The lock order is protected authentication and learner authorization,
+then the bound material when present, followed by source, OCR run, and
+review. Authorization is rechecked after lock acquisition.
+
+Decision request IDs are fingerprinted with their canonical payload.
+An exact replay returns the original terminal result. Reusing the same
+request ID with different content conflicts. Concurrent accept/accept and
+accept/reject operations therefore converge on one terminal decision.
+
+Acceptance requires a submitted review and matching material/review
+versions. If a source is unbound, the service creates and binds one
+reading material inside the same transaction. Acceptance appends exactly
+one immutable `ocr_reviewed` revision using the reviewed text and hash,
+not the raw OCR output.
+
+Raw OCR extraction evidence stays immutable and the OCR extraction run
+remains `review_required`. Any failure before commit rolls back revision
+creation, material/source binding, and the decision together.
+
+Acceptance does not automatically start normalization, segmentation, or
+profiling. The resulting immutable revision continues through the existing
+explicit reading-material processing workflow.
+
+Learners, guardians, and educator viewers cannot use the review service.
+Instructor-level write authorization is required. OCR remains disabled
+for deployment until the later engine/runtime phases and Linux
+qualification are complete.
