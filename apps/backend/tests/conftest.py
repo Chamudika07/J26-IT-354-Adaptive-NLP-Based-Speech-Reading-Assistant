@@ -10,12 +10,12 @@ from alembic.config import Config
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from pydantic import SecretStr
-from sqlalchemy import Connection, Engine, create_engine, text
-from sqlalchemy.engine import make_url
+from sqlalchemy import Connection, Engine, create_engine
 from sqlalchemy.orm import Session
 
 from app.core.config import Settings
 from app.main import create_app
+from db_test_safety import validate_test_database_connection, validate_test_database_url
 
 
 @pytest.fixture
@@ -48,11 +48,10 @@ def postgres_engine() -> Iterator[Engine]:
     value = os.environ.get("TEST_DATABASE_URL")
     if not value:
         pytest.skip("Set TEST_DATABASE_URL and ALLOW_TEST_DATABASE_RESET=1 for PostgreSQL tests")
-    url = make_url(value)
-    if url.drivername != "postgresql+psycopg" or not (url.database or "").endswith("_test"):
-        pytest.fail(
-            "Refusing test database: PostgreSQL/psycopg and a name ending in _test are required"
-        )
+    try:
+        url = validate_test_database_url(value)
+    except ValueError as error:
+        pytest.fail(str(error), pytrace=False)
     if os.environ.get("ALLOW_TEST_DATABASE_RESET") != "1":
         pytest.fail(
             "Database tests require ALLOW_TEST_DATABASE_RESET=1 and an exclusive disposable DB"
@@ -66,9 +65,7 @@ def postgres_engine() -> Iterator[Engine]:
     )
     try:
         with engine.begin() as connection:
-            assert (
-                connection.execute(text("SELECT current_database()")).scalar_one() == url.database
-            )
+            validate_test_database_connection(connection, url.database)
             command.upgrade(migration_config(connection), "head")
         yield engine
     finally:
