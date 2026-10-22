@@ -165,9 +165,9 @@ it("starts reading from the compact Home action without changing the sample sour
   render(<App />);
   await screen.findByText("Hi, Reader!");
   expect(screen.getByText("Let's grow your reading skills!")).toBeTruthy();
-  expect(screen.getByText("Completed Sessions")).toBeTruthy();
-  expect(screen.getByText("Reading Accuracy (%)")).toBeTruthy();
-  expect(screen.getByText("Reading Speed (WPM)")).toBeTruthy();
+  expect(screen.getByText("Sessions")).toBeTruthy();
+  expect(screen.getByText("Accuracy")).toBeTruthy();
+  expect(screen.getByText("Speed")).toBeTruthy();
   fireEvent.press(screen.getByRole("button", { name: "Reading Results" }));
   expect(screen.getByRole("button", { name: "Update My Progress" })).toBeTruthy();
   expect(screen.queryByRole("button", { name: "Start Demo Reading Journey" })).toBeNull();
