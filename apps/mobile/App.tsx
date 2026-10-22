@@ -567,10 +567,14 @@ export default function App() {
   const [resultTextView, setResultTextView] =
     useState<ResultTextView>("simplified");
   const [showHighlights, setShowHighlights] = useState(true);
+  const [reviewedVocabularyItems, setReviewedVocabularyItems] = useState<Set<string>>(
+    () => new Set()
+  );
   const activeSimplifyAbortRef = useRef<AbortController | null>(null);
   const activeFeedbackAbortRef = useRef<AbortController | null>(null);
 
   const [explainTerm, setExplainTerm] = useState<string | null>(null);
+  const [explainItemKey, setExplainItemKey] = useState<string | null>(null);
   const [explainResult, setExplainResult] =
     useState<WordExplanationResponse | null>(null);
   const [isExplainLoading, setIsExplainLoading] = useState(false);
@@ -672,9 +676,11 @@ export default function App() {
     setSubmittedSourceText(null);
     setResultTextView("simplified");
     setShowHighlights(true);
+    setReviewedVocabularyItems(new Set());
     setApiError(null);
     setValidationError(null);
     setExplainTerm(null);
+    setExplainItemKey(null);
     setExplainResult(null);
     setExplainError(null);
     setIsExplainLoading(false);
@@ -691,6 +697,7 @@ export default function App() {
     setSubmittedSourceText(null);
     setResultTextView("simplified");
     setShowHighlights(true);
+    setReviewedVocabularyItems(new Set());
     if (validationError) {
       setValidationError(null);
     }
@@ -701,6 +708,7 @@ export default function App() {
 
   const handleClearPassage = () => {
     setPassage("");
+    setReviewedVocabularyItems(new Set());
     setValidationError(null);
     setApiError(null);
   };
@@ -711,17 +719,18 @@ export default function App() {
     setGuidedStep(2);
   };
 
-  const handleExplainWord = async (item: VocabularyItemResponse) => {
-    if (explainTerm === item.term && activeExplainAbortRef.current) {
+  const handleExplainWord = async (item: VocabularyItemResponse, itemKey: string) => {
+    if (explainItemKey === itemKey && activeExplainAbortRef.current) {
       return;
     }
 
-    if (explainTerm === item.term && !explainError) {
+    if (explainItemKey === itemKey && !explainError) {
       if (activeExplainAbortRef.current) {
         activeExplainAbortRef.current.abort();
         activeExplainAbortRef.current = null;
       }
       setExplainTerm(null);
+      setExplainItemKey(null);
       setExplainResult(null);
       return;
     }
@@ -742,10 +751,12 @@ export default function App() {
           "A Learner UUID and authentication session are required. Configure the session above.",
       });
       setExplainTerm(item.term);
+      setExplainItemKey(itemKey);
       return;
     }
 
     setExplainTerm(item.term);
+    setExplainItemKey(itemKey);
     setExplainResult(null);
     setExplainError(null);
     setIsExplainLoading(true);
@@ -834,9 +845,19 @@ export default function App() {
       activeExplainAbortRef.current = null;
     }
     setExplainTerm(null);
+    setExplainItemKey(null);
     setExplainResult(null);
     setExplainError(null);
     setIsExplainLoading(false);
+  };
+
+  const handleAcknowledgeVocabulary = (itemKey: string) => {
+    setReviewedVocabularyItems((current) => {
+      if (current.has(itemKey)) return current;
+      const next = new Set(current);
+      next.add(itemKey);
+      return next;
+    });
   };
 
   const handleSubmitFeedback = async (signal: FeedbackSignal) => {
@@ -992,7 +1013,9 @@ export default function App() {
     setSubmittedSourceText(null);
     setResultTextView("simplified");
     setShowHighlights(true);
+    setReviewedVocabularyItems(new Set());
     setExplainTerm(null);
+    setExplainItemKey(null);
     setExplainResult(null);
     setExplainError(null);
     setSelectedFeedback(null);
@@ -1034,6 +1057,7 @@ export default function App() {
         setSubmittedSourceText(sourceTextForDisplay);
         setResultTextView("simplified");
         setShowHighlights(true);
+        setReviewedVocabularyItems(new Set());
         setApiError(null);
       }
     } catch (err: unknown) {
@@ -2215,77 +2239,144 @@ export default function App() {
                   {simplifiedResult.vocabulary_items.length > 0 ? (
                     <View>
                       <View style={styles.vocabHeader}>
-                        <Text style={styles.vocabHeaderTitle}>
-                          🔍 Word Detective Helpers ({simplifiedResult.vocabulary_items.length})
-                        </Text>
+                        <View style={styles.vocabHeaderRow}>
+                          <Text style={styles.vocabHeaderTitle}>
+                            🔍 Word Detective Helpers ({simplifiedResult.vocabulary_items.length})
+                          </Text>
+                          <View style={styles.vocabReviewCountPill}>
+                            <Text style={styles.vocabReviewCountText}>
+                              {`${reviewedVocabularyItems.size} of ${simplifiedResult.vocabulary_items.length} reviewed this time`}
+                            </Text>
+                          </View>
+                        </View>
                         <Text style={styles.vocabHeaderHint}>
-                          Tap any word card for a child-friendly explanation!
+                          Read each card, explore more if you want, then tap Got it!
                         </Text>
                       </View>
 
                       {simplifiedResult.vocabulary_items.map((item, idx) => {
-                        const isExpanded = explainTerm === item.term;
+                        const itemKey = `${idx}:${item.term}`;
+                        const isExpanded = explainItemKey === itemKey;
+                        const isReviewed = reviewedVocabularyItems.has(itemKey);
                         const palette = VOCABULARY_PALETTES[idx % VOCABULARY_PALETTES.length];
                         return (
-                          <View key={`${item.term}-${idx}`} style={styles.vocabItemWrap}>
-                            <TouchableOpacity
+                          <View key={itemKey} style={styles.vocabItemWrap}>
+                            <View
                               style={[
                                 styles.vocabCard,
                                 isExpanded && styles.vocabCardActive,
+                                isReviewed && styles.vocabCardReviewed,
                                 {
                                   backgroundColor: palette.backgroundColor,
-                                  borderColor: isExpanded ? palette.accentColor : palette.borderColor,
+                                  borderColor: isReviewed
+                                    ? "#10B981"
+                                    : isExpanded
+                                      ? palette.accentColor
+                                      : palette.borderColor,
                                 },
                               ]}
-                              onPress={() => handleExplainWord(item)}
-                              accessibilityRole="button"
-                              accessibilityLabel={`Word: ${item.term}. Tap to explain.`}
-                              accessibilityState={{ expanded: isExpanded }}
                             >
-                              <View style={styles.vocabCardRow}>
-                                <View style={styles.vocabTermRow}>
-                                  <Text style={styles.vocabDetBadge}>🔍</Text>
-                                  <Text style={[styles.vocabTerm, { color: palette.accentColor }]}>
-                                    {item.term}
-                                  </Text>
+                              <TouchableOpacity
+                                style={styles.vocabLearnArea}
+                                onPress={() => handleExplainWord(item, itemKey)}
+                                accessibilityRole="button"
+                                accessibilityLabel={`Word: ${item.term}. Tap to explain.`}
+                                accessibilityState={{ expanded: isExpanded }}
+                              >
+                                <View style={styles.vocabCardRow}>
+                                  <View style={styles.vocabTermRow}>
+                                    <Text style={styles.vocabDetBadge}>📚</Text>
+                                    <Text style={[styles.vocabTerm, { color: palette.accentColor }]}>
+                                      {item.term}
+                                    </Text>
+                                    {isReviewed && (
+                                      <View style={styles.vocabReviewedBadge}>
+                                        <Text style={styles.vocabReviewedBadgeText}>✓ REVIEWED</Text>
+                                      </View>
+                                    )}
+                                  </View>
+                                  <View style={styles.vocabCardRight}>
+                                    {isExplainLoading && isExpanded ? (
+                                      <ActivityIndicator size="small" color={palette.accentColor} />
+                                    ) : (
+                                      <View
+                                        style={[
+                                          styles.vocabActionPill,
+                                          { backgroundColor: palette.tagBg },
+                                        ]}
+                                      >
+                                        <Text
+                                          style={[
+                                            styles.vocabActionText,
+                                            { color: palette.accentColor },
+                                          ]}
+                                        >
+                                          {isExpanded ? "Close ▲" : "Explain ▼"}
+                                        </Text>
+                                      </View>
+                                    )}
+                                  </View>
                                 </View>
-                                <View style={styles.vocabCardRight}>
-                                  {isExplainLoading && isExpanded ? (
-                                    <ActivityIndicator size="small" color={palette.accentColor} />
-                                  ) : (
-                                    <View style={[styles.vocabActionPill, { backgroundColor: palette.tagBg }]}>
-                                      <Text style={[styles.vocabActionText, { color: palette.accentColor }]}>
-                                        {isExpanded ? "Close ▲" : "Explain ▼"}
+
+                                <View style={styles.vocabDefinitionBox}>
+                                  <Text style={styles.vocabDefinitionLabel}>WHAT IT MEANS</Text>
+                                  <Text style={styles.vocabDef}>{item.simplified_definition}</Text>
+                                </View>
+
+                                {item.example_sentence &&
+                                  item.example_sentence.trim().length > 0 && (
+                                    <View style={styles.vocabExample}>
+                                      <Text style={styles.vocabExampleLabel}>
+                                        TRY IT IN A SENTENCE
+                                      </Text>
+                                      <Text style={styles.vocabExampleText}>
+                                        "{item.example_sentence.trim()}"
                                       </Text>
                                     </View>
                                   )}
-                                </View>
-                              </View>
 
-                              <Text style={styles.vocabDef}>{item.simplified_definition}</Text>
+                                {item.synonyms &&
+                                  item.synonyms.filter((s) => Boolean(s && s.trim())).length > 0 && (
+                                    <View style={styles.synonymsRow}>
+                                      {item.synonyms
+                                        .filter((s) => Boolean(s && s.trim()))
+                                        .map((syn, si) => (
+                                          <View key={si} style={styles.synonymChip}>
+                                            <Text style={styles.synonymChipText}>{syn}</Text>
+                                          </View>
+                                        ))}
+                                    </View>
+                                  )}
+                              </TouchableOpacity>
 
-                              {item.example_sentence && item.example_sentence.trim().length > 0 && (
-                                <View style={styles.vocabExample}>
-                                  <Text style={styles.vocabExampleLabel}>TRY IT IN A SENTENCE</Text>
-                                  <Text style={styles.vocabExampleText}>
-                                    "{item.example_sentence.trim()}"
+                              <View style={styles.vocabReviewFooter}>
+                                <Text style={styles.vocabReviewHint}>
+                                  {isReviewed
+                                    ? "Nice work — reviewed for this reading!"
+                                    : "Finished reading this card?"}
+                                </Text>
+                                <TouchableOpacity
+                                  style={[
+                                    styles.vocabGotItButton,
+                                    isReviewed && styles.vocabGotItButtonReviewed,
+                                  ]}
+                                  onPress={() => handleAcknowledgeVocabulary(itemKey)}
+                                  disabled={isReviewed}
+                                  accessibilityRole="button"
+                                  accessibilityLabel={`Got it: ${item.term}, card ${idx + 1}`}
+                                  accessibilityState={{ selected: isReviewed, disabled: isReviewed }}
+                                >
+                                  <Text
+                                    style={[
+                                      styles.vocabGotItText,
+                                      isReviewed && styles.vocabGotItTextReviewed,
+                                    ]}
+                                  >
+                                    {isReviewed ? "✓ Got it!" : "Got it!"}
                                   </Text>
-                                </View>
-                              )}
-
-                              {item.synonyms &&
-                                item.synonyms.filter((s) => Boolean(s && s.trim())).length > 0 && (
-                                  <View style={styles.synonymsRow}>
-                                    {item.synonyms
-                                      .filter((s) => Boolean(s && s.trim()))
-                                      .map((syn, si) => (
-                                        <View key={si} style={styles.synonymChip}>
-                                          <Text style={styles.synonymChipText}>{syn}</Text>
-                                        </View>
-                                      ))}
-                                  </View>
-                                )}
-                            </TouchableOpacity>
+                                </TouchableOpacity>
+                              </View>
+                            </View>
 
                             {/* Explain drawer */}
                             {isExpanded && (
@@ -2321,7 +2412,7 @@ export default function App() {
                                     <Text style={styles.explainErrorMsg}>{explainError.message}</Text>
                                     <TouchableOpacity
                                       style={styles.explainRetryBtn}
-                                      onPress={() => handleExplainWord(item)}
+                                      onPress={() => handleExplainWord(item, itemKey)}
                                       accessibilityRole="button"
                                       accessibilityLabel={`Retry explanation for ${item.term}`}
                                     >
@@ -4510,11 +4601,34 @@ const styles = StyleSheet.create({
   vocabHeader: {
     marginBottom: 12,
   },
+  vocabHeaderRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: 8,
+    marginBottom: 5,
+  },
   vocabHeaderTitle: {
     fontSize: 15,
     fontWeight: "900",
     color: "#1E1B4B",
-    marginBottom: 4,
+    flex: 1,
+  },
+  vocabReviewCountPill: {
+    maxWidth: 132,
+    backgroundColor: "#ECFDF5",
+    borderRadius: 12,
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
+  },
+  vocabReviewCountText: {
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: "800",
+    color: "#047857",
+    textAlign: "center",
   },
   vocabHeaderHint: {
     fontSize: 12,
@@ -4526,7 +4640,6 @@ const styles = StyleSheet.create({
   },
   vocabCard: {
     borderRadius: 16,
-    padding: 14,
     borderWidth: 1.5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
@@ -4534,10 +4647,20 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+  vocabLearnArea: {
+    padding: 14,
+    paddingBottom: 12,
+  },
   vocabCardActive: {
     shadowOpacity: 0.12,
     shadowRadius: 8,
     elevation: 5,
+  },
+  vocabCardReviewed: {
+    shadowColor: "#10B981",
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
   },
   vocabCardRow: {
     flexDirection: "row",
@@ -4557,6 +4680,21 @@ const styles = StyleSheet.create({
   vocabTerm: {
     fontSize: 16,
     fontWeight: "900",
+    flexShrink: 1,
+  },
+  vocabReviewedBadge: {
+    backgroundColor: "#D1FAE5",
+    borderRadius: 10,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderWidth: 1,
+    borderColor: "#6EE7B7",
+  },
+  vocabReviewedBadgeText: {
+    fontSize: 8,
+    fontWeight: "900",
+    color: "#047857",
+    letterSpacing: 0.4,
   },
   vocabCardRight: {
     marginLeft: 8,
@@ -4570,11 +4708,23 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "700",
   },
+  vocabDefinitionBox: {
+    backgroundColor: "rgba(255,255,255,0.72)",
+    borderRadius: 12,
+    padding: 11,
+    marginBottom: 8,
+  },
+  vocabDefinitionLabel: {
+    fontSize: 9,
+    fontWeight: "900",
+    color: "#64748B",
+    letterSpacing: 0.8,
+    marginBottom: 4,
+  },
   vocabDef: {
     fontSize: 13,
     color: "#374151",
     lineHeight: 18,
-    marginBottom: 6,
   },
   vocabExample: {
     backgroundColor: "rgba(255,255,255,0.6)",
@@ -4615,6 +4765,50 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
     color: "#374151",
+  },
+  vocabReviewFooter: {
+    minHeight: 58,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    backgroundColor: "rgba(255,255,255,0.72)",
+    borderTopWidth: 1,
+    borderTopColor: "rgba(148,163,184,0.24)",
+    borderBottomLeftRadius: 14,
+    borderBottomRightRadius: 14,
+  },
+  vocabReviewHint: {
+    flex: 1,
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: "600",
+    color: "#64748B",
+  },
+  vocabGotItButton: {
+    minWidth: 88,
+    minHeight: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#7C3AED",
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 9,
+  },
+  vocabGotItButtonReviewed: {
+    backgroundColor: "#D1FAE5",
+    borderWidth: 1.5,
+    borderColor: "#6EE7B7",
+  },
+  vocabGotItText: {
+    fontSize: 13,
+    fontWeight: "900",
+    color: "#FFFFFF",
+  },
+  vocabGotItTextReviewed: {
+    color: "#047857",
   },
   vocabEmptyBox: {
     alignItems: "center",

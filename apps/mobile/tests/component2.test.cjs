@@ -428,6 +428,146 @@ test("empty vocabulary response shows a friendly state without internal session 
   assert.doesNotMatch(app.text(), new RegExp(sessionId.slice(0, 8)));
 });
 
+test("vocabulary learning cards show supplied content and omit missing examples", async () => {
+  const app = harness();
+  const withExample = {
+    ...vocab("ecosystem"),
+    simplified_definition: "Living things working together in one place.",
+    example_sentence: "A pond is an ecosystem.",
+    synonyms: ["natural community"],
+  };
+  const withoutExample = {
+    ...vocab("habitat"),
+    simplified_definition: "A home for a plant or animal.",
+    example_sentence: null,
+  };
+  await app.simplify("Simple result.", [withExample, withoutExample]);
+
+  const ecosystemCard = app.textByAccessibilityLabel("Word: ecosystem. Tap to explain.");
+  assert.match(ecosystemCard, /ecosystem/);
+  assert.match(ecosystemCard, /Living things working together in one place/);
+  assert.match(ecosystemCard, /A pond is an ecosystem/);
+  assert.match(ecosystemCard, /natural community/);
+
+  const habitatCard = app.textByAccessibilityLabel("Word: habitat. Tap to explain.");
+  assert.match(habitatCard, /A home for a plant or animal/);
+  assert.doesNotMatch(habitatCard, /TRY IT IN A SENTENCE/);
+});
+
+test("Got it acknowledges one card locally and updates the reviewed count", async () => {
+  const app = harness();
+  await app.simplify();
+  const requestCount = app.calls.length;
+  assert.match(app.text(), /0 of 2 reviewed this time/);
+
+  await app.press("Got it: habitat, card 1");
+
+  assert.equal(app.calls.length, requestCount);
+  assert.match(app.text(), /1 of 2 reviewed this time/);
+  assert.match(app.text(), /Nice work — reviewed for this reading/);
+  assert.equal(
+    app.nodeByAccessibilityLabel("Got it: habitat, card 1").props.accessibilityState.selected,
+    true,
+  );
+  assert.equal(
+    app.nodeByAccessibilityLabel("Got it: forest, card 2").props.accessibilityState.selected,
+    false,
+  );
+});
+
+test("duplicate vocabulary terms are acknowledged as separate cards", async () => {
+  const app = harness();
+  await app.simplify("Simple result.", [vocab("habitat"), vocab("habitat")]);
+
+  await app.press("Got it: habitat, card 1");
+  assert.match(app.text(), /1 of 2 reviewed this time/);
+  assert.equal(
+    app.nodeByAccessibilityLabel("Got it: habitat, card 1").props.accessibilityState.selected,
+    true,
+  );
+  assert.equal(
+    app.nodeByAccessibilityLabel("Got it: habitat, card 2").props.accessibilityState.selected,
+    false,
+  );
+
+  await app.press("Got it: habitat, card 2");
+  assert.match(app.text(), /2 of 2 reviewed this time/);
+
+  const explanation = app.press("Word: habitat. Tap to explain.");
+  assert.equal(
+    (app.text().match(/Asking ReadBuddy AI for a helpful explanation/g) || []).length,
+    1,
+  );
+  app.calls.at(-1).reject(
+    new client.SimplificationApiError(503, "service_unavailable", "Unavailable"),
+  );
+  await explanation;
+});
+
+test("Got it remains available while an explanation loads or fails", async () => {
+  const app = harness();
+  await app.simplify();
+  const explanation = app.press("Word: habitat. Tap to explain.");
+  const explanationCall = app.calls.at(-1);
+  assert.equal(explanationCall.method, "explainWord");
+
+  await app.press("Got it: habitat, card 1");
+  assert.equal(explanationCall.args[2].signal.aborted, false);
+  assert.equal(app.calls.filter(({ method }) => method === "explainWord").length, 1);
+  assert.match(app.text(), /1 of 2 reviewed this time/);
+
+  explanationCall.reject(
+    new client.SimplificationApiError(503, "service_unavailable", "Unavailable"),
+  );
+  await explanation;
+  app.render();
+  assert.match(app.text(), /AI vocabulary engine is currently unavailable/);
+  assert.equal(
+    app.nodeByAccessibilityLabel("Got it: habitat, card 1").props.accessibilityState.selected,
+    true,
+  );
+});
+
+test("Got it preserves comparison and highlight selections without requests", async () => {
+  const app = harness();
+  await app.simplify();
+  await app.press("Compare");
+  await app.press("Show highlights");
+  const requestCount = app.calls.length;
+
+  await app.press("Got it: habitat, card 1");
+
+  assert.equal(app.calls.length, requestCount);
+  assert.equal(app.nodeByAccessibilityLabel("Compare").props.accessibilityState.selected, true);
+  assert.equal(
+    app.nodeByAccessibilityLabel("Show highlights").props.accessibilityState.checked,
+    false,
+  );
+});
+
+test("vocabulary acknowledgments reset with result lifecycle changes", async () => {
+  const app = harness();
+  await app.simplify("First result.");
+  await app.press("Got it: habitat, card 1");
+  assert.match(app.text(), /1 of 2 reviewed this time/);
+
+  await app.press("Reset");
+  await app.simplify("Second result.");
+  assert.match(app.text(), /0 of 2 reviewed this time/);
+
+  await app.press("Got it: habitat, card 1");
+  app.enter("Changed passage.");
+  assert.match(app.text(), /0 of 2 reviewed this time/);
+
+  const pending = app.press("Simplify my text");
+  app.calls.at(-1).reject(
+    new client.SimplificationApiError(503, "service_unavailable", "Unavailable"),
+  );
+  await pending;
+  app.render();
+  assert.doesNotMatch(app.text(), /reviewed this time|✓ REVIEWED/);
+});
+
 test("vocabulary explanation failure can retry without duplicate in-flight requests", async () => {
   const app = harness();
   await app.simplify();
