@@ -35,11 +35,14 @@ const vocab = (term) => ({
   term, simplified_definition: `Simple ${term}`, example_sentence: "Synthetic context.",
   synonyms: [], source: "automatic",
 });
-const result = (text = "Synthetic simplified passage.") => ({
+const result = (
+  text = "Synthetic simplified passage.",
+  vocabularyItems = [vocab("habitat"), vocab("forest")],
+) => ({
   learner_id: learnerId, session_id: sessionId, simplified_text: text,
   target_reading_level: "elementary", strategy_applied: "combined",
   estimated_output_difficulty: "0.25", adaptation_attempt: 1,
-  vocabulary_items: [vocab("habitat"), vocab("forest")], warnings: [],
+  vocabulary_items: vocabularyItems, warnings: [],
   created_at: "2026-01-01T00:00:00Z",
 });
 function deferred() {
@@ -53,6 +56,7 @@ function harness(initialSession = {
   const slots = [];
   const cleanups = [];
   let cursor = 0, session = initialSession, tree;
+  let sessionListener;
   const calls = [];
   const api = Object.fromEntries(
     ["simplifyText", "explainWord", "submitReadingFeedback"].map((method) => [
@@ -100,7 +104,10 @@ function harness(initialSession = {
       setAuthSession: (next) => { session = next; },
       clearAuthSession: () => { session = {}; },
       restoreAuthSession: async () => session,
-      subscribeAuthSession: () => () => {},
+      subscribeAuthSession: (listener) => {
+        sessionListener = listener;
+        return () => { sessionListener = undefined; };
+      },
       getEffectiveApiBaseUrl: () => "http://localhost:8000",
     },
   });
@@ -131,15 +138,16 @@ function harness(initialSession = {
       .props.onChangeText(passage);
     render();
   }
-  async function simplify(textValue) {
+  async function simplify(textValue, vocabularyItems) {
     enter();
     const pending = press("Simplify my text");
-    calls.at(-1).resolve(result(textValue));
+    calls.at(-1).resolve(result(textValue, vocabularyItems));
     await pending;
     render();
   }
   render();
   return { calls, press, enter, render, simplify, text,
+    setSession: (next) => { session = next; sessionListener?.(next); render(); },
     unmount: () => cleanups.forEach((cleanup) => cleanup?.()) };
 }
 
@@ -157,6 +165,62 @@ test("simplification uses selected values and renders vocabulary", async () => {
   await pending; app.render();
   assert.match(app.text(), /Synthetic simplified passage/);
   assert.match(app.text(), /Simple habitat/);
+  assert.match(app.text(), /Synthetic context/);
+});
+
+test("empty vocabulary response shows a friendly state without internal session ID", async () => {
+  const app = harness();
+  await app.simplify("Hello everyone!", []);
+  assert.match(app.text(), /No tricky words this time/);
+  assert.match(app.text(), /no extra vocabulary help is needed/i);
+  assert.doesNotMatch(app.text(), new RegExp(sessionId.slice(0, 8)));
+});
+
+test("vocabulary explanation failure can retry without duplicate in-flight requests", async () => {
+  const app = harness();
+  await app.simplify();
+
+  const first = app.press("Word: habitat. Tap to explain.");
+  assert.equal(app.calls.filter(({ method }) => method === "explainWord").length, 1);
+  await app.press("Word: habitat. Tap to explain.");
+  assert.equal(app.calls.filter(({ method }) => method === "explainWord").length, 1);
+
+  app.calls.at(-1).reject(
+    new client.SimplificationApiError(503, "service_unavailable", "Unavailable"),
+  );
+  await first;
+  app.render();
+  assert.match(app.text(), /AI vocabulary engine is currently unavailable/);
+
+  const retry = app.press("Retry explanation for habitat");
+  const retryCall = app.calls.at(-1);
+  assert.equal(retryCall.method, "explainWord");
+  assert.equal(app.calls.filter(({ method }) => method === "explainWord").length, 2);
+  retryCall.resolve({
+    learner_id: learnerId,
+    session_id: sessionId,
+    language_tag: "en",
+    item: {
+      ...vocab("habitat"),
+      simplified_definition: "A natural home for an animal.",
+    },
+    created_at: "2026-01-01T00:00:00Z",
+  });
+  await retry;
+  app.render();
+  assert.match(app.text(), /A natural home for an animal/);
+  assert.doesNotMatch(app.text(), /AI vocabulary engine is currently unavailable/);
+});
+
+test("missing tokens block vocabulary explanation before API transport", async () => {
+  const app = harness();
+  await app.simplify();
+  app.setSession({ learnerId, accessToken: null, refreshToken: null });
+
+  await app.press("Word: habitat. Tap to explain.");
+
+  assert.equal(app.calls.filter(({ method }) => method === "explainWord").length, 0);
+  assert.match(app.text(), /Authentication Required/);
 });
 
 test("explanation switch and close ignore late successes and failures", async () => {
@@ -298,6 +362,28 @@ test("network failure and AbortError remain distinguishable", async () => {
       return true;
     });
   }
+});
+
+test("simplification transport preserves backend vocabulary response fields", async () => {
+  const backendItem = {
+    term: "ecosystem",
+    simplified_definition: "Living things and their environment working together.",
+    example_sentence: "A pond is a small ecosystem.",
+    synonyms: ["natural community"],
+    source: "automatic",
+  };
+  const api = client.createSimplificationClient({
+    baseUrl: "http://localhost:8000",
+    fetch: async () => new Response(
+      JSON.stringify(result("A pond supports many living things.", [backendItem])),
+      { headers: { "content-type": "application/json" } },
+    ),
+  });
+
+  const response = await api.simplifyText(learnerId, {
+    source_text: "Synthetic ecosystem passage.",
+  });
+  assert.deepEqual(response.vocabulary_items[0], backendItem);
 });
 
 test("successful word explanation is displayed for the active term", async () => {
