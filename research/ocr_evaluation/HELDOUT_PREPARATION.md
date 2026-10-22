@@ -12,7 +12,7 @@ The original benchmark's planned flags remain historical; the overlay records
 current preparation state separately from execution state.
 
 - Categories A–O: 45 prepared image/ground-truth pairs, three per category.
-- Category P: three prepared print-master/ground-truth pairs; real photos pending.
+- Category P: three prepared print-master/ground-truth pairs; three real photos registered.
 - Held-out OCR executions: **0**.
 
 Artifacts are local and ignored by Git under `artifacts/heldout-preparation-v1/`.
@@ -35,15 +35,19 @@ rings, and periscopes, with normal paragraphs and 80–120 words including headi
 The 1600 × 2263 raster pages preserve the existing print-master layout, using
 Bitstream Vera with a 31-pixel body font (about 11.5 points fitted to A4).
 
-Future genuine captures belong at:
+Registered genuine captures are at:
 
 - `artifacts/phone_photos/heldout/phone_camera_photo-heldout-01.jpg`
 - `artifacts/phone_photos/heldout/phone_camera_photo-heldout-02.jpg`
 - `artifacts/phone_photos/heldout/phone_camera_photo-heldout-03.jpg`
 
-All are currently absent. Print masters are not substitutes for camera captures.
+All three are available. Their verified hashes, byte counts, dimensions, JPEG format,
+and user-attested capture type are recorded in the preparation manifest.
+Print masters are not substitutes for camera captures.
 The current ground-truth polygons describe the print masters; future photo
-registration/geometry and capture provenance require validation before evaluation.
+registration/geometry still require validation before any spatial photo diagnostics.
+Photo capture provenance and filename-to-passage matches have been verified; ground
+truth remains unchanged.
 
 ## Reproducibility and validation
 
@@ -61,7 +65,7 @@ or invokes OCR engines. Do not execute held-out OCR until separately authorized.
 Validation checks the benchmark schema, exact fixture/category counts, source
 families, generator hashes, all ground-truth hashes/tokens/layout geometry, image
 hashes/pixels, development text overlap, within-held-out duplicates, and pending
-phone metadata. It also rejects persisted held-out result rows under `artifacts/`
+phone metadata in both pending and available lifecycle states. It also rejects persisted held-out result rows under `artifacts/`
 and `results/`. Preparation tests require the local artifacts; on a fresh checkout
 those integration checks explicitly skip until the corpus is prepared.
 
@@ -69,3 +73,22 @@ Validation at preparation: 122 OCR research tests and 66 PDF research tests pass
 OCR Ruff and formatting checks passed; configured OCR mypy passed (metrics and
 schemas scope). The development-freeze verifier passed. Alembic remains at the
 single head `0008_pdf_text_extraction`. No production files were changed.
+
+## Registered-photo pre-run validation
+
+Run `uv run python heldout_preparation.py --pre-run` to require all three registered
+photos and verify the development freeze as well as the full preparation checks.
+The ordinary validator also supports the earlier pending state, where photos must
+be absent. Extra files in the held-out photo directory are rejected. No command
+executes OCR. The top-level `prepared_not_executed` status remains unchanged.
+
+The `source_digest` and `image` fields continue to describe each print master;
+`photo_source_digest` and `expected_photo_path` describe the genuine capture.
+The category identifier remains `phone_camera_photo` (Category P in the protocol).
+The registration record preserves the prior manifest and validator hashes, while
+`file_sha256` identifies the current lifecycle-aware validator. The 45 A–O records,
+source generators, all ground truth, and JPEG bytes are unchanged.
+
+Registration checks: 142 OCR research tests and 66 PDF research tests passed.
+Ruff, formatting, configured mypy, and pre-run/development-freeze validation passed.
+Held-out OCR executions remain **0**.

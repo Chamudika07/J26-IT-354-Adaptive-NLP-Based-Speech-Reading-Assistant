@@ -83,6 +83,69 @@ def safe_path(root: Path, name: str) -> Path:
     return path
 
 
+def validate_phone_registry(root: Path, rows: list[dict], dev_sources: set) -> dict:
+    """Validate capture lifecycle without changing or recognizing image contents."""
+    expected_ids = {f"phone_camera_photo-heldout-{i:02}" for i in (1, 2, 3)}
+    if len(rows) != 3 or {r["fixture_id"] for r in rows} != expected_ids:
+        raise ValueError("phone fixture identity/count mismatch")
+    registered, hashes = set(), set()
+    pending = 0
+    for row in rows:
+        fixture = row["fixture_id"]
+        filename = f"{fixture}.jpg"
+        relative = f"artifacts/phone_photos/heldout/{filename}"
+        if (
+            row["category"] != "phone_camera_photo"
+            or row["split"] != "heldout"
+            or row["expected_photo_filename"] != filename
+            or row["expected_photo_path"] != relative
+        ):
+            raise ValueError("phone filename/category/split mismatch")
+        path = safe_path(root, relative)
+        truth_bytes = safe_path(root, row["truth"]).read_bytes()
+        truth = json.loads(truth_bytes)
+        if (
+            digest(truth_bytes) != row["ground_truth_digest"]
+            or truth["fixture_id"] != fixture
+            or truth["layout"]["category"] != "phone_camera_photo"
+        ):
+            raise ValueError("phone ground truth mismatch")
+        if row["capture_status"] == "pending":
+            if path.exists() or row["photo_source_digest"] is not None:
+                raise ValueError("invalid pending phone master")
+            if any(key.startswith("photo_") and value is not None for key, value in row.items()):
+                raise ValueError("pending photo has capture metadata")
+            pending += 1
+            continue
+        if row["capture_status"] != "available" or not path.is_file():
+            raise ValueError("available phone photo missing or invalid capture status")
+        data = path.read_bytes()
+        sha = digest(data)
+        if sha != row["photo_source_digest"] or sha in hashes | dev_sources:
+            raise ValueError("phone hash mismatch, duplicate, or development reuse")
+        if (
+            row["capture_type"] != "genuine_phone_camera_user_attested"
+            or row["photo_mime_type"] != "image/jpeg"
+            or row["photo_signature"] != "JPEG"
+            or row["photo_byte_count"] != len(data)
+            or not data.startswith(b"\xff\xd8\xff")
+        ):
+            raise ValueError("phone capture metadata/signature mismatch")
+        with Image.open(path) as image:
+            if image.format != "JPEG" or image.size != (row["photo_width"], row["photo_height"]):
+                raise ValueError("phone format/dimensions mismatch")
+            image.verify()
+        with Image.open(path) as image:
+            image.load()  # Verify the complete raster can decode, not just the header.
+        hashes.add(sha)
+        registered.add(filename)
+    folder = root / "artifacts/phone_photos/heldout"
+    actual = {p.name for p in folder.iterdir()} if folder.exists() else set()
+    if actual != registered:
+        raise ValueError("unregistered extra phone artifact")
+    return {"phone_photos_pending": pending, "phone_photos_registered": len(registered)}
+
+
 def validate(root: Path = ROOT, manifest_path: Path | None = None) -> dict:
     payload = json.loads(
         (manifest_path or root / "manifests/heldout-preparation.v1.json").read_bytes()
@@ -196,16 +259,11 @@ def validate(root: Path = ROOT, manifest_path: Path | None = None) -> dict:
         if fixture.category == "tables" and len(truth["layout"]["cells"]) != 9:
             raise ValueError("invalid table cells")
         if fixture.category == "phone_camera_photo":
-            if (
-                row["capture_status"] != "pending"
-                or row["photo_source_digest"] is not None
-                or row["expected_photo_filename"] != fixture.fixture_id + ".jpg"
-                or row["expected_photo_path"]
-                != f"artifacts/phone_photos/heldout/{fixture.fixture_id}.jpg"
-                or safe_path(root, row["expected_photo_path"]).exists()
-                or not 80 <= len(truth["transcription"]["words"]) <= 120
-            ):
-                raise ValueError("invalid pending phone master")
+            if not 80 <= len(truth["transcription"]["words"]) <= 120:
+                raise ValueError("invalid phone master word count")
+    phone_counts = validate_phone_registry(
+        root, [r for r in rows if r["category"] == "phone_camera_photo"], dev_sources | sources
+    )
     # Audit persisted result evidence, rather than relying only on a declared counter.
     for folder in (root / "artifacts", root / "results"):
         for path in folder.rglob("*.jsonl"):
@@ -217,7 +275,7 @@ def validate(root: Path = ROOT, manifest_path: Path | None = None) -> dict:
         status="pass",
         ao_cases=45,
         phone_masters=3,
-        phone_photos_pending=3,
+        **phone_counts,
         total_slots=48,
         heldout_executions=0,
         independence="pass",
@@ -227,7 +285,19 @@ def validate(root: Path = ROOT, manifest_path: Path | None = None) -> dict:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--prepare", action="store_true")
+    parser.add_argument(
+        "--pre-run", action="store_true", help="Require all three registered photos"
+    )
     args = parser.parse_args()
     if args.prepare:
         prepare()
-    print(json.dumps(validate()))
+    report = validate()
+    if args.pre_run:
+        from verify_development_freeze import verify
+
+        if report["phone_photos_registered"] != 3 or report["phone_photos_pending"] != 0:
+            raise ValueError("pre-run requires three registered photos")
+        report["development_freeze"] = verify(
+            ROOT / "manifests/development-configuration-freeze.v1.json"
+        )["status"]
+    print(json.dumps(report))
