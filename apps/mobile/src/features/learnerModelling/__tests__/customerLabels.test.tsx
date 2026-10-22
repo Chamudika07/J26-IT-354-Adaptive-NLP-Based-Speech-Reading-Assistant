@@ -7,8 +7,8 @@ it("shows one small sample disclosure and keeps developer tools out of normal na
   for (const title of ["My Profile", "My Reading Analytics", "My Reading Tips", "Support Settings", "Session Feedback", "My Reading Report"]) {
     const tab = ({ "My Profile": "Profile", "My Reading Analytics": "Analytics", "My Reading Tips": "Suggestions" } as Record<string, string>)[title];
     fireEvent.press(tab ? screen.getByRole("tab", { name: `${tab} learner view` }) : screen.getByRole("button", { name: `Open ${title}` }));
-    expect(screen.getByRole("header", { name: title })).toBeTruthy();
-    expect(screen.getAllByText(["My Reading Analytics", "My Profile"].includes(title) ? "Demo \u00b7 Fictional data" : "Sample Data")).toHaveLength(1);
+    expect(screen.getByRole("header", { name: title === "Support Settings" ? "Reading Settings" : title })).toBeTruthy();
+    expect(screen.getAllByText(["My Reading Analytics", "My Profile", "Support Settings"].includes(title) ? "Demo \u00b7 Fictional data" : "Sample Data")).toHaveLength(1);
     expect(screen.queryByRole("button", { name: "Developer Details" })).toBeNull();
     expect(screen.queryByRole("button", { name: /Export.*JSON|Select connected backend/ })).toBeNull();
     if (title === "My Reading Report") {

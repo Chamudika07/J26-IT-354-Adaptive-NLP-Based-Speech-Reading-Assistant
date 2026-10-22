@@ -242,7 +242,7 @@ it("shows labelled sample identity and temporary preferences beside connected ob
   expect(screen.getByText(/Your profile name is separate/)).toBeTruthy();
   for (const metric of replay[1]!.metrics) expect(screen.getByText(metric.display_label)).toBeTruthy();
   fireEvent.press(screen.getByRole("button", { name: "Reading Settings" }));
-  fireEvent.press(screen.getByRole("radio", { name: "Reading font size: Extra large" }));
+  fireEvent.press(screen.getByRole("radio", { name: "Reading font size: XL" }));
   fireEvent.press(screen.getByRole("tab", { name: "Profile learner view" }));
   expect(screen.getByText(/Font size: Extra large/)).toBeTruthy();
   expect(screen.getByText(/no reading support changes/)).toBeTruthy();

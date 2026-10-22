@@ -13,13 +13,13 @@ const open = (name: string) => fireEvent.press(name === "My Profile" ? screen.ge
 const home = () => fireEvent.press(screen.getByRole("button", { name: "Back to reading Home" }));
 function chooseSettings() {
   fireEvent.press(screen.getByRole("radio", { name: "Line spacing: Wide" }));
-  fireEvent.press(screen.getByRole("radio", { name: "Reading font size: Extra large" }));
+  fireEvent.press(screen.getByRole("radio", { name: "Reading font size: XL" }));
   fireEvent(screen.getByRole("switch", { name: "Text highlighting preference" }), "valueChange", true);
   fireEvent(screen.getByRole("switch", { name: "Audio-support preference" }), "valueChange", true);
 }
 function expectSettingsDefaults() {
-  expect(screen.getByRole("radio", { name: "Line spacing: Comfortable" }).props.accessibilityState.checked).toBe(true);
-  expect(screen.getByRole("radio", { name: "Reading font size: Comfortable" }).props.accessibilityState.checked).toBe(true);
+  expect(screen.getByRole("radio", { name: "Line spacing: Normal" }).props.accessibilityState.checked).toBe(true);
+  expect(screen.getByRole("radio", { name: "Reading font size: Normal" }).props.accessibilityState.checked).toBe(true);
   expect(screen.getByRole("switch", { name: "Text highlighting preference" }).props.value).toBe(false);
   expect(screen.getByRole("switch", { name: "Audio-support preference" }).props.value).toBe(false);
 }
@@ -47,7 +47,7 @@ it("retains both drafts across screens and period changes; resets each independe
   expect(screen.getByRole("switch", { name: "Audio-support preference" }).props.value).toBe(true);
   fireEvent.press(screen.getByRole("radio", { name: "7 day reporting period" }));
   await screen.findByTestId("support-sample-text");
-  expect(screen.getByRole("radio", { name: "Reading font size: Extra large" }).props.accessibilityState.checked).toBe(true);
+  expect(screen.getByRole("radio", { name: "Reading font size: XL" }).props.accessibilityState.checked).toBe(true);
   fireEvent.press(screen.getByRole("button", { name: "Reset Settings" }));
   expectSettingsDefaults();
   home();

@@ -42,8 +42,8 @@ it("discovers all original areas without adding secondary bottom tabs", async ()
     const link = tab ? screen.getByRole("tab", { name: `${tab} learner view` }) : screen.getByRole("button", { name: `Open ${title}` });
     expect(StyleSheet.flatten(link.props.style).minHeight).toBeGreaterThanOrEqual(48);
     fireEvent.press(link);
-    expect(screen.getByRole("header", { name: title === "My Reading Analytics" ? "My Reading Analytics" : title === "My Reading Report" ? "My Reading Report" : title })).toBeTruthy();
-    expect(screen.getByText(["My Reading Analytics", "My Profile"].includes(title) ? "Demo \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
+    expect(screen.getByRole("header", { name: title === "Support Settings" ? "Reading Settings" : title === "My Reading Analytics" ? "My Reading Analytics" : title === "My Reading Report" ? "My Reading Report" : title })).toBeTruthy();
+    expect(screen.getByText(["My Reading Analytics", "My Profile", "Support Settings"].includes(title) ? "Demo \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
     fireEvent.press(screen.getByRole("button", { name: "Back to reading Home" }));
   }
   const navigation = within(screen.getByLabelText("Learner feature navigation"));
@@ -65,16 +65,16 @@ it("discovers all original areas without adding secondary bottom tabs", async ()
 
 it("previews font, highlighting and audio preferences across navigation until explicitly reset", async () => {
   await open("Support Settings");
-  expect(screen.getByText(/not saved to your learner profile/)).toBeTruthy();
+  expect(screen.getByText("Save these choices on this device.")).toBeTruthy();
   expect(StyleSheet.flatten(screen.getByTestId("support-sample-text").props.style).fontSize).toBe(18);
-  fireEvent.press(screen.getByRole("radio", { name: "Reading font size: Extra large" }));
+  fireEvent.press(screen.getByRole("radio", { name: "Reading font size: XL" }));
   expect(StyleSheet.flatten(screen.getByTestId("support-sample-text").props.style).fontSize).toBe(28);
-  expect(screen.getByRole("radio", { name: "Reading font size: Extra large" }).props.accessibilityState.checked).toBe(true);
+  expect(screen.getByRole("radio", { name: "Reading font size: XL" }).props.accessibilityState.checked).toBe(true);
   fireEvent(screen.getByRole("switch", { name: "Text highlighting preference" }), "valueChange", true);
   expect(screen.getByText("Highlighting is on in this sample.")).toBeTruthy();
   expect(StyleSheet.flatten(screen.getByText("The kind fox shares a book.").props.style).backgroundColor).toBe(palette.yellowSoft);
   fireEvent(screen.getByRole("switch", { name: "Audio-support preference" }), "valueChange", true);
-  expect(screen.getByText("Audio support preferred in this local preview. Audio playback is not connected.")).toBeTruthy();
+  expect(screen.getByText("Audio playback is not connected.")).toBeTruthy();
   fireEvent.press(screen.getByRole("button", { name: "Back to reading Home" }));
   fireEvent.press(screen.getByRole("tab", { name: "Profile learner view" }));
   expect(screen.getByText("Reading Settings")).toBeTruthy();
@@ -179,12 +179,12 @@ it.each(["Support Settings", "Session Feedback", "My Reading Report"])("hides %s
   const view = render(<LearnerProgressScreen periodDays={30} />);
   await screen.findByText("Hi, Reader!");
   fireEvent.press(screen.getByRole("button", { name: `Open ${title}` }));
-  expect(screen.getByRole("header", { name: title === "My Reading Report" ? "My Reading Report" : title })).toBeTruthy();
+  expect(screen.getByRole("header", { name: title === "Support Settings" ? "Reading Settings" : title === "My Reading Report" ? "My Reading Report" : title })).toBeTruthy();
   act(() => { expect(back.mock.calls.at(-1)?.[1]({ type: "hardwareBackPress", timeStamp: 0 })).toBe(true); });
   expect(screen.getByText("Hi, Reader!")).toBeTruthy();
   fireEvent.press(screen.getByRole("button", { name: `Open ${title}` }));
   view.rerender(<LearnerProgressScreen periodDays={30} provider={unavailableLiveDashboardProvider} />);
-  expect(screen.queryByRole("header", { name: title })).toBeNull();
+  expect(screen.queryByRole("header", { name: title === "Support Settings" ? "Reading Settings" : title })).toBeNull();
   expect(screen.queryByText("Sample Data")).toBeNull();
   expect(await screen.findByText("Report temporarily unavailable")).toBeTruthy();
 });
