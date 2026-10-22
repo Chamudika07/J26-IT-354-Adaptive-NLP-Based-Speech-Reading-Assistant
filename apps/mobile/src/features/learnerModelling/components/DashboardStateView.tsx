@@ -2,6 +2,8 @@ import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-nat
 
 import { DemoBanner } from "./DemoBanner";
 import { PreviewDashboard } from "./PreviewDashboard";
+import { ReadingBuddyIllustration } from "./ReadingBuddyIllustration";
+import { palette, radii, softShadow, spacing } from "../theme";
 import type { DashboardPresentationState, DashboardPreview } from "../types";
 
 const STATE_COPY = {
@@ -45,11 +47,16 @@ export function DashboardStateView<TDashboard extends DashboardPreview>({
 
   const copy = STATE_COPY[state.status];
   return (
-    <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+    <ScrollView
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+      style={styles.scroll}
+    >
       {demoMode ? <DemoBanner /> : null}
       <View accessibilityRole="alert" style={styles.card}>
+        <ReadingBuddyIllustration compact />
         {state.status === "loading" ? (
-          <ActivityIndicator accessibilityLabel="Loading reading report" color="#176B5B" />
+          <ActivityIndicator accessibilityLabel="Loading reading report" color={palette.primary} />
         ) : null}
         <Text accessibilityRole="header" style={styles.title}>
           {copy.title}
@@ -61,27 +68,31 @@ export function DashboardStateView<TDashboard extends DashboardPreview>({
 }
 
 const styles = StyleSheet.create({
+  scroll: {
+    backgroundColor: palette.paper,
+  },
   content: {
-    gap: 14,
+    gap: spacing.lg,
     paddingHorizontal: 16,
     paddingBottom: 32,
   },
   card: {
     alignItems: "center",
-    gap: 10,
-    borderRadius: 18,
-    backgroundColor: "#FFFFFF",
+    gap: spacing.md,
+    borderRadius: radii.large,
+    backgroundColor: palette.surface,
     paddingHorizontal: 20,
-    paddingVertical: 28,
+    paddingVertical: 32,
+    ...softShadow,
   },
   title: {
-    color: "#183142",
-    fontSize: 20,
-    fontWeight: "800",
+    color: palette.ink,
+    fontSize: 21,
+    fontWeight: "900",
     textAlign: "center",
   },
   message: {
-    color: "#526A7B",
+    color: palette.muted,
     fontSize: 14,
     lineHeight: 21,
     textAlign: "center",

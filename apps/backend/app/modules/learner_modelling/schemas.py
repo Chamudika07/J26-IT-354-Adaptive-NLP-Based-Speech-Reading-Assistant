@@ -8,11 +8,12 @@ import hashlib
 import json
 from datetime import UTC
 from decimal import Decimal
-from typing import Any
+from typing import Annotated, Any
 from uuid import UUID
 
 from pydantic import (
     AwareDatetime,
+    ConfigDict,
     Field,
     model_validator,
 )
@@ -35,6 +36,39 @@ NON_CLINICAL_DISCLAIMER: str = (
 )
 
 
+class SupportSettingsRead(Schema):
+    """Private immutable read projection, not an approved HTTP/disclosure contract.
+
+    All fields are required: a missing row must never acquire schema defaults.
+    Identifiers, editor identity and ORM metadata are deliberately excluded.
+    """
+
+    model_config = ConfigDict(strict=True, frozen=True, extra="forbid", from_attributes=False)
+
+    row_version: Annotated[int, Field(gt=0)]
+    support_mode: SupportMode
+    default_difficulty_tier: DifficultyTier
+    enable_speech_cues: bool
+    speech_rate_multiplier: Annotated[
+        Decimal,
+        Field(
+            ge=Decimal("0.50"),
+            le=Decimal("2.00"),
+            max_digits=3,
+            decimal_places=2,
+            allow_inf_nan=False,
+        ),
+    ]
+    enable_syllable_assistance: bool
+    enable_phoneme_breakdown: bool
+    enable_visual_pacing: bool
+    visual_pacing_rate_wpm: Annotated[int, Field(ge=20, le=300)] | None
+    enable_line_focus: bool
+    simplification_level: Annotated[int, Field(ge=1, le=5)]
+    pause_threshold_ms: Annotated[int, Field(ge=1000, le=10000)]
+    manual_override_locked: bool
+
+
 class ReadingSessionIngest(Schema):
     """Validated input payload for reading-session ingestion.
 
@@ -54,16 +88,17 @@ class ReadingSessionIngest(Schema):
     support_mode: SupportMode = "adaptive"
     completion_status: CompletionStatus = "completed"
 
-    words_attempted: int = Field(ge=0)
-    words_correct: int = Field(ge=0)
-    target_word_count: int = Field(ge=0)
-    active_duration_ms: int = Field(ge=0)
-    total_duration_ms: int = Field(ge=0)
+    # Match existing PostgreSQL INTEGER storage, not a research plausibility threshold.
+    words_attempted: int = Field(ge=0, le=2_147_483_647)
+    words_correct: int = Field(ge=0, le=2_147_483_647)
+    target_word_count: int = Field(ge=0, le=2_147_483_647)
+    active_duration_ms: int = Field(ge=0, le=2_147_483_647)
+    total_duration_ms: int = Field(ge=0, le=2_147_483_647)
 
-    hesitation_count: int | None = Field(default=None, ge=0)
-    total_pause_duration_ms: int | None = Field(default=None, ge=0)
-    pause_count: int | None = Field(default=None, ge=0)
-    replay_count: int | None = Field(default=None, ge=0)
+    hesitation_count: int | None = Field(default=None, ge=0, le=2_147_483_647)
+    total_pause_duration_ms: int | None = Field(default=None, ge=0, le=2_147_483_647)
+    pause_count: int | None = Field(default=None, ge=0, le=2_147_483_647)
+    replay_count: int | None = Field(default=None, ge=0, le=2_147_483_647)
 
     @model_validator(mode="after")
     def _validate_invariants(self) -> "ReadingSessionIngest":

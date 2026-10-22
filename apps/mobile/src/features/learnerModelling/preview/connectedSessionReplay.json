@@ -1,0 +1,721 @@
+[{
+  "schemaVersion": "connected-synthetic-v2",
+  "synthetic": true,
+  "verifiedTelemetry": false,
+  "role": "learner",
+  "source": "component4-offline-backend",
+  "sourceDigest": "fd5455bf3433ae788b862362faa18d4b9257191d3e8594b352d20eb0b5376218",
+  "generatedAt": "2026-10-21T22:29:02.362376Z",
+  "reportingStartUtc": "2026-01-01T00:00:00Z",
+  "reportingEndUtc": "2026-01-31T00:00:00Z",
+  "context": {
+    "task": "independent_reading",
+    "tier": "intermediate",
+    "mode": "adaptive"
+  },
+  "settingsSource": "approved-synthetic-settings-scenario",
+  "includedSessionCount": 0,
+  "excludedSessionCount": 0,
+  "metrics": [],
+  "history": [],
+  "reportStatements": [
+    "Reporting period [2026-01-01T00:00:00+00:00, 2026-01-31T00:00:00+00:00); UTC.",
+    "The reporting period contains 0 recorded sessions.",
+    "Descriptive educational observations only. They do not establish causes or assess health or ability.",
+    "Evidence is limited to the supplied role projection; unavailable fields are not inferred.",
+    "Advisory only. This report never changes support, difficulty or learner settings."
+  ],
+  "recommendation": null,
+  "recommendationExplanation": [
+    "Recommendation unavailable: no eligible completed sample sessions in the selected context/window."
+  ],
+  "disclaimer": "These observations describe recorded reading sessions. They do not show why measurements changed."
+},{
+  "schemaVersion": "connected-synthetic-v2",
+  "synthetic": true,
+  "verifiedTelemetry": false,
+  "role": "learner",
+  "source": "component4-offline-backend",
+  "sourceDigest": "aa7a0eb8f4f5c17da4492c4c41f947d4b2c5c64c89542e2f7878271b9ba725a4",
+  "generatedAt": "2026-10-21T22:29:02.362376Z",
+  "reportingStartUtc": "2026-01-01T00:00:00Z",
+  "reportingEndUtc": "2026-01-31T00:00:00Z",
+  "context": {
+    "task": "independent_reading",
+    "tier": "intermediate",
+    "mode": "adaptive"
+  },
+  "settingsSource": "approved-synthetic-settings-scenario",
+  "includedSessionCount": 1,
+  "excludedSessionCount": 0,
+  "metrics": [
+    {
+      "metric_name": "reading_accuracy",
+      "display_label": "Reading accuracy",
+      "unit": "proportion",
+      "first_value": "0.9300",
+      "latest_value": "0.9300",
+      "change_direction": "insufficient_evidence",
+      "evidence_state": "limited",
+      "explanation": "There are not enough comparable observations to describe a trend."
+    },
+    {
+      "metric_name": "reading_fluency_wpm",
+      "display_label": "Reading speed",
+      "unit": "words_per_minute",
+      "first_value": "85.71",
+      "latest_value": "85.71",
+      "change_direction": "insufficient_evidence",
+      "evidence_state": "limited",
+      "explanation": "There are not enough comparable observations to describe a trend."
+    },
+    {
+      "metric_name": "hesitation_rate_per_word",
+      "display_label": "Hesitation rate",
+      "unit": "hesitations_per_attempted_word",
+      "first_value": "0.0500",
+      "latest_value": "0.0500",
+      "change_direction": "insufficient_evidence",
+      "evidence_state": "limited",
+      "explanation": "There are not enough comparable observations to describe a trend."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "recordedAt": "2026-01-01T09:00:00Z",
+      "accuracy": "0.93",
+      "wpm": "85.71",
+      "hesitation": "0.05",
+      "experimentalEngagement": "0.9339"
+    }
+  ],
+  "reportStatements": [
+    "Reporting period [2026-01-01T00:00:00+00:00, 2026-01-31T00:00:00+00:00); UTC.",
+    "The reporting period contains 1 recorded sessions.",
+    "Descriptive educational observations only. They do not establish causes or assess health or ability.",
+    "Evidence is limited to the supplied role projection; unavailable fields are not inferred.",
+    "Advisory only. This report never changes support, difficulty or learner settings.",
+    "Context 1: Independent reading; observed Intermediate level; Adaptive support.",
+    "Context 1, reading_accuracy: first 0.9300, latest 0.9300; unit proportion.",
+    "Context 1, reading_accuracy: insufficient comparable evidence for a trend.",
+    "Context 1, reading_fluency_wpm: first 85.71, latest 85.71; unit words_per_minute.",
+    "Context 1, reading_fluency_wpm: insufficient comparable evidence for a trend.",
+    "Context 1, hesitation_rate_per_word: first 0.0500, latest 0.0500; unit hesitations_per_attempted_word.",
+    "Context 1, hesitation_rate_per_word: insufficient comparable evidence for a trend.",
+    "Observed difficulty labels: Intermediate level. No unlocked levels are inferred.",
+    "Observed Adaptive support: 1 recorded sessions."
+  ],
+  "recommendation": null,
+  "recommendationExplanation": [
+    "Recommendation unavailable: insufficient comparable completed-session evidence.",
+    "Not enough completed reading sessions are available to make a reliable recommendation (found 1, need at least 3). Continuing to gather reading session data before making adjustments."
+  ],
+  "disclaimer": "These observations describe recorded reading sessions. They do not show why measurements changed."
+},{
+  "schemaVersion": "connected-synthetic-v2",
+  "synthetic": true,
+  "verifiedTelemetry": false,
+  "role": "learner",
+  "source": "component4-offline-backend",
+  "sourceDigest": "d76b492574b481b983fed0770b233edd5c8dfa6295277e9009694a9e4a788a37",
+  "generatedAt": "2026-10-21T22:29:02.362376Z",
+  "reportingStartUtc": "2026-01-01T00:00:00Z",
+  "reportingEndUtc": "2026-01-31T00:00:00Z",
+  "context": {
+    "task": "independent_reading",
+    "tier": "intermediate",
+    "mode": "adaptive"
+  },
+  "settingsSource": "approved-synthetic-settings-scenario",
+  "includedSessionCount": 2,
+  "excludedSessionCount": 0,
+  "metrics": [
+    {
+      "metric_name": "reading_accuracy",
+      "display_label": "Reading accuracy",
+      "unit": "proportion",
+      "first_value": "0.9300",
+      "latest_value": "0.9400",
+      "change_direction": "insufficient_evidence",
+      "evidence_state": "limited",
+      "explanation": "There are not enough comparable observations to describe a trend."
+    },
+    {
+      "metric_name": "reading_fluency_wpm",
+      "display_label": "Reading speed",
+      "unit": "words_per_minute",
+      "first_value": "85.71",
+      "latest_value": "92.31",
+      "change_direction": "insufficient_evidence",
+      "evidence_state": "limited",
+      "explanation": "There are not enough comparable observations to describe a trend."
+    },
+    {
+      "metric_name": "hesitation_rate_per_word",
+      "display_label": "Hesitation rate",
+      "unit": "hesitations_per_attempted_word",
+      "first_value": "0.0500",
+      "latest_value": "0.0400",
+      "change_direction": "insufficient_evidence",
+      "evidence_state": "limited",
+      "explanation": "There are not enough comparable observations to describe a trend."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "recordedAt": "2026-01-01T09:00:00Z",
+      "accuracy": "0.93",
+      "wpm": "85.71",
+      "hesitation": "0.05",
+      "experimentalEngagement": "0.9339"
+    },
+    {
+      "sequence": 2,
+      "recordedAt": "2026-01-02T09:00:00Z",
+      "accuracy": "0.94",
+      "wpm": "92.31",
+      "hesitation": "0.04",
+      "experimentalEngagement": "0.9478"
+    }
+  ],
+  "reportStatements": [
+    "Reporting period [2026-01-01T00:00:00+00:00, 2026-01-31T00:00:00+00:00); UTC.",
+    "The reporting period contains 2 recorded sessions.",
+    "Descriptive educational observations only. They do not establish causes or assess health or ability.",
+    "Evidence is limited to the supplied role projection; unavailable fields are not inferred.",
+    "Advisory only. This report never changes support, difficulty or learner settings.",
+    "Context 1: Independent reading; observed Intermediate level; Adaptive support.",
+    "Context 1, reading_accuracy: first 0.9300, latest 0.9400; unit proportion.",
+    "Context 1, reading_accuracy: insufficient comparable evidence for a trend.",
+    "Context 1, reading_fluency_wpm: first 85.71, latest 92.31; unit words_per_minute.",
+    "Context 1, reading_fluency_wpm: insufficient comparable evidence for a trend.",
+    "Context 1, hesitation_rate_per_word: first 0.0500, latest 0.0400; unit hesitations_per_attempted_word.",
+    "Context 1, hesitation_rate_per_word: insufficient comparable evidence for a trend.",
+    "Observed difficulty labels: Intermediate level. No unlocked levels are inferred.",
+    "Observed Adaptive support: 2 recorded sessions."
+  ],
+  "recommendation": null,
+  "recommendationExplanation": [
+    "Recommendation unavailable: insufficient comparable completed-session evidence.",
+    "Not enough completed reading sessions are available to make a reliable recommendation (found 2, need at least 3). Continuing to gather reading session data before making adjustments."
+  ],
+  "disclaimer": "These observations describe recorded reading sessions. They do not show why measurements changed."
+},{
+  "schemaVersion": "connected-synthetic-v2",
+  "synthetic": true,
+  "verifiedTelemetry": false,
+  "role": "learner",
+  "source": "component4-offline-backend",
+  "sourceDigest": "7f7be9b0c22af335f1da72d4bb0edd7826cb08eac3327ac3366a716fbbc06cb7",
+  "generatedAt": "2026-10-21T22:29:02.362376Z",
+  "reportingStartUtc": "2026-01-01T00:00:00Z",
+  "reportingEndUtc": "2026-01-31T00:00:00Z",
+  "context": {
+    "task": "independent_reading",
+    "tier": "intermediate",
+    "mode": "adaptive"
+  },
+  "settingsSource": "approved-synthetic-settings-scenario",
+  "includedSessionCount": 3,
+  "excludedSessionCount": 0,
+  "metrics": [
+    {
+      "metric_name": "reading_accuracy",
+      "display_label": "Reading accuracy",
+      "unit": "proportion",
+      "first_value": "0.9300",
+      "latest_value": "0.9500",
+      "change_direction": "insufficient_evidence",
+      "evidence_state": "limited",
+      "explanation": "There are not enough comparable observations to describe a trend."
+    },
+    {
+      "metric_name": "reading_fluency_wpm",
+      "display_label": "Reading speed",
+      "unit": "words_per_minute",
+      "first_value": "85.71",
+      "latest_value": "96.77",
+      "change_direction": "insufficient_evidence",
+      "evidence_state": "limited",
+      "explanation": "There are not enough comparable observations to describe a trend."
+    },
+    {
+      "metric_name": "hesitation_rate_per_word",
+      "display_label": "Hesitation rate",
+      "unit": "hesitations_per_attempted_word",
+      "first_value": "0.0500",
+      "latest_value": "0.0300",
+      "change_direction": "insufficient_evidence",
+      "evidence_state": "limited",
+      "explanation": "There are not enough comparable observations to describe a trend."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "recordedAt": "2026-01-01T09:00:00Z",
+      "accuracy": "0.93",
+      "wpm": "85.71",
+      "hesitation": "0.05",
+      "experimentalEngagement": "0.9339"
+    },
+    {
+      "sequence": 2,
+      "recordedAt": "2026-01-02T09:00:00Z",
+      "accuracy": "0.94",
+      "wpm": "92.31",
+      "hesitation": "0.04",
+      "experimentalEngagement": "0.9478"
+    },
+    {
+      "sequence": 3,
+      "recordedAt": "2026-01-03T09:00:00Z",
+      "accuracy": "0.95",
+      "wpm": "96.77",
+      "hesitation": "0.03",
+      "experimentalEngagement": "0.9335"
+    }
+  ],
+  "reportStatements": [
+    "Reporting period [2026-01-01T00:00:00+00:00, 2026-01-31T00:00:00+00:00); UTC.",
+    "The reporting period contains 3 recorded sessions.",
+    "Descriptive educational observations only. They do not establish causes or assess health or ability.",
+    "Evidence is limited to the supplied role projection; unavailable fields are not inferred.",
+    "Advisory only. This report never changes support, difficulty or learner settings.",
+    "Context 1: Independent reading; observed Intermediate level; Adaptive support.",
+    "Context 1, reading_accuracy: first 0.9300, latest 0.9500; unit proportion.",
+    "Context 1, reading_accuracy: insufficient comparable evidence for a trend.",
+    "Context 1, reading_fluency_wpm: first 85.71, latest 96.77; unit words_per_minute.",
+    "Context 1, reading_fluency_wpm: insufficient comparable evidence for a trend.",
+    "Context 1, hesitation_rate_per_word: first 0.0500, latest 0.0300; unit hesitations_per_attempted_word.",
+    "Context 1, hesitation_rate_per_word: insufficient comparable evidence for a trend.",
+    "Observed difficulty labels: Intermediate level. No unlocked levels are inferred.",
+    "Observed Adaptive support: 3 recorded sessions."
+  ],
+  "recommendation": {
+    "status": "available",
+    "task_type": "independent_reading",
+    "current": "intermediate / Adaptive support",
+    "action": "Keep current support",
+    "proposed": [],
+    "reasons": [
+      "Recent reading accuracy is close to the difficulty progression threshold. Monitoring a few more sessions before suggesting a harder level."
+    ],
+    "limitations": [],
+    "evidence_state": "sufficient",
+    "fixed_baseline": false,
+    "manual_override_active": false,
+    "global_lock": false,
+    "manual_control_prevents_adjustment": false,
+    "blocked_by_manual_override": false,
+    "advisory_only": true,
+    "changes_applied": false,
+    "automatic_application_allowed": false,
+    "disclaimer": "Adaptive reading recommendations are experimental educational heuristics for software scaffolding only. They do not constitute a clinical assessment, diagnosis, or any determination of a learner's psychological or neurological state."
+  },
+  "recommendationExplanation": [
+    "Recent reading accuracy is close to the difficulty progression threshold. Monitoring a few more sessions before suggesting a harder level."
+  ],
+  "disclaimer": "These observations describe recorded reading sessions. They do not show why measurements changed."
+},{
+  "schemaVersion": "connected-synthetic-v2",
+  "synthetic": true,
+  "verifiedTelemetry": false,
+  "role": "learner",
+  "source": "component4-offline-backend",
+  "sourceDigest": "29f5900faa2f63ff9a1732109bf3cc9f8f2c2ce77dc9feae7840fa4c67e718f7",
+  "generatedAt": "2026-10-21T22:29:02.362376Z",
+  "reportingStartUtc": "2026-01-01T00:00:00Z",
+  "reportingEndUtc": "2026-01-31T00:00:00Z",
+  "context": {
+    "task": "independent_reading",
+    "tier": "intermediate",
+    "mode": "adaptive"
+  },
+  "settingsSource": "approved-synthetic-settings-scenario",
+  "includedSessionCount": 4,
+  "excludedSessionCount": 0,
+  "metrics": [
+    {
+      "metric_name": "reading_accuracy",
+      "display_label": "Reading accuracy",
+      "unit": "proportion",
+      "first_value": "0.9300",
+      "latest_value": "0.9600",
+      "change_direction": "insufficient_evidence",
+      "evidence_state": "limited",
+      "explanation": "There are not enough comparable observations to describe a trend."
+    },
+    {
+      "metric_name": "reading_fluency_wpm",
+      "display_label": "Reading speed",
+      "unit": "words_per_minute",
+      "first_value": "85.71",
+      "latest_value": "100.00",
+      "change_direction": "insufficient_evidence",
+      "evidence_state": "limited",
+      "explanation": "There are not enough comparable observations to describe a trend."
+    },
+    {
+      "metric_name": "hesitation_rate_per_word",
+      "display_label": "Hesitation rate",
+      "unit": "hesitations_per_attempted_word",
+      "first_value": "0.0500",
+      "latest_value": "0.0200",
+      "change_direction": "insufficient_evidence",
+      "evidence_state": "limited",
+      "explanation": "There are not enough comparable observations to describe a trend."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "recordedAt": "2026-01-01T09:00:00Z",
+      "accuracy": "0.93",
+      "wpm": "85.71",
+      "hesitation": "0.05",
+      "experimentalEngagement": "0.9339"
+    },
+    {
+      "sequence": 2,
+      "recordedAt": "2026-01-02T09:00:00Z",
+      "accuracy": "0.94",
+      "wpm": "92.31",
+      "hesitation": "0.04",
+      "experimentalEngagement": "0.9478"
+    },
+    {
+      "sequence": 3,
+      "recordedAt": "2026-01-03T09:00:00Z",
+      "accuracy": "0.95",
+      "wpm": "96.77",
+      "hesitation": "0.03",
+      "experimentalEngagement": "0.9335"
+    },
+    {
+      "sequence": 4,
+      "recordedAt": "2026-01-04T09:00:00Z",
+      "accuracy": "0.96",
+      "wpm": "100.0",
+      "hesitation": "0.02",
+      "experimentalEngagement": "0.9238"
+    }
+  ],
+  "reportStatements": [
+    "Reporting period [2026-01-01T00:00:00+00:00, 2026-01-31T00:00:00+00:00); UTC.",
+    "The reporting period contains 4 recorded sessions.",
+    "Descriptive educational observations only. They do not establish causes or assess health or ability.",
+    "Evidence is limited to the supplied role projection; unavailable fields are not inferred.",
+    "Advisory only. This report never changes support, difficulty or learner settings.",
+    "Context 1: Independent reading; observed Intermediate level; Adaptive support.",
+    "Context 1, reading_accuracy: first 0.9300, latest 0.9600; unit proportion.",
+    "Context 1, reading_accuracy: insufficient comparable evidence for a trend.",
+    "Context 1, reading_fluency_wpm: first 85.71, latest 100.00; unit words_per_minute.",
+    "Context 1, reading_fluency_wpm: insufficient comparable evidence for a trend.",
+    "Context 1, hesitation_rate_per_word: first 0.0500, latest 0.0200; unit hesitations_per_attempted_word.",
+    "Context 1, hesitation_rate_per_word: insufficient comparable evidence for a trend.",
+    "Observed difficulty labels: Intermediate level. No unlocked levels are inferred.",
+    "Observed Adaptive support: 4 recorded sessions."
+  ],
+  "recommendation": {
+    "status": "available",
+    "task_type": "independent_reading",
+    "current": "intermediate / Adaptive support",
+    "action": "Keep current support",
+    "proposed": [],
+    "reasons": [
+      "Recent reading accuracy is close to the difficulty progression threshold. Monitoring a few more sessions before suggesting a harder level."
+    ],
+    "limitations": [],
+    "evidence_state": "sufficient",
+    "fixed_baseline": false,
+    "manual_override_active": false,
+    "global_lock": false,
+    "manual_control_prevents_adjustment": false,
+    "blocked_by_manual_override": false,
+    "advisory_only": true,
+    "changes_applied": false,
+    "automatic_application_allowed": false,
+    "disclaimer": "Adaptive reading recommendations are experimental educational heuristics for software scaffolding only. They do not constitute a clinical assessment, diagnosis, or any determination of a learner's psychological or neurological state."
+  },
+  "recommendationExplanation": [
+    "Recent reading accuracy is close to the difficulty progression threshold. Monitoring a few more sessions before suggesting a harder level."
+  ],
+  "disclaimer": "These observations describe recorded reading sessions. They do not show why measurements changed."
+},{
+  "schemaVersion": "connected-synthetic-v2",
+  "synthetic": true,
+  "verifiedTelemetry": false,
+  "role": "learner",
+  "source": "component4-offline-backend",
+  "sourceDigest": "3be79ca3aa387352faa2ecb552ca3d854f13e92f5a8775333743e3091958dec0",
+  "generatedAt": "2026-10-21T22:29:02.362376Z",
+  "reportingStartUtc": "2026-01-01T00:00:00Z",
+  "reportingEndUtc": "2026-01-31T00:00:00Z",
+  "context": {
+    "task": "independent_reading",
+    "tier": "intermediate",
+    "mode": "adaptive"
+  },
+  "settingsSource": "approved-synthetic-settings-scenario",
+  "includedSessionCount": 5,
+  "excludedSessionCount": 0,
+  "metrics": [
+    {
+      "metric_name": "reading_accuracy",
+      "display_label": "Reading accuracy",
+      "unit": "proportion",
+      "first_value": "0.9300",
+      "latest_value": "0.9600",
+      "change_direction": "insufficient_evidence",
+      "evidence_state": "limited",
+      "explanation": "There are not enough comparable observations to describe a trend."
+    },
+    {
+      "metric_name": "reading_fluency_wpm",
+      "display_label": "Reading speed",
+      "unit": "words_per_minute",
+      "first_value": "85.71",
+      "latest_value": "100.00",
+      "change_direction": "insufficient_evidence",
+      "evidence_state": "limited",
+      "explanation": "There are not enough comparable observations to describe a trend."
+    },
+    {
+      "metric_name": "hesitation_rate_per_word",
+      "display_label": "Hesitation rate",
+      "unit": "hesitations_per_attempted_word",
+      "first_value": "0.0500",
+      "latest_value": "0.0200",
+      "change_direction": "insufficient_evidence",
+      "evidence_state": "limited",
+      "explanation": "There are not enough comparable observations to describe a trend."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "recordedAt": "2026-01-01T09:00:00Z",
+      "accuracy": "0.93",
+      "wpm": "85.71",
+      "hesitation": "0.05",
+      "experimentalEngagement": "0.9339"
+    },
+    {
+      "sequence": 2,
+      "recordedAt": "2026-01-02T09:00:00Z",
+      "accuracy": "0.94",
+      "wpm": "92.31",
+      "hesitation": "0.04",
+      "experimentalEngagement": "0.9478"
+    },
+    {
+      "sequence": 3,
+      "recordedAt": "2026-01-03T09:00:00Z",
+      "accuracy": "0.95",
+      "wpm": "96.77",
+      "hesitation": "0.03",
+      "experimentalEngagement": "0.9335"
+    },
+    {
+      "sequence": 4,
+      "recordedAt": "2026-01-04T09:00:00Z",
+      "accuracy": "0.96",
+      "wpm": "100.0",
+      "hesitation": "0.02",
+      "experimentalEngagement": "0.9238"
+    },
+    {
+      "sequence": 5,
+      "recordedAt": "2026-01-05T09:00:00Z",
+      "accuracy": "0.96",
+      "wpm": "100.0",
+      "hesitation": "0.02",
+      "experimentalEngagement": "0.9238"
+    }
+  ],
+  "reportStatements": [
+    "Reporting period [2026-01-01T00:00:00+00:00, 2026-01-31T00:00:00+00:00); UTC.",
+    "The reporting period contains 5 recorded sessions.",
+    "Descriptive educational observations only. They do not establish causes or assess health or ability.",
+    "Evidence is limited to the supplied role projection; unavailable fields are not inferred.",
+    "Advisory only. This report never changes support, difficulty or learner settings.",
+    "Context 1: Independent reading; observed Intermediate level; Adaptive support.",
+    "Context 1, reading_accuracy: first 0.9300, latest 0.9600; unit proportion.",
+    "Context 1, reading_accuracy: insufficient comparable evidence for a trend.",
+    "Context 1, reading_fluency_wpm: first 85.71, latest 100.00; unit words_per_minute.",
+    "Context 1, reading_fluency_wpm: insufficient comparable evidence for a trend.",
+    "Context 1, hesitation_rate_per_word: first 0.0500, latest 0.0200; unit hesitations_per_attempted_word.",
+    "Context 1, hesitation_rate_per_word: insufficient comparable evidence for a trend.",
+    "Observed difficulty labels: Intermediate level. No unlocked levels are inferred.",
+    "Observed Adaptive support: 5 recorded sessions."
+  ],
+  "recommendation": {
+    "status": "available",
+    "task_type": "independent_reading",
+    "current": "intermediate / Adaptive support",
+    "action": "Keep current support",
+    "proposed": [],
+    "reasons": [
+      "Recent reading accuracy is close to the difficulty progression threshold. Monitoring a few more sessions before suggesting a harder level."
+    ],
+    "limitations": [],
+    "evidence_state": "sufficient",
+    "fixed_baseline": false,
+    "manual_override_active": false,
+    "global_lock": false,
+    "manual_control_prevents_adjustment": false,
+    "blocked_by_manual_override": false,
+    "advisory_only": true,
+    "changes_applied": false,
+    "automatic_application_allowed": false,
+    "disclaimer": "Adaptive reading recommendations are experimental educational heuristics for software scaffolding only. They do not constitute a clinical assessment, diagnosis, or any determination of a learner's psychological or neurological state."
+  },
+  "recommendationExplanation": [
+    "Recent reading accuracy is close to the difficulty progression threshold. Monitoring a few more sessions before suggesting a harder level."
+  ],
+  "disclaimer": "These observations describe recorded reading sessions. They do not show why measurements changed."
+},{
+  "schemaVersion": "connected-synthetic-v2",
+  "synthetic": true,
+  "verifiedTelemetry": false,
+  "role": "learner",
+  "source": "component4-offline-backend",
+  "sourceDigest": "33659d1c6947d7687a7d74e00f4540da065a2450b357805c90566ec71fda0ad7",
+  "generatedAt": "2026-10-21T22:29:02.362376Z",
+  "reportingStartUtc": "2026-01-01T00:00:00Z",
+  "reportingEndUtc": "2026-01-31T00:00:00Z",
+  "context": {
+    "task": "independent_reading",
+    "tier": "intermediate",
+    "mode": "adaptive"
+  },
+  "settingsSource": "approved-synthetic-settings-scenario",
+  "includedSessionCount": 6,
+  "excludedSessionCount": 0,
+  "metrics": [
+    {
+      "metric_name": "reading_accuracy",
+      "display_label": "Reading accuracy",
+      "unit": "proportion",
+      "first_value": "0.9300",
+      "latest_value": "0.9600",
+      "change_direction": "increased",
+      "evidence_state": "sufficient",
+      "explanation": "Measured accuracy increased in comparable sessions."
+    },
+    {
+      "metric_name": "reading_fluency_wpm",
+      "display_label": "Reading speed",
+      "unit": "words_per_minute",
+      "first_value": "85.71",
+      "latest_value": "100.00",
+      "change_direction": "increased",
+      "evidence_state": "sufficient",
+      "explanation": "Reading-speed measurements increased in comparable sessions."
+    },
+    {
+      "metric_name": "hesitation_rate_per_word",
+      "display_label": "Hesitation rate",
+      "unit": "hesitations_per_attempted_word",
+      "first_value": "0.0500",
+      "latest_value": "0.0200",
+      "change_direction": "decreased",
+      "evidence_state": "sufficient",
+      "explanation": "Measured hesitation frequency decreased in comparable sessions."
+    }
+  ],
+  "history": [
+    {
+      "sequence": 1,
+      "recordedAt": "2026-01-01T09:00:00Z",
+      "accuracy": "0.93",
+      "wpm": "85.71",
+      "hesitation": "0.05",
+      "experimentalEngagement": "0.9339"
+    },
+    {
+      "sequence": 2,
+      "recordedAt": "2026-01-02T09:00:00Z",
+      "accuracy": "0.94",
+      "wpm": "92.31",
+      "hesitation": "0.04",
+      "experimentalEngagement": "0.9478"
+    },
+    {
+      "sequence": 3,
+      "recordedAt": "2026-01-03T09:00:00Z",
+      "accuracy": "0.95",
+      "wpm": "96.77",
+      "hesitation": "0.03",
+      "experimentalEngagement": "0.9335"
+    },
+    {
+      "sequence": 4,
+      "recordedAt": "2026-01-04T09:00:00Z",
+      "accuracy": "0.96",
+      "wpm": "100.0",
+      "hesitation": "0.02",
+      "experimentalEngagement": "0.9238"
+    },
+    {
+      "sequence": 5,
+      "recordedAt": "2026-01-05T09:00:00Z",
+      "accuracy": "0.96",
+      "wpm": "100.0",
+      "hesitation": "0.02",
+      "experimentalEngagement": "0.9238"
+    },
+    {
+      "sequence": 6,
+      "recordedAt": "2026-01-06T09:00:00Z",
+      "accuracy": "0.96",
+      "wpm": "100.0",
+      "hesitation": "0.02",
+      "experimentalEngagement": "0.9238"
+    }
+  ],
+  "reportStatements": [
+    "Reporting period [2026-01-01T00:00:00+00:00, 2026-01-31T00:00:00+00:00); UTC.",
+    "The reporting period contains 6 recorded sessions.",
+    "Descriptive educational observations only. They do not establish causes or assess health or ability.",
+    "Evidence is limited to the supplied role projection; unavailable fields are not inferred.",
+    "Advisory only. This report never changes support, difficulty or learner settings.",
+    "Context 1: Independent reading; observed Intermediate level; Adaptive support.",
+    "Context 1, reading_accuracy: first 0.9300, latest 0.9600; unit proportion.",
+    "Context 1, reading_accuracy: measurements increased in comparable observations; this does not establish improvement in ability.",
+    "Context 1, reading_fluency_wpm: first 85.71, latest 100.00; unit words_per_minute.",
+    "Context 1, reading_fluency_wpm: measurements increased in comparable observations; this does not establish improvement in ability.",
+    "Context 1, hesitation_rate_per_word: first 0.0500, latest 0.0200; unit hesitations_per_attempted_word.",
+    "Context 1, hesitation_rate_per_word: measurements decreased in comparable observations; this does not establish improvement in ability.",
+    "Observed difficulty labels: Intermediate level. No unlocked levels are inferred.",
+    "Observed Adaptive support: 6 recorded sessions."
+  ],
+  "recommendation": {
+    "status": "available",
+    "task_type": "independent_reading",
+    "current": "intermediate / Adaptive support",
+    "action": "Keep current support",
+    "proposed": [],
+    "reasons": [
+      "Recent reading accuracy is close to the difficulty progression threshold. Monitoring a few more sessions before suggesting a harder level."
+    ],
+    "limitations": [],
+    "evidence_state": "sufficient",
+    "fixed_baseline": false,
+    "manual_override_active": false,
+    "global_lock": false,
+    "manual_control_prevents_adjustment": false,
+    "blocked_by_manual_override": false,
+    "advisory_only": true,
+    "changes_applied": false,
+    "automatic_application_allowed": false,
+    "disclaimer": "Adaptive reading recommendations are experimental educational heuristics for software scaffolding only. They do not constitute a clinical assessment, diagnosis, or any determination of a learner's psychological or neurological state."
+  },
+  "recommendationExplanation": [
+    "Recent reading accuracy is close to the difficulty progression threshold. Monitoring a few more sessions before suggesting a harder level."
+  ],
+  "disclaimer": "These observations describe recorded reading sessions. They do not show why measurements changed."
+}]

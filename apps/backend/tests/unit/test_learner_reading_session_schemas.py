@@ -474,3 +474,22 @@ def test_reading_session_response_from_orm() -> None:
     assert direct_metrics.calculated_accuracy == Decimal("0.9200")
     assert direct_metrics.calculated_wpm == Decimal("25.00")
     assert direct_metrics.disclaimer == NON_CLINICAL_DISCLAIMER
+
+
+@pytest.mark.parametrize(
+    "field",
+    [
+        "words_attempted",
+        "words_correct",
+        "target_word_count",
+        "active_duration_ms",
+        "total_duration_ms",
+        "hesitation_count",
+        "total_pause_duration_ms",
+        "pause_count",
+        "replay_count",
+    ],
+)
+def test_telemetry_rejects_values_outside_existing_postgresql_integer_columns(field):
+    with pytest.raises(ValidationError):
+        ReadingSessionIngest.model_validate(_make_valid_payload_dict(**{field: 2_147_483_648}))

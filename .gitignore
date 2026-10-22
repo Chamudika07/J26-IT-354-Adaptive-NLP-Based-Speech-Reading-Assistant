@@ -259,3 +259,7 @@ research/artifacts/
 # The original Python template ignores lib/ globally; allow future app source here.
 !apps/mobile/src/lib/
 !apps/mobile/src/lib/**
+
+# Private certificate bundles
+*.p12
+*.pfx

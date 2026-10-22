@@ -1,8 +1,8 @@
-"""Private, unregistered adapters for proposed Component 4 reporting endpoints.
+"""Role-fixed service adapters used by authenticated Component 4 reporting endpoints.
 
-An approved HTTP layer may eventually supply the shared request-scoped ``Session``
-and authenticated ``Principal`` to these functions. It must also inject the learners
-component's approved production consent callback with the existing signature::
+The HTTP layer supplies the shared request-scoped ``Session``
+and authenticated ``Principal`` to these functions. Production consent integration
+needs the learners component's approved callback with the existing signature::
 
     ConsentChecker = Callable[[Session, UUID, str], None]
 
@@ -10,7 +10,8 @@ The callback must raise a sanitized ``SecurityError`` when active consent for
 ``learning_support`` is absent. No production evaluator exists here. Omitting the
 callback deliberately preserves the existing fail-closed service behavior.
 
-This module defines no ``APIRouter`` and is not imported by the production router.
+The router currently supplies the deny-by-default consent evaluator. This module
+defines no router and cannot turn a client-provided value into a consent decision.
 """
 
 from __future__ import annotations

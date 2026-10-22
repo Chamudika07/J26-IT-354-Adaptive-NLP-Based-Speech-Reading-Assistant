@@ -16,8 +16,11 @@
     "doctor": "expo-doctor"
   },
   "dependencies": {
-    "expo": "~57.0.30",
+    "expo": "~57.0.31",
     "expo-dev-client": "~57.0.20",
+    "expo-print": "~57.0.2",
+    "expo-secure-store": "~57.0.4",
+    "expo-sharing": "~57.0.24",
     "expo-status-bar": "~57.0.1",
     "react": "19.2.3",
     "react-native": "0.86.3",

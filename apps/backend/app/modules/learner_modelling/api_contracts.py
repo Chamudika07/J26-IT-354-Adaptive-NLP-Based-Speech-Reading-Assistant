@@ -1,8 +1,8 @@
-"""Inactive request contracts for proposed Component 4 reporting APIs.
+"""Bounded request and minimized response contracts for Component 4 APIs.
 
 This module defines validation only. It has no router, dependency injection, database
-access, authorization selection, or consent implementation. The 90-day and 1,000-row
-bounds are existing candidate internal limits, not approved production settings.
+access, authorization selection, or consent implementation. The existing 90-day and
+1,000-row safety bounds are retained; production consent integration remains blocked.
 """
 
 from __future__ import annotations
@@ -26,7 +26,7 @@ from app.modules.learner_modelling.historical import (
 
 
 class ReportingRequest(Schema):
-    """Learner-scoped, bounded values for a future reporting request.
+    """Learner-scoped, bounded values for a reporting request.
 
     No authorization action, access path, projection choice, or consent result is
     accepted from a client. Those policies remain fixed by the selected private
@@ -65,3 +65,11 @@ class ReportingRequest(Schema):
 ReportingProjection = (
     LearnerProgressProjection | GuardianSummaryProjection | EducatorAnalyticsProjection
 )
+
+
+class SessionIngestReceipt(Schema):
+    """Minimized ingestion acknowledgment, never an unrestricted session read."""
+
+    id: UUID
+    client_session_id: UUID
+    created: bool

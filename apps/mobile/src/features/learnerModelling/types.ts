@@ -16,6 +16,8 @@ export interface MetricPreview {
   latestValue: number;
   changeDirection: ChangeDirection;
   evidenceLabel: string;
+  validObservationCount?: number;
+  missingObservationCount?: number;
   explanation: string;
   detail?: string;
 }

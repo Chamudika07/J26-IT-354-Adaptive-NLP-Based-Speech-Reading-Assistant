@@ -9,7 +9,7 @@ def test_migration_history_has_one_root_and_one_head() -> None:
     history = ScriptDirectory.from_config(Config(str(backend / "alembic.ini")))
     assert len(history.get_heads()) == 1
     assert len(history.get_bases()) == 1
-    assert history.get_current_head() == "0006_learner_reading_sessions"
+    assert history.get_current_head() == "0008_c4_pp1_saved"
 
 
 def test_historical_migration_test_targets_intended_revision() -> None:

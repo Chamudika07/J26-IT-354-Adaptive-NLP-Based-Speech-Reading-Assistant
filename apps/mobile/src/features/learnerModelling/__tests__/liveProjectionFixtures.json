@@ -1,0 +1,290 @@
+{
+  "learner": {
+    "reporting_period": {
+      "start_at_utc": "2026-01-01T00:00:00Z",
+      "end_at_utc": "2026-02-01T00:00:00Z"
+    },
+    "included_session_count": 6,
+    "contexts": [
+      {
+        "task_label": "Independent reading",
+        "difficulty_label": "Intermediate level",
+        "support_label": "Adaptive support",
+        "metrics": [
+          {
+            "metric_name": "reading_accuracy",
+            "display_label": "Reading accuracy",
+            "unit": "proportion",
+            "first_value": "0.9000",
+            "latest_value": "0.9000",
+            "change_direction": "no_observed_change",
+            "evidence_state": "sufficient",
+            "explanation": "Measured accuracy showed no observed change in comparable sessions."
+          },
+          {
+            "metric_name": "reading_fluency_wpm",
+            "display_label": "Reading speed",
+            "unit": "words_per_minute",
+            "first_value": "100.00",
+            "latest_value": "100.00",
+            "change_direction": "no_observed_change",
+            "evidence_state": "sufficient",
+            "explanation": "Reading-speed measurements showed no observed change in comparable sessions."
+          },
+          {
+            "metric_name": "hesitation_rate_per_word",
+            "display_label": "Hesitation rate",
+            "unit": "hesitations_per_attempted_word",
+            "first_value": null,
+            "latest_value": null,
+            "change_direction": "insufficient_evidence",
+            "evidence_state": "no_observations",
+            "explanation": "There are not enough comparable observations to describe a trend."
+          }
+        ]
+      }
+    ],
+    "support_observations": [
+      {
+        "support_label": "Adaptive support",
+        "session_count": 6,
+        "description": "Reading sessions were recorded using adaptive support."
+      }
+    ],
+    "difficulty_observations": [
+      {
+        "observed_at": "2026-01-02T00:00:00Z",
+        "task_label": "Independent reading",
+        "support_label": "Adaptive support",
+        "difficulty_label": "Intermediate level",
+        "description": "Intermediate level reading sessions were observed for independent reading with adaptive support."
+      }
+    ],
+    "evidence_message": "Some observations are available, but more comparable sessions are needed.",
+    "disclaimer": "These observations describe recorded reading sessions. They do not show why measurements changed."
+  },
+  "guardian": {
+    "reporting_period": {
+      "start_at_utc": "2026-01-01T00:00:00Z",
+      "end_at_utc": "2026-02-01T00:00:00Z"
+    },
+    "included_session_count": 6,
+    "contexts": [
+      {
+        "task_type": "independent_reading",
+        "task_label": "Independent reading",
+        "difficulty_tier": "intermediate",
+        "difficulty_label": "Intermediate level",
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "session_count": 6,
+        "first_session_at": "2026-01-02T00:00:00Z",
+        "latest_session_at": "2026-01-07T00:00:00Z",
+        "metrics": [
+          {
+            "metric_name": "reading_accuracy",
+            "display_label": "Reading accuracy",
+            "unit": "proportion",
+            "valid_observation_count": 6,
+            "missing_observation_count": 0,
+            "first_value": "0.9000",
+            "latest_value": "0.9000",
+            "change_direction": "no_observed_change",
+            "evidence_sufficient": true,
+            "fluctuation_detected": false,
+            "explanation": "Measured accuracy showed no observed change in comparable sessions."
+          },
+          {
+            "metric_name": "reading_fluency_wpm",
+            "display_label": "Reading speed",
+            "unit": "words_per_minute",
+            "valid_observation_count": 6,
+            "missing_observation_count": 0,
+            "first_value": "100.00",
+            "latest_value": "100.00",
+            "change_direction": "no_observed_change",
+            "evidence_sufficient": true,
+            "fluctuation_detected": false,
+            "explanation": "Reading-speed measurements showed no observed change in comparable sessions."
+          },
+          {
+            "metric_name": "hesitation_rate_per_word",
+            "display_label": "Hesitation rate",
+            "unit": "hesitations_per_attempted_word",
+            "valid_observation_count": 0,
+            "missing_observation_count": 6,
+            "first_value": null,
+            "latest_value": null,
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "explanation": "There are not enough comparable observations to describe a trend."
+          }
+        ]
+      }
+    ],
+    "support_exposures": [
+      {
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "session_count": 6,
+        "first_observed_at": "2026-01-02T00:00:00Z",
+        "latest_observed_at": "2026-01-07T00:00:00Z",
+        "description": "Reading sessions were recorded using adaptive support."
+      }
+    ],
+    "difficulty_history": [
+      {
+        "observed_at": "2026-01-02T00:00:00Z",
+        "task_type": "independent_reading",
+        "task_label": "Independent reading",
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "previous_difficulty_tier": null,
+        "difficulty_tier": "intermediate",
+        "difficulty_label": "Intermediate level",
+        "description": "Intermediate level reading sessions were observed for independent reading with adaptive support."
+      }
+    ],
+    "evidence_limitations": [
+      "Trends require at least six valid observations in one comparable context.",
+      "Sessions are compared only when task, difficulty, and observed support mode match.",
+      "Observed support and difficulty context do not explain why measurements changed."
+    ],
+    "disclaimer": "These descriptive observations do not show that a support mode caused a change and should be considered with other educational information."
+  },
+  "educator": {
+    "reporting_period": {
+      "start_at_utc": "2026-01-01T00:00:00Z",
+      "end_at_utc": "2026-02-01T00:00:00Z"
+    },
+    "included_session_count": 6,
+    "partitions": [
+      {
+        "task_type": "independent_reading",
+        "difficulty_tier": "intermediate",
+        "support_mode": "adaptive",
+        "window": {
+          "start_at_utc": "2026-01-01T00:00:00Z",
+          "end_at_utc": "2026-02-01T00:00:00Z"
+        },
+        "session_count": 6,
+        "first_session_at": "2026-01-02T00:00:00Z",
+        "latest_session_at": "2026-01-07T00:00:00Z",
+        "metrics": [
+          {
+            "metric_name": "reading_accuracy",
+            "unit": "proportion",
+            "total_relevant_sessions": 6,
+            "valid_observation_count": 6,
+            "missing_observation_count": 0,
+            "missing_observations": [],
+            "first_value": "0.9000",
+            "first_observed_at": "2026-01-02T00:00:00Z",
+            "latest_value": "0.9000",
+            "latest_observed_at": "2026-01-07T00:00:00Z",
+            "early_window_count": 3,
+            "early_window_mean": "0.9000",
+            "late_window_count": 3,
+            "late_window_mean": "0.9000",
+            "numeric_change": "0.0000",
+            "change_direction": "no_observed_change",
+            "evidence_sufficient": true,
+            "fluctuation_detected": false,
+            "metric_calculation_version": "analytics.calculate_reading_accuracy-v1",
+            "observed_metric_versions": [
+              "analytics.calculate_reading_accuracy-v1"
+            ],
+            "longitudinal_calculation_version": "v0.1-early-late-3",
+            "comparison_blocker": null,
+            "educational_interpretation": "Measured reading accuracy showed no observed change across the selected observations."
+          },
+          {
+            "metric_name": "reading_fluency_wpm",
+            "unit": "words_per_minute",
+            "total_relevant_sessions": 6,
+            "valid_observation_count": 6,
+            "missing_observation_count": 0,
+            "missing_observations": [],
+            "first_value": "100.00",
+            "first_observed_at": "2026-01-02T00:00:00Z",
+            "latest_value": "100.00",
+            "latest_observed_at": "2026-01-07T00:00:00Z",
+            "early_window_count": 3,
+            "early_window_mean": "100.00",
+            "late_window_count": 3,
+            "late_window_mean": "100.00",
+            "numeric_change": "0.00",
+            "change_direction": "no_observed_change",
+            "evidence_sufficient": true,
+            "fluctuation_detected": false,
+            "metric_calculation_version": "analytics.calculate_words_per_minute-v1",
+            "observed_metric_versions": [
+              "analytics.calculate_words_per_minute-v1"
+            ],
+            "longitudinal_calculation_version": "v0.1-early-late-3",
+            "comparison_blocker": null,
+            "educational_interpretation": "Measured reading speed showed no observed change across the selected observations."
+          },
+          {
+            "metric_name": "hesitation_rate_per_word",
+            "unit": "hesitations_per_attempted_word",
+            "total_relevant_sessions": 6,
+            "valid_observation_count": 0,
+            "missing_observation_count": 6,
+            "missing_observations": [
+              {
+                "reason_code": "hesitation_not_measured",
+                "count": 6
+              }
+            ],
+            "first_value": null,
+            "first_observed_at": null,
+            "latest_value": null,
+            "latest_observed_at": null,
+            "early_window_count": 0,
+            "early_window_mean": null,
+            "late_window_count": 0,
+            "late_window_mean": null,
+            "numeric_change": null,
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "metric_calculation_version": null,
+            "observed_metric_versions": [],
+            "longitudinal_calculation_version": "v0.1-early-late-3",
+            "comparison_blocker": null,
+            "educational_interpretation": "Insufficient comparable observations are available."
+          }
+        ]
+      }
+    ],
+    "support_mode_exposures": [
+      {
+        "support_mode": "adaptive",
+        "session_count": 6,
+        "total_duration_ms": 420000,
+        "active_duration_ms": 360000,
+        "first_observed_at": "2026-01-02T00:00:00Z",
+        "latest_observed_at": "2026-01-07T00:00:00Z"
+      }
+    ],
+    "difficulty_timeline": [
+      {
+        "observed_at": "2026-01-02T00:00:00Z",
+        "task_type": "independent_reading",
+        "support_mode": "adaptive",
+        "previous_difficulty_tier": null,
+        "difficulty_tier": "intermediate"
+      }
+    ],
+    "longitudinal_calculation_version": "v0.1-early-late-3",
+    "limitations": [
+      "Results are descriptive and do not establish that support caused a change.",
+      "Task, difficulty tier, and observed support mode are analyzed separately.",
+      "Observed support mode does not represent randomized research assignment.",
+      "Exact historical support-setting values are not available in session telemetry."
+    ],
+    "disclaimer": "These descriptive educational observations do not establish causes and should not be used to assess health or ability."
+  }
+}

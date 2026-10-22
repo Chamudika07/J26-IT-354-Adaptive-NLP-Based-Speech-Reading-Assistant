@@ -502,3 +502,101 @@ def test_repository_methods_never_commit() -> None:
     db.add.assert_called_once_with(orm_instance)
     db.flush.assert_called_once()
     db.commit.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"words_attempted": 1000000, "words_correct": 0, "active_duration_ms": 1000},
+        {"words_attempted": 1, "words_correct": 1, "hesitation_count": 100},
+    ],
+)
+def test_unrepresentable_metrics_fail_before_database_write(monkeypatch, overrides):
+    """Storage limits are not educational thresholds; never clamp or invent values."""
+    db = MagicMock(spec=Session)
+    principal = _make_principal()
+    payload = _make_ingest_payload(**overrides)
+    monkeypatch.setattr(
+        "app.modules.learner_modelling.service.protect_principal_for_write", lambda db, p: p
+    )
+    monkeypatch.setattr(
+        "app.modules.learner_modelling.service.authorize_learner_action", lambda *a: None
+    )
+    monkeypatch.setattr(
+        "app.modules.learner_modelling.service.assert_protected_session_live", lambda *a: None
+    )
+    monkeypatch.setattr(repo, "get_session_by_client_id", lambda *a, **k: None)
+    insert = MagicMock()
+    monkeypatch.setattr(repo, "insert_reading_session", insert)
+    with pytest.raises(SecurityError) as error:
+        ingest_reading_session(db, principal, payload, consent_checker=lambda *a: None)
+    assert error.value.status == 422
+    assert error.value.code == "measurement_out_of_range"
+    insert.assert_not_called()
+    db.begin_nested.assert_not_called()
+
+
+def test_unexpected_consent_failure_is_sanitized_before_repository_access(monkeypatch):
+    db = MagicMock(spec=Session)
+    monkeypatch.setattr(
+        "app.modules.learner_modelling.service.protect_principal_for_write", lambda db, p: p
+    )
+    monkeypatch.setattr(
+        "app.modules.learner_modelling.service.authorize_learner_action", lambda *a: None
+    )
+    read = MagicMock()
+    monkeypatch.setattr(repo, "get_session_by_client_id", read)
+
+    def unavailable(*args):
+        raise RuntimeError("private consent provider details")
+
+    with pytest.raises(SecurityError) as error:
+        ingest_reading_session(
+            db, _make_principal(), _make_ingest_payload(), consent_checker=unavailable
+        )
+    assert error.value.status == 503
+    assert "private" not in str(error.value)
+    read.assert_not_called()
+    db.add.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "overrides, expected_wpm, expected_hesitation",
+    [
+        (
+            {"words_attempted": 99999, "words_correct": 0, "active_duration_ms": 60000},
+            Decimal("99999.00"),
+            Decimal("0.0000"),
+        ),
+        (
+            {"words_attempted": 1, "words_correct": 1, "hesitation_count": 99},
+            Decimal("0.25"),
+            Decimal("99.0000"),
+        ),
+    ],
+)
+def test_representable_large_metrics_are_not_clamped(
+    monkeypatch, overrides, expected_wpm, expected_hesitation
+):
+    db = MagicMock(spec=Session)
+    monkeypatch.setattr(
+        "app.modules.learner_modelling.service.protect_principal_for_write", lambda db, p: p
+    )
+    monkeypatch.setattr(
+        "app.modules.learner_modelling.service.authorize_learner_action", lambda *a: None
+    )
+    monkeypatch.setattr(
+        "app.modules.learner_modelling.service.assert_protected_session_live", lambda *a: None
+    )
+    monkeypatch.setattr(repo, "get_session_by_client_id", lambda *a, **k: None)
+    insert = MagicMock()
+    monkeypatch.setattr(repo, "insert_reading_session", insert)
+    payload = _make_ingest_payload(**{**{"hesitation_count": 0}, **overrides})
+    record, created = ingest_reading_session(
+        db, _make_principal(), payload, consent_checker=lambda *a: None
+    )
+    assert created
+    assert record.calculated_wpm == expected_wpm
+    assert record.calculated_hesitation_rate == expected_hesitation
+    insert.assert_called_once()
+    db.commit.assert_not_called()

@@ -15,7 +15,20 @@ from app.modules.learner_modelling.historical import (
     HistoricalSessionQuery,
     HistoricalSessionRecord,
 )
-from app.modules.learner_modelling.models import ReadingSession
+from app.modules.learner_modelling.models import LearnerReadingSupportSettings, ReadingSession
+
+
+def get_support_settings(db: Session, learner_id: UUID) -> LearnerReadingSupportSettings | None:
+    """Private learner-scoped lookup; caller must already authorize and evaluate consent.
+
+    No defaults, locks, writes or transaction ownership. Suppress implicit flushing
+    of unrelated pending changes when SQLAlchemy executes the read.
+    """
+    statement = select(LearnerReadingSupportSettings).where(
+        LearnerReadingSupportSettings.learner_id == learner_id
+    )
+    with db.no_autoflush:
+        return db.scalars(statement).one_or_none()
 
 
 def get_session_by_client_id(

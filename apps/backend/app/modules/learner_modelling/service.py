@@ -166,15 +166,16 @@ def _read_dashboard_projection[DashboardProjectionT](
     """Run one complete read-only dashboard pipeline without owning the transaction.
 
     The candidate access-path mappings and disclosure policies still require team
-    approval. Consent withdrawal locking/version semantics are also unresolved, so
-    these private entry points must remain unreachable from production routes.
+    approval. Consent withdrawal locking/version semantics are also unresolved.
+    HTTP callers therefore retain the deny-by-default consent evaluator; only
+    synthetic tests inject an allowing checker until production integration is approved.
     """
     if not isinstance(principal, Principal) or principal.status != "active":
         raise authentication_required()
 
     grant = authorize_learner_action(db, principal, query.learner_id, policy.action)
     _verify_dashboard_grant(grant, principal, query, policy)
-    _evaluate_dashboard_consent(db, query.learner_id, consent_checker)
+    _evaluate_learning_support_consent(db, query.learner_id, consent_checker)
 
     records = repo.get_bounded_learner_session_history(db, query)
     observations = historical_records_to_observations(records)
@@ -204,7 +205,7 @@ def _verify_dashboard_grant[DashboardProjectionT](
         raise SecurityError(404, "not_found", "Resource not found")
 
 
-def _evaluate_dashboard_consent(
+def _evaluate_learning_support_consent(
     db: Session,
     learner_id: UUID,
     consent_checker: ConsentChecker | None,
@@ -238,6 +239,8 @@ def ingest_reading_session(
         SecurityError(404 / 403): if principal lacks PERFORM_LEARNING_INTERACTION on learner
         SecurityError(403): if active consent for 'learning_support' is missing or unverified
         SecurityError(409): if client_session_id exists but request_digest conflicts
+        SecurityError(422): if calculated measurements exceed existing storage precision
+        SecurityError(503): if the consent evaluator is unexpectedly unavailable
     """
     if principal.status != "active":
         raise SecurityError(401, "authentication_required", "Authentication required")
@@ -254,8 +257,7 @@ def ingest_reading_session(
     )
 
     # 3. Verify consent before checking or returning existing session data or persisting new session
-    checker = consent_checker if consent_checker is not None else _fail_closed_consent_checker
-    checker(db, payload.learner_id, CONSENT_PURPOSE_LEARNING_SUPPORT)
+    _evaluate_learning_support_consent(db, payload.learner_id, consent_checker)
 
     # 4. Compute backend-owned canonical request digest
     canonical_digest = compute_canonical_session_digest(payload)
@@ -296,6 +298,13 @@ def ingest_reading_session(
     )
     engagement_dec = Decimal(f"{eng.score:.4f}") if eng.score is not None else None
     formula_version = eng.formula_version
+
+    # Existing PostgreSQL Numeric(7, 2) and Numeric(6, 4) representation limits,
+    # not new educational thresholds. Reject rather than clamp or lose evidence.
+    if (wpm_dec is not None and wpm_dec >= Decimal("100000")) or (
+        hesitation_dec is not None and hesitation_dec >= Decimal("100")
+    ):
+        raise SecurityError(422, "measurement_out_of_range", "Measurements exceed storage limits")
 
     orm_session = payload.to_orm_model(
         request_digest=canonical_digest,

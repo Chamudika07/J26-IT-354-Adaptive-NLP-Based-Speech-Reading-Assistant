@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react-native";
+import { fireEvent, act, render, screen } from "@testing-library/react-native";
 
 import { DashboardStateView } from "../components/DashboardStateView";
 import {
@@ -69,8 +69,8 @@ describe("Component 4 dashboard providers", () => {
       });
 
       expect(screen.getByText("Report temporarily unavailable")).toBeTruthy();
-      expect(screen.queryByText("DEMO — SYNTHETIC DATA")).toBeNull();
-      expect(screen.queryByText("My reading progress")).toBeNull();
+      expect(screen.queryByText("Sample Data")).toBeNull();
+      expect(screen.queryByText("Hi, Reader!")).toBeNull();
     },
     15_000,
   );
@@ -84,14 +84,14 @@ describe("Component 4 dashboard providers", () => {
     };
     const view = render(<LearnerProgressScreen periodDays={30} />);
 
-    expect(await screen.findByText("My reading progress")).toBeTruthy();
-    expect(screen.getByText("DEMO — SYNTHETIC DATA")).toBeTruthy();
+    expect(await screen.findByText("Hi, Reader!")).toBeTruthy();
+    expect(screen.getByText("Sample Data")).toBeTruthy();
 
     view.rerender(<LearnerProgressScreen periodDays={30} provider={liveProvider} />);
 
     expect(screen.getByText("Loading reading report")).toBeTruthy();
-    expect(screen.queryByText("My reading progress")).toBeNull();
-    expect(screen.queryByText("DEMO — SYNTHETIC DATA")).toBeNull();
+    expect(screen.queryByText("Hi, Reader!")).toBeNull();
+    expect(screen.queryByText("Sample Data")).toBeNull();
     view.unmount();
   });
 
@@ -104,7 +104,7 @@ describe("Component 4 dashboard providers", () => {
     const view = render(<LearnerProgressScreen periodDays={30} provider={demoProvider} />);
 
     expect(screen.getByText("Loading reading report")).toBeTruthy();
-    expect(screen.getByText("DEMO — SYNTHETIC DATA")).toBeTruthy();
+    expect(screen.getByText("Sample Data")).toBeTruthy();
 
     view.rerender(
       <LearnerProgressScreen periodDays={30} provider={unavailableLiveDashboardProvider} />,
@@ -116,8 +116,8 @@ describe("Component 4 dashboard providers", () => {
       await demoRequest.promise;
     });
 
-    expect(screen.queryByText("My reading progress")).toBeNull();
-    expect(screen.queryByText("DEMO — SYNTHETIC DATA")).toBeNull();
+    expect(screen.queryByText("Hi, Reader!")).toBeNull();
+    expect(screen.queryByText("Sample Data")).toBeNull();
     expect(screen.getByText("Report temporarily unavailable")).toBeTruthy();
   });
 
@@ -125,7 +125,7 @@ describe("Component 4 dashboard providers", () => {
     const provider = createTestProvider();
     render(<LearnerProgressScreen periodDays={7} provider={provider} />);
 
-    expect(await screen.findByText("My reading progress")).toBeTruthy();
+    expect(await screen.findByText("Hi, Reader!")).toBeTruthy();
     expect(provider.loadLearnerProgress).toHaveBeenCalledWith(7);
     expect(provider.loadGuardianSummary).not.toHaveBeenCalled();
     expect(provider.loadEducatorAnalytics).not.toHaveBeenCalled();
@@ -145,6 +145,7 @@ describe("Component 4 dashboard providers", () => {
     const provider = createTestProvider();
     render(<EducatorAnalyticsScreen periodDays={90} provider={provider} />);
 
+    fireEvent.press(await screen.findByRole("button", { name: "View separate example" }));
     expect(await screen.findByText("Educator reading analytics")).toBeTruthy();
     expect(provider.loadEducatorAnalytics).toHaveBeenCalledWith(90);
     expect(provider.loadLearnerProgress).not.toHaveBeenCalled();
@@ -188,7 +189,7 @@ describe("Component 4 dashboard providers", () => {
     render(<DashboardStateView state={{ status, provenance: "demo" }} />);
 
     expect(screen.getByText(title)).toBeTruthy();
-    expect(screen.getByText("DEMO — SYNTHETIC DATA")).toBeTruthy();
+    expect(screen.getByText("Sample Data")).toBeTruthy();
   });
 
   it("maps typed consent and authorization failures without evaluating either policy", async () => {
@@ -208,3 +209,18 @@ describe("Component 4 dashboard providers", () => {
     expect(await screen.findByText("Learner unavailable")).toBeTruthy();
   });
 });
+
+it.each(["loadLearnerProgress", "loadGuardianSummary", "loadEducatorAnalytics"] as const)(
+  "keeps %s inactive for every reporting period without network or synthetic fallback",
+  async (method) => {
+    const fetch = jest.spyOn(globalThis, "fetch");
+    try {
+      for (const days of [7, 30, 90] as const) {
+        await expect(unavailableLiveDashboardProvider[method](days)).rejects.toMatchObject({
+          name: "DashboardProviderError", failure: "temporarily_unavailable",
+        });
+      }
+      expect(fetch).not.toHaveBeenCalled();
+    } finally { fetch.mockRestore(); }
+  },
+);

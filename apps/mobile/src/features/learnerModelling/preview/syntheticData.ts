@@ -297,6 +297,8 @@ function metricPreview(
     firstValue: evidence.firstValue,
     latestValue: evidence.latestValue,
     changeDirection: evidence.changeDirection,
+    validObservationCount: evidence.validObservationCount,
+    missingObservationCount: evidence.missingObservationCount,
     evidenceLabel: `${sufficiency} — ${evidence.validObservationCount} of ${sessionCount} sessions measured`,
     explanation,
     detail: metricDetail(role, evidence),

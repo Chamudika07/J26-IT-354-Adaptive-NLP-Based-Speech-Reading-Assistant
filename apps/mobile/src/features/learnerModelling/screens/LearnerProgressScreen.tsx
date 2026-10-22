@@ -1,6 +1,7 @@
 import { useCallback } from "react";
+import { DashboardModeBoundary, type LiveScreenProps } from "../components/DashboardModeBoundary";
 
-import { DashboardStateView } from "../components/DashboardStateView";
+import { LearnerNavigation } from "../navigation/LearnerNavigation";
 import {
   demoDashboardProvider,
   type Component4DashboardProvider,
@@ -8,12 +9,16 @@ import {
 import { useDashboardPresentation } from "../data/useDashboardPresentation";
 import type { ReportingPeriodDays } from "../types";
 
-interface LearnerProgressScreenProps {
+interface LearnerProgressScreenProps extends LiveScreenProps {
   periodDays: ReportingPeriodDays;
   provider?: Component4DashboardProvider;
 }
 
-export function LearnerProgressScreen({
+export function LearnerProgressScreen(props: LearnerProgressScreenProps) {
+  return <DashboardModeBoundary {...props} role="learner"><DemoLearnerProgressScreen {...props} /></DashboardModeBoundary>;
+}
+
+function DemoLearnerProgressScreen({
   periodDays,
   provider = demoDashboardProvider,
 }: LearnerProgressScreenProps) {
@@ -23,5 +28,5 @@ export function LearnerProgressScreen({
   );
   const state = useDashboardPresentation(loadDashboard, provider.mode);
 
-  return <DashboardStateView state={state} />;
+  return <LearnerNavigation state={state} periodDays={periodDays} />;
 }

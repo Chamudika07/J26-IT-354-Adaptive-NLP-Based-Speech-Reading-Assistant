@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { palette, radii, softShadow, spacing } from "../theme";
 import type { PreviewRole } from "../types";
 
 interface RoleSwitcherProps {
@@ -7,57 +8,88 @@ interface RoleSwitcherProps {
   onSelectRole: (role: PreviewRole) => void;
 }
 
-const ROLES: readonly { value: PreviewRole; label: string }[] = [
-  { value: "learner", label: "Learner" },
-  { value: "guardian", label: "Guardian" },
-  { value: "educator", label: "Educator" },
+const ROLES: readonly { value: PreviewRole; label: string; icon: string }[] = [
+  { value: "learner", label: "Learner", icon: "Aa" },
+  { value: "guardian", label: "Guardian", icon: "♡" },
+  { value: "educator", label: "Educator", icon: "✓" },
 ];
 
 export function RoleSwitcher({ selectedRole, onSelectRole }: RoleSwitcherProps) {
   return (
-    <View accessibilityRole="tablist" style={styles.group}>
-      {ROLES.map(({ value, label }) => {
-        const selected = value === selectedRole;
-        return (
-          <Pressable
-            accessibilityRole="tab"
-            accessibilityLabel={`${label} synthetic preview`}
-            accessibilityState={{ selected }}
-            key={value}
-            onPress={() => onSelectRole(value)}
-            style={[styles.button, selected && styles.selectedButton]}
-          >
-            <Text style={[styles.label, selected && styles.selectedLabel]}>{label}</Text>
-          </Pressable>
-        );
-      })}
+    <View style={[styles.container, selectedRole === "educator" && __DEV__ && { paddingRight: 40 }]}>
+      {selectedRole !== "educator" ? <Text style={styles.demoLabel}>Demo views only: choose your view</Text> : null}
+      <View accessibilityRole="tablist" style={styles.group}>
+        {ROLES.map(({ value, label, icon }) => {
+          const selected = value === selectedRole;
+          return (
+            <Pressable
+              accessibilityRole="tab"
+              accessibilityLabel={`${label} sample preview`}
+              accessibilityState={{ selected }}
+              key={value}
+              onPress={() => onSelectRole(value)}
+              style={({ pressed }) => [
+                styles.button,
+                selectedRole === "educator" && styles.compactButton,
+                selected && styles.selectedButton,
+                pressed && styles.pressedButton,
+              ]}
+            >
+              <Text style={[styles.icon, selected && styles.selectedLabel]}>{icon}</Text>
+              <Text style={[styles.label, selected && styles.selectedLabel]}>{label}</Text>
+            </Pressable>
+          );
+        })}
+        </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    gap: spacing.sm,
+  },
+  demoLabel: {
+    color: palette.primaryDark,
+    fontSize: 12,
+    fontWeight: "800",
+  },
   group: {
     flexDirection: "row",
-    gap: 8,
+    gap: spacing.sm,
   },
   button: {
     flex: 1,
-    minHeight: 44,
+    minHeight: 56,
+    paddingVertical: 8,
+    paddingHorizontal: 4,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 12,
+    gap: 2,
+    borderRadius: radii.medium,
     borderWidth: 1,
-    borderColor: "#B9C8D5",
-    backgroundColor: "#FFFFFF",
+    borderColor: palette.outline,
+    backgroundColor: palette.surface,
+    ...softShadow,
   },
+  compactButton: { minHeight: 48, flexDirection: "row", flexWrap: "wrap", gap: 6 },
   selectedButton: {
-    borderColor: "#176B5B",
-    backgroundColor: "#176B5B",
+    borderColor: palette.primary,
+    backgroundColor: palette.primary,
+  },
+  pressedButton: {
+    opacity: 0.82,
+  },
+  icon: {
+    color: palette.primary,
+    fontSize: 15,
+    fontWeight: "900",
   },
   label: {
-    color: "#274154",
-    fontSize: 14,
-    fontWeight: "700",
+    color: palette.ink,
+    fontSize: 13,
+    textAlign: "center",
+    fontWeight: "800",
   },
   selectedLabel: {
     color: "#FFFFFF",

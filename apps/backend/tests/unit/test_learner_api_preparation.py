@@ -546,6 +546,6 @@ def test_role_adapter_service_failures_remain_sanitized(
     assert "private" not in error.message
 
 
-def test_inactive_adapters_are_not_exposed_as_routes() -> None:
-    assert router.routes == []
+def test_reporting_routes_use_existing_private_adapters() -> None:
+    assert len(router.routes) == 4
     assert not hasattr(api_adapters, "router")

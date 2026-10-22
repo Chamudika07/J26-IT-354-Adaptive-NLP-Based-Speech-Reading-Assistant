@@ -1,0 +1,1515 @@
+{
+  "LearnerProgressProjection": {
+    "$defs": {
+      "DashboardWindow": {
+        "additionalProperties": false,
+        "description": "Half-open UTC reporting period copied from the longitudinal report.",
+        "properties": {
+          "start_at_utc": {
+            "format": "date-time",
+            "title": "Start At Utc",
+            "type": "string"
+          },
+          "end_at_utc": {
+            "format": "date-time",
+            "title": "End At Utc",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_at_utc",
+          "end_at_utc"
+        ],
+        "title": "DashboardWindow",
+        "type": "object"
+      },
+      "DisplayTrend": {
+        "additionalProperties": false,
+        "description": "Small learner-facing observation without internal evidence details.",
+        "properties": {
+          "metric_name": {
+            "enum": [
+              "reading_accuracy",
+              "reading_fluency_wpm",
+              "hesitation_rate_per_word"
+            ],
+            "title": "Metric Name",
+            "type": "string"
+          },
+          "display_label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Display Label",
+            "type": "string"
+          },
+          "unit": {
+            "enum": [
+              "proportion",
+              "words_per_minute",
+              "hesitations_per_attempted_word"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "first_value": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,28}|(?=[\\d.]{1,29}0*$)\\d*\\.\\d*0*$)",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Value"
+          },
+          "latest_value": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,28}|(?=[\\d.]{1,29}0*$)\\d*\\.\\d*0*$)",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Value"
+          },
+          "change_direction": {
+            "enum": [
+              "increased",
+              "decreased",
+              "no_observed_change",
+              "insufficient_evidence"
+            ],
+            "title": "Change Direction",
+            "type": "string"
+          },
+          "evidence_state": {
+            "enum": [
+              "sufficient",
+              "limited",
+              "no_observations"
+            ],
+            "title": "Evidence State",
+            "type": "string"
+          },
+          "explanation": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Explanation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "metric_name",
+          "display_label",
+          "unit",
+          "first_value",
+          "latest_value",
+          "change_direction",
+          "evidence_state",
+          "explanation"
+        ],
+        "title": "DisplayTrend",
+        "type": "object"
+      },
+      "LearnerContextObservation": {
+        "additionalProperties": false,
+        "description": "Friendly labels and three approved metrics for one comparable context.",
+        "properties": {
+          "task_label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Task Label",
+            "type": "string"
+          },
+          "difficulty_label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Difficulty Label",
+            "type": "string"
+          },
+          "support_label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Support Label",
+            "type": "string"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/$defs/DisplayTrend"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Metrics",
+            "type": "array"
+          }
+        },
+        "required": [
+          "task_label",
+          "difficulty_label",
+          "support_label",
+          "metrics"
+        ],
+        "title": "LearnerContextObservation",
+        "type": "object"
+      },
+      "LearnerDifficultyObservation": {
+        "additionalProperties": false,
+        "description": "Friendly, descriptive difficulty event without achievement claims.",
+        "properties": {
+          "observed_at": {
+            "format": "date-time",
+            "title": "Observed At",
+            "type": "string"
+          },
+          "task_label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Task Label",
+            "type": "string"
+          },
+          "support_label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Support Label",
+            "type": "string"
+          },
+          "difficulty_label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Difficulty Label",
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Description",
+            "type": "string"
+          }
+        },
+        "required": [
+          "observed_at",
+          "task_label",
+          "support_label",
+          "difficulty_label",
+          "description"
+        ],
+        "title": "LearnerDifficultyObservation",
+        "type": "object"
+      },
+      "LearnerSupportObservation": {
+        "additionalProperties": false,
+        "description": "Minimized description of sessions recorded with one support mode.",
+        "properties": {
+          "support_label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Support Label",
+            "type": "string"
+          },
+          "session_count": {
+            "minimum": 1,
+            "title": "Session Count",
+            "type": "integer"
+          },
+          "description": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Description",
+            "type": "string"
+          }
+        },
+        "required": [
+          "support_label",
+          "session_count",
+          "description"
+        ],
+        "title": "LearnerSupportObservation",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "description": "Minimal, supportive projection for the already-authorized learner.",
+    "properties": {
+      "reporting_period": {
+        "$ref": "#/$defs/DashboardWindow"
+      },
+      "included_session_count": {
+        "minimum": 0,
+        "title": "Included Session Count",
+        "type": "integer"
+      },
+      "contexts": {
+        "items": {
+          "$ref": "#/$defs/LearnerContextObservation"
+        },
+        "maxItems": 27,
+        "title": "Contexts",
+        "type": "array"
+      },
+      "support_observations": {
+        "items": {
+          "$ref": "#/$defs/LearnerSupportObservation"
+        },
+        "maxItems": 3,
+        "title": "Support Observations",
+        "type": "array"
+      },
+      "difficulty_observations": {
+        "items": {
+          "$ref": "#/$defs/LearnerDifficultyObservation"
+        },
+        "maxItems": 1024,
+        "title": "Difficulty Observations",
+        "type": "array"
+      },
+      "evidence_message": {
+        "maxLength": 400,
+        "minLength": 1,
+        "title": "Evidence Message",
+        "type": "string"
+      },
+      "disclaimer": {
+        "maxLength": 400,
+        "minLength": 1,
+        "title": "Disclaimer",
+        "type": "string"
+      }
+    },
+    "required": [
+      "reporting_period",
+      "included_session_count",
+      "contexts",
+      "support_observations",
+      "difficulty_observations",
+      "evidence_message",
+      "disclaimer"
+    ],
+    "title": "LearnerProgressProjection",
+    "type": "object"
+  },
+  "GuardianSummaryProjection": {
+    "$defs": {
+      "DashboardWindow": {
+        "additionalProperties": false,
+        "description": "Half-open UTC reporting period copied from the longitudinal report.",
+        "properties": {
+          "start_at_utc": {
+            "format": "date-time",
+            "title": "Start At Utc",
+            "type": "string"
+          },
+          "end_at_utc": {
+            "format": "date-time",
+            "title": "End At Utc",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_at_utc",
+          "end_at_utc"
+        ],
+        "title": "DashboardWindow",
+        "type": "object"
+      },
+      "GuardianContextSummary": {
+        "additionalProperties": false,
+        "description": "Readable like-for-like context summary for an authorized guardian.",
+        "properties": {
+          "task_type": {
+            "enum": [
+              "independent_reading",
+              "assisted_read_aloud",
+              "guided_echo_reading"
+            ],
+            "title": "Task Type",
+            "type": "string"
+          },
+          "task_label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Task Label",
+            "type": "string"
+          },
+          "difficulty_tier": {
+            "enum": [
+              "early",
+              "intermediate",
+              "advanced"
+            ],
+            "title": "Difficulty Tier",
+            "type": "string"
+          },
+          "difficulty_label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Difficulty Label",
+            "type": "string"
+          },
+          "support_mode": {
+            "enum": [
+              "baseline_fixed",
+              "adaptive",
+              "manual_override"
+            ],
+            "title": "Support Mode",
+            "type": "string"
+          },
+          "support_label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Support Label",
+            "type": "string"
+          },
+          "session_count": {
+            "minimum": 1,
+            "title": "Session Count",
+            "type": "integer"
+          },
+          "first_session_at": {
+            "format": "date-time",
+            "title": "First Session At",
+            "type": "string"
+          },
+          "latest_session_at": {
+            "format": "date-time",
+            "title": "Latest Session At",
+            "type": "string"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/$defs/GuardianMetricTrend"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Metrics",
+            "type": "array"
+          }
+        },
+        "required": [
+          "task_type",
+          "task_label",
+          "difficulty_tier",
+          "difficulty_label",
+          "support_mode",
+          "support_label",
+          "session_count",
+          "first_session_at",
+          "latest_session_at",
+          "metrics"
+        ],
+        "title": "GuardianContextSummary",
+        "type": "object"
+      },
+      "GuardianDifficultyObservation": {
+        "additionalProperties": false,
+        "description": "Observed difficulty history described without an achievement inference.",
+        "properties": {
+          "observed_at": {
+            "format": "date-time",
+            "title": "Observed At",
+            "type": "string"
+          },
+          "task_type": {
+            "enum": [
+              "independent_reading",
+              "assisted_read_aloud",
+              "guided_echo_reading"
+            ],
+            "title": "Task Type",
+            "type": "string"
+          },
+          "task_label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Task Label",
+            "type": "string"
+          },
+          "support_mode": {
+            "enum": [
+              "baseline_fixed",
+              "adaptive",
+              "manual_override"
+            ],
+            "title": "Support Mode",
+            "type": "string"
+          },
+          "support_label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Support Label",
+            "type": "string"
+          },
+          "previous_difficulty_tier": {
+            "anyOf": [
+              {
+                "enum": [
+                  "early",
+                  "intermediate",
+                  "advanced"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Difficulty Tier"
+          },
+          "difficulty_tier": {
+            "enum": [
+              "early",
+              "intermediate",
+              "advanced"
+            ],
+            "title": "Difficulty Tier",
+            "type": "string"
+          },
+          "difficulty_label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Difficulty Label",
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Description",
+            "type": "string"
+          }
+        },
+        "required": [
+          "observed_at",
+          "task_type",
+          "task_label",
+          "support_mode",
+          "support_label",
+          "previous_difficulty_tier",
+          "difficulty_tier",
+          "difficulty_label",
+          "description"
+        ],
+        "title": "GuardianDifficultyObservation",
+        "type": "object"
+      },
+      "GuardianMetricTrend": {
+        "additionalProperties": false,
+        "description": "Guardian-facing trend with counts but no internal reason codes or versions.",
+        "properties": {
+          "metric_name": {
+            "enum": [
+              "reading_accuracy",
+              "reading_fluency_wpm",
+              "hesitation_rate_per_word"
+            ],
+            "title": "Metric Name",
+            "type": "string"
+          },
+          "display_label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Display Label",
+            "type": "string"
+          },
+          "unit": {
+            "enum": [
+              "proportion",
+              "words_per_minute",
+              "hesitations_per_attempted_word"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "valid_observation_count": {
+            "minimum": 0,
+            "title": "Valid Observation Count",
+            "type": "integer"
+          },
+          "missing_observation_count": {
+            "minimum": 0,
+            "title": "Missing Observation Count",
+            "type": "integer"
+          },
+          "first_value": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,28}|(?=[\\d.]{1,29}0*$)\\d*\\.\\d*0*$)",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Value"
+          },
+          "latest_value": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,28}|(?=[\\d.]{1,29}0*$)\\d*\\.\\d*0*$)",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Value"
+          },
+          "change_direction": {
+            "enum": [
+              "increased",
+              "decreased",
+              "no_observed_change",
+              "insufficient_evidence"
+            ],
+            "title": "Change Direction",
+            "type": "string"
+          },
+          "evidence_sufficient": {
+            "title": "Evidence Sufficient",
+            "type": "boolean"
+          },
+          "fluctuation_detected": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fluctuation Detected"
+          },
+          "explanation": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Explanation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "metric_name",
+          "display_label",
+          "unit",
+          "valid_observation_count",
+          "missing_observation_count",
+          "first_value",
+          "latest_value",
+          "change_direction",
+          "evidence_sufficient",
+          "fluctuation_detected",
+          "explanation"
+        ],
+        "title": "GuardianMetricTrend",
+        "type": "object"
+      },
+      "GuardianSupportExposure": {
+        "additionalProperties": false,
+        "description": "Readable support exposure without raw duration telemetry.",
+        "properties": {
+          "support_mode": {
+            "enum": [
+              "baseline_fixed",
+              "adaptive",
+              "manual_override"
+            ],
+            "title": "Support Mode",
+            "type": "string"
+          },
+          "support_label": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Support Label",
+            "type": "string"
+          },
+          "session_count": {
+            "minimum": 1,
+            "title": "Session Count",
+            "type": "integer"
+          },
+          "first_observed_at": {
+            "format": "date-time",
+            "title": "First Observed At",
+            "type": "string"
+          },
+          "latest_observed_at": {
+            "format": "date-time",
+            "title": "Latest Observed At",
+            "type": "string"
+          },
+          "description": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Description",
+            "type": "string"
+          }
+        },
+        "required": [
+          "support_mode",
+          "support_label",
+          "session_count",
+          "first_observed_at",
+          "latest_observed_at",
+          "description"
+        ],
+        "title": "GuardianSupportExposure",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "description": "Privacy-minimized educational summary for an authorized guardian.",
+    "properties": {
+      "reporting_period": {
+        "$ref": "#/$defs/DashboardWindow"
+      },
+      "included_session_count": {
+        "minimum": 0,
+        "title": "Included Session Count",
+        "type": "integer"
+      },
+      "contexts": {
+        "items": {
+          "$ref": "#/$defs/GuardianContextSummary"
+        },
+        "maxItems": 27,
+        "title": "Contexts",
+        "type": "array"
+      },
+      "support_exposures": {
+        "items": {
+          "$ref": "#/$defs/GuardianSupportExposure"
+        },
+        "maxItems": 3,
+        "title": "Support Exposures",
+        "type": "array"
+      },
+      "difficulty_history": {
+        "items": {
+          "$ref": "#/$defs/GuardianDifficultyObservation"
+        },
+        "maxItems": 1024,
+        "title": "Difficulty History",
+        "type": "array"
+      },
+      "evidence_limitations": {
+        "items": {
+          "maxLength": 400,
+          "minLength": 1,
+          "type": "string"
+        },
+        "maxItems": 6,
+        "minItems": 3,
+        "title": "Evidence Limitations",
+        "type": "array"
+      },
+      "disclaimer": {
+        "maxLength": 400,
+        "minLength": 1,
+        "title": "Disclaimer",
+        "type": "string"
+      }
+    },
+    "required": [
+      "reporting_period",
+      "included_session_count",
+      "contexts",
+      "support_exposures",
+      "difficulty_history",
+      "evidence_limitations",
+      "disclaimer"
+    ],
+    "title": "GuardianSummaryProjection",
+    "type": "object"
+  },
+  "EducatorAnalyticsProjection": {
+    "$defs": {
+      "DashboardWindow": {
+        "additionalProperties": false,
+        "description": "Half-open UTC reporting period copied from the longitudinal report.",
+        "properties": {
+          "start_at_utc": {
+            "format": "date-time",
+            "title": "Start At Utc",
+            "type": "string"
+          },
+          "end_at_utc": {
+            "format": "date-time",
+            "title": "End At Utc",
+            "type": "string"
+          }
+        },
+        "required": [
+          "start_at_utc",
+          "end_at_utc"
+        ],
+        "title": "DashboardWindow",
+        "type": "object"
+      },
+      "EducatorContextTrend": {
+        "additionalProperties": false,
+        "description": "Detailed metrics for one unchanged task/difficulty/support partition.",
+        "properties": {
+          "task_type": {
+            "enum": [
+              "independent_reading",
+              "assisted_read_aloud",
+              "guided_echo_reading"
+            ],
+            "title": "Task Type",
+            "type": "string"
+          },
+          "difficulty_tier": {
+            "enum": [
+              "early",
+              "intermediate",
+              "advanced"
+            ],
+            "title": "Difficulty Tier",
+            "type": "string"
+          },
+          "support_mode": {
+            "enum": [
+              "baseline_fixed",
+              "adaptive",
+              "manual_override"
+            ],
+            "title": "Support Mode",
+            "type": "string"
+          },
+          "window": {
+            "$ref": "#/$defs/DashboardWindow"
+          },
+          "session_count": {
+            "minimum": 1,
+            "title": "Session Count",
+            "type": "integer"
+          },
+          "first_session_at": {
+            "format": "date-time",
+            "title": "First Session At",
+            "type": "string"
+          },
+          "latest_session_at": {
+            "format": "date-time",
+            "title": "Latest Session At",
+            "type": "string"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/$defs/EducatorMetricTrend"
+            },
+            "maxItems": 3,
+            "minItems": 3,
+            "title": "Metrics",
+            "type": "array"
+          }
+        },
+        "required": [
+          "task_type",
+          "difficulty_tier",
+          "support_mode",
+          "window",
+          "session_count",
+          "first_session_at",
+          "latest_session_at",
+          "metrics"
+        ],
+        "title": "EducatorContextTrend",
+        "type": "object"
+      },
+      "EducatorDifficultyObservation": {
+        "additionalProperties": false,
+        "description": "Full descriptive difficulty event without achievement or assignment claims.",
+        "properties": {
+          "observed_at": {
+            "format": "date-time",
+            "title": "Observed At",
+            "type": "string"
+          },
+          "task_type": {
+            "enum": [
+              "independent_reading",
+              "assisted_read_aloud",
+              "guided_echo_reading"
+            ],
+            "title": "Task Type",
+            "type": "string"
+          },
+          "support_mode": {
+            "enum": [
+              "baseline_fixed",
+              "adaptive",
+              "manual_override"
+            ],
+            "title": "Support Mode",
+            "type": "string"
+          },
+          "previous_difficulty_tier": {
+            "anyOf": [
+              {
+                "enum": [
+                  "early",
+                  "intermediate",
+                  "advanced"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Previous Difficulty Tier"
+          },
+          "difficulty_tier": {
+            "enum": [
+              "early",
+              "intermediate",
+              "advanced"
+            ],
+            "title": "Difficulty Tier",
+            "type": "string"
+          }
+        },
+        "required": [
+          "observed_at",
+          "task_type",
+          "support_mode",
+          "previous_difficulty_tier",
+          "difficulty_tier"
+        ],
+        "title": "EducatorDifficultyObservation",
+        "type": "object"
+      },
+      "EducatorMetricTrend": {
+        "additionalProperties": false,
+        "description": "Detailed approved metric projection preserving upstream calculations.",
+        "properties": {
+          "metric_name": {
+            "enum": [
+              "reading_accuracy",
+              "reading_fluency_wpm",
+              "hesitation_rate_per_word"
+            ],
+            "title": "Metric Name",
+            "type": "string"
+          },
+          "unit": {
+            "enum": [
+              "proportion",
+              "words_per_minute",
+              "hesitations_per_attempted_word"
+            ],
+            "title": "Unit",
+            "type": "string"
+          },
+          "total_relevant_sessions": {
+            "minimum": 0,
+            "title": "Total Relevant Sessions",
+            "type": "integer"
+          },
+          "valid_observation_count": {
+            "minimum": 0,
+            "title": "Valid Observation Count",
+            "type": "integer"
+          },
+          "missing_observation_count": {
+            "minimum": 0,
+            "title": "Missing Observation Count",
+            "type": "integer"
+          },
+          "missing_observations": {
+            "items": {
+              "$ref": "#/$defs/EducatorMissingObservation"
+            },
+            "maxItems": 8,
+            "title": "Missing Observations",
+            "type": "array"
+          },
+          "first_value": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,28}|(?=[\\d.]{1,29}0*$)\\d*\\.\\d*0*$)",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Value"
+          },
+          "first_observed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Observed At"
+          },
+          "latest_value": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,28}|(?=[\\d.]{1,29}0*$)\\d*\\.\\d*0*$)",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Value"
+          },
+          "latest_observed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latest Observed At"
+          },
+          "early_window_count": {
+            "maximum": 3,
+            "minimum": 0,
+            "title": "Early Window Count",
+            "type": "integer"
+          },
+          "early_window_mean": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,28}|(?=[\\d.]{1,29}0*$)\\d*\\.\\d*0*$)",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Early Window Mean"
+          },
+          "late_window_count": {
+            "maximum": 3,
+            "minimum": 0,
+            "title": "Late Window Count",
+            "type": "integer"
+          },
+          "late_window_mean": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,28}|(?=[\\d.]{1,29}0*$)\\d*\\.\\d*0*$)",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Late Window Mean"
+          },
+          "numeric_change": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,28}|(?=[\\d.]{1,29}0*$)\\d*\\.\\d*0*$)",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Numeric Change"
+          },
+          "change_direction": {
+            "enum": [
+              "increased",
+              "decreased",
+              "no_observed_change",
+              "insufficient_evidence"
+            ],
+            "title": "Change Direction",
+            "type": "string"
+          },
+          "evidence_sufficient": {
+            "title": "Evidence Sufficient",
+            "type": "boolean"
+          },
+          "fluctuation_detected": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fluctuation Detected"
+          },
+          "metric_calculation_version": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metric Calculation Version"
+          },
+          "observed_metric_versions": {
+            "items": {
+              "maxLength": 128,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 8,
+            "title": "Observed Metric Versions",
+            "type": "array"
+          },
+          "longitudinal_calculation_version": {
+            "const": "v0.1-early-late-3",
+            "title": "Longitudinal Calculation Version",
+            "type": "string"
+          },
+          "comparison_blocker": {
+            "anyOf": [
+              {
+                "const": "mixed_metric_versions",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Comparison Blocker"
+          },
+          "educational_interpretation": {
+            "maxLength": 400,
+            "minLength": 1,
+            "title": "Educational Interpretation",
+            "type": "string"
+          }
+        },
+        "required": [
+          "metric_name",
+          "unit",
+          "total_relevant_sessions",
+          "valid_observation_count",
+          "missing_observation_count",
+          "missing_observations",
+          "first_value",
+          "first_observed_at",
+          "latest_value",
+          "latest_observed_at",
+          "early_window_count",
+          "early_window_mean",
+          "late_window_count",
+          "late_window_mean",
+          "numeric_change",
+          "change_direction",
+          "evidence_sufficient",
+          "fluctuation_detected",
+          "metric_calculation_version",
+          "observed_metric_versions",
+          "longitudinal_calculation_version",
+          "comparison_blocker",
+          "educational_interpretation"
+        ],
+        "title": "EducatorMetricTrend",
+        "type": "object"
+      },
+      "EducatorMissingObservation": {
+        "additionalProperties": false,
+        "description": "Educator-visible missingness count for one upstream reason code.",
+        "properties": {
+          "reason_code": {
+            "enum": [
+              "zero_words_attempted",
+              "insufficient_active_duration",
+              "hesitation_not_measured",
+              "engagement_inputs_missing",
+              "wpm_above_configured_ceiling"
+            ],
+            "title": "Reason Code",
+            "type": "string"
+          },
+          "count": {
+            "minimum": 1,
+            "title": "Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "reason_code",
+          "count"
+        ],
+        "title": "EducatorMissingObservation",
+        "type": "object"
+      },
+      "EducatorSupportExposure": {
+        "additionalProperties": false,
+        "description": "Complete descriptive support exposure from the upstream report.",
+        "properties": {
+          "support_mode": {
+            "enum": [
+              "baseline_fixed",
+              "adaptive",
+              "manual_override"
+            ],
+            "title": "Support Mode",
+            "type": "string"
+          },
+          "session_count": {
+            "minimum": 1,
+            "title": "Session Count",
+            "type": "integer"
+          },
+          "total_duration_ms": {
+            "minimum": 0,
+            "title": "Total Duration Ms",
+            "type": "integer"
+          },
+          "active_duration_ms": {
+            "minimum": 0,
+            "title": "Active Duration Ms",
+            "type": "integer"
+          },
+          "first_observed_at": {
+            "format": "date-time",
+            "title": "First Observed At",
+            "type": "string"
+          },
+          "latest_observed_at": {
+            "format": "date-time",
+            "title": "Latest Observed At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "support_mode",
+          "session_count",
+          "total_duration_ms",
+          "active_duration_ms",
+          "first_observed_at",
+          "latest_observed_at"
+        ],
+        "title": "EducatorSupportExposure",
+        "type": "object"
+      }
+    },
+    "additionalProperties": false,
+    "description": "Detailed educational analysis with experimental engagement omitted.",
+    "properties": {
+      "reporting_period": {
+        "$ref": "#/$defs/DashboardWindow"
+      },
+      "included_session_count": {
+        "minimum": 0,
+        "title": "Included Session Count",
+        "type": "integer"
+      },
+      "partitions": {
+        "items": {
+          "$ref": "#/$defs/EducatorContextTrend"
+        },
+        "maxItems": 27,
+        "title": "Partitions",
+        "type": "array"
+      },
+      "support_mode_exposures": {
+        "items": {
+          "$ref": "#/$defs/EducatorSupportExposure"
+        },
+        "maxItems": 3,
+        "title": "Support Mode Exposures",
+        "type": "array"
+      },
+      "difficulty_timeline": {
+        "items": {
+          "$ref": "#/$defs/EducatorDifficultyObservation"
+        },
+        "maxItems": 1024,
+        "title": "Difficulty Timeline",
+        "type": "array"
+      },
+      "longitudinal_calculation_version": {
+        "const": "v0.1-early-late-3",
+        "title": "Longitudinal Calculation Version",
+        "type": "string"
+      },
+      "limitations": {
+        "items": {
+          "maxLength": 400,
+          "minLength": 1,
+          "type": "string"
+        },
+        "maxItems": 8,
+        "minItems": 3,
+        "title": "Limitations",
+        "type": "array"
+      },
+      "disclaimer": {
+        "maxLength": 400,
+        "minLength": 1,
+        "title": "Disclaimer",
+        "type": "string"
+      }
+    },
+    "required": [
+      "reporting_period",
+      "included_session_count",
+      "partitions",
+      "support_mode_exposures",
+      "difficulty_timeline",
+      "longitudinal_calculation_version",
+      "limitations",
+      "disclaimer"
+    ],
+    "title": "EducatorAnalyticsProjection",
+    "type": "object"
+  },
+  "ReadingSessionIngest": {
+    "additionalProperties": false,
+    "description": "Validated input payload for reading-session ingestion.\n\nRejects naive datetimes, unexpected fields, and out-of-order bounds.\nMissing nullable telemetry counters are preserved as None.",
+    "properties": {
+      "learner_id": {
+        "format": "uuid",
+        "title": "Learner Id",
+        "type": "string"
+      },
+      "client_session_id": {
+        "format": "uuid",
+        "title": "Client Session Id",
+        "type": "string"
+      },
+      "document_id": {
+        "anyOf": [
+          {
+            "format": "uuid",
+            "type": "string"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Document Id"
+      },
+      "session_start_time": {
+        "format": "date-time",
+        "title": "Session Start Time",
+        "type": "string"
+      },
+      "session_end_time": {
+        "format": "date-time",
+        "title": "Session End Time",
+        "type": "string"
+      },
+      "task_type": {
+        "default": "independent_reading",
+        "enum": [
+          "independent_reading",
+          "assisted_read_aloud",
+          "guided_echo_reading"
+        ],
+        "title": "Task Type",
+        "type": "string"
+      },
+      "difficulty_tier": {
+        "default": "intermediate",
+        "enum": [
+          "early",
+          "intermediate",
+          "advanced"
+        ],
+        "title": "Difficulty Tier",
+        "type": "string"
+      },
+      "support_mode": {
+        "default": "adaptive",
+        "enum": [
+          "baseline_fixed",
+          "adaptive",
+          "manual_override"
+        ],
+        "title": "Support Mode",
+        "type": "string"
+      },
+      "completion_status": {
+        "default": "completed",
+        "enum": [
+          "completed",
+          "abandoned",
+          "interrupted"
+        ],
+        "title": "Completion Status",
+        "type": "string"
+      },
+      "words_attempted": {
+        "maximum": 2147483647,
+        "minimum": 0,
+        "title": "Words Attempted",
+        "type": "integer"
+      },
+      "words_correct": {
+        "maximum": 2147483647,
+        "minimum": 0,
+        "title": "Words Correct",
+        "type": "integer"
+      },
+      "target_word_count": {
+        "maximum": 2147483647,
+        "minimum": 0,
+        "title": "Target Word Count",
+        "type": "integer"
+      },
+      "active_duration_ms": {
+        "maximum": 2147483647,
+        "minimum": 0,
+        "title": "Active Duration Ms",
+        "type": "integer"
+      },
+      "total_duration_ms": {
+        "maximum": 2147483647,
+        "minimum": 0,
+        "title": "Total Duration Ms",
+        "type": "integer"
+      },
+      "hesitation_count": {
+        "anyOf": [
+          {
+            "maximum": 2147483647,
+            "minimum": 0,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Hesitation Count"
+      },
+      "total_pause_duration_ms": {
+        "anyOf": [
+          {
+            "maximum": 2147483647,
+            "minimum": 0,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Total Pause Duration Ms"
+      },
+      "pause_count": {
+        "anyOf": [
+          {
+            "maximum": 2147483647,
+            "minimum": 0,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Pause Count"
+      },
+      "replay_count": {
+        "anyOf": [
+          {
+            "maximum": 2147483647,
+            "minimum": 0,
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ],
+        "default": null,
+        "title": "Replay Count"
+      }
+    },
+    "required": [
+      "learner_id",
+      "client_session_id",
+      "session_start_time",
+      "session_end_time",
+      "words_attempted",
+      "words_correct",
+      "target_word_count",
+      "active_duration_ms",
+      "total_duration_ms"
+    ],
+    "title": "ReadingSessionIngest",
+    "type": "object"
+  },
+  "SessionIngestReceipt": {
+    "additionalProperties": false,
+    "description": "Minimized ingestion acknowledgment, never an unrestricted session read.",
+    "properties": {
+      "id": {
+        "format": "uuid",
+        "title": "Id",
+        "type": "string"
+      },
+      "client_session_id": {
+        "format": "uuid",
+        "title": "Client Session Id",
+        "type": "string"
+      },
+      "created": {
+        "title": "Created",
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "id",
+      "client_session_id",
+      "created"
+    ],
+    "title": "SessionIngestReceipt",
+    "type": "object"
+  }
+}

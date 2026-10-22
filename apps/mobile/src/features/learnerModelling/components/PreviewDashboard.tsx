@@ -1,14 +1,22 @@
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import type { ReactNode } from "react";
+import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 
+import { DemoLearnerCard } from "./DemoLearnerCard";
+import { FeatureAccent } from "./FeatureAccent";
 import { DemoBanner } from "./DemoBanner";
 import { DifficultyProgression } from "./DifficultyProgression";
 import { MetricChart } from "./MetricChart";
+import { ReadingBuddyIllustration } from "./ReadingBuddyIllustration";
 import { RecommendationPanel } from "./RecommendationPanel";
-import type { DashboardPreview } from "../types";
+import { palette, radii, softShadow, spacing } from "../theme";
+import type { DashboardPreview, PreviewRole } from "../types";
 
 interface PreviewDashboardProps {
   dashboard: DashboardPreview;
   demoMode: boolean;
+  children?: ReactNode;
+  compactMetrics?: boolean;
+  homeHeader?: ReactNode;
 }
 
 function shortDate(value: string): string {
@@ -20,45 +28,97 @@ function shortDate(value: string): string {
   });
 }
 
-export function PreviewDashboard({ dashboard, demoMode }: PreviewDashboardProps) {
+const ROLE_PRESENTATION: Record<
+  PreviewRole,
+  { eyebrow: string; greeting: string; summaryPrompt: string }
+> = {
+  learner: {
+    eyebrow: "READBUDDY",
+    greeting: "Hi, reader!",
+    summaryPrompt: "Your reading practice",
+  },
+  guardian: {
+    eyebrow: "READBUDDY FOR GUARDIANS",
+    greeting: "A caring view of progress",
+    summaryPrompt: "Reading practice summary",
+  },
+  educator: {
+    eyebrow: "READBUDDY FOR EDUCATORS",
+    greeting: "Evidence at a glance",
+    summaryPrompt: "Comparable reading evidence",
+  },
+};
+
+export function PreviewDashboard({ dashboard, demoMode, children, compactMetrics = false, homeHeader }: PreviewDashboardProps) {
+  const { width, fontScale } = useWindowDimensions();
+  const stacked = width < 380 || fontScale > 1.2;
+  const rolePresentation = ROLE_PRESENTATION[dashboard.role];
+  const playful = dashboard.role === "learner";
   return (
     <ScrollView
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
+      style={styles.scroll}
     >
-      {demoMode ? <DemoBanner /> : null}
-      <View style={styles.intro}>
-        <Text accessibilityRole="header" style={styles.title}>
-          {dashboard.title}
-        </Text>
-        <Text style={styles.subtitle}>{dashboard.subtitle}</Text>
-        <Text style={styles.period}>
-          {shortDate(dashboard.reportingStartUtc)} – {shortDate(dashboard.reportingEndUtc)}
-        </Text>
+      {demoMode && dashboard.role !== "learner" ? <Text style={{ fontSize: 15, lineHeight: 22, color: palette.ink }}>This view uses its own sample data. It does not follow the Learner&apos;s selected scenario.</Text> : null}
+      {demoMode ? <><DemoBanner />{!homeHeader ? <DemoLearnerCard /> : null}</> : null}
+      {homeHeader ?? <>
+      <View style={[styles.hero, (stacked || playful) && styles.stacked, playful && styles.learnerHero]}>
+        <View style={styles.heroCopy}>
+          <FeatureAccent title={dashboard.role === "learner" ? "Reading Home" : dashboard.role} />
+          <Text style={styles.eyebrow}>{rolePresentation.eyebrow}</Text>
+          <Text accessibilityRole="header" style={styles.greeting}>
+            {rolePresentation.greeting}
+          </Text>
+          <Text style={styles.heroTitle}>{dashboard.title}</Text>
+          <Text style={styles.subtitle}>
+            {playful ? "Explore your reading. Find your next step. This is a demo report." : dashboard.subtitle}
+          </Text>
+        </View>
+        <ReadingBuddyIllustration large={playful} />
       </View>
       <View style={styles.summaryCard}>
-        <Text style={styles.summaryValue}>{dashboard.includedSessionCount}</Text>
-        <Text style={styles.summaryLabel}>synthetic sessions in this reporting period</Text>
+        <View style={[styles.summaryTopRow, stacked && styles.stacked]}>
+          <View style={styles.summaryCount}>
+            <Text style={styles.summaryValue}>{dashboard.includedSessionCount}</Text>
+            <Text style={styles.summaryLabel}>sample sessions</Text>
+          </View>
+          <View style={styles.periodBadge}>
+            <Text style={styles.periodBadgeLabel}>Reporting period</Text>
+            <Text style={styles.period}>
+              {shortDate(dashboard.reportingStartUtc)} – {shortDate(dashboard.reportingEndUtc)}
+            </Text>
+          </View>
+        </View>
+        <Text style={styles.summaryPrompt}>{rolePresentation.summaryPrompt}</Text>
         <Text style={styles.context}>{dashboard.contextSummary}</Text>
       </View>
+      </>}
       <View style={styles.section}>
-        <Text accessibilityRole="header" style={styles.sectionTitle}>
-          Reading measures
-        </Text>
+        <View style={styles.sectionHeadingRow}>
+          <View style={styles.sectionMark} />
+          <Text accessibilityRole="header" style={styles.sectionTitle}>
+            Reading progress
+          </Text>
+        </View>
         <Text style={styles.sectionDescription}>
-          First and latest values are shown within one comparable synthetic context.
+          Compare first and latest sample results from the same reading context.
         </Text>
         {dashboard.metrics.map((metric) => (
-          <MetricChart key={metric.key} metric={metric} />
+          <MetricChart key={metric.key} metric={metric} playful={playful} collapsibleDetails={compactMetrics} />
         ))}
       </View>
-      <DifficultyProgression observations={dashboard.difficultyProgression} />
-      <RecommendationPanel recommendation={dashboard.recommendation} />
+      {children}
+      <DifficultyProgression observations={dashboard.difficultyProgression} playful={playful} />
+      {dashboard.role === "learner" ? <RecommendationPanel recommendation={dashboard.recommendation} playful={playful} /> : null}
       <View style={styles.limitations}>
-        <Text accessibilityRole="header" style={styles.sectionTitle}>
-          Evidence limitations
-        </Text>
+        <View style={styles.sectionHeadingRow}>
+          <View style={[styles.sectionMark, styles.limitationsMark]} />
+          <Text accessibilityRole="header" style={styles.sectionTitle}>
+            Evidence notes
+          </Text>
+        </View>
         {dashboard.limitations.map((limitation) => (
           <Text key={limitation} style={styles.limitation}>
             • {limitation}
@@ -71,80 +131,162 @@ export function PreviewDashboard({ dashboard, demoMode }: PreviewDashboardProps)
 }
 
 const styles = StyleSheet.create({
+  scroll: {
+    backgroundColor: palette.paper,
+  },
   content: {
-    gap: 14,
+    gap: spacing.lg,
     paddingHorizontal: 16,
-    paddingBottom: 32,
+    paddingBottom: 36,
   },
-  intro: {
-    gap: 6,
+  stacked: {
+    flexDirection: "column",
+    alignItems: "flex-start",
   },
-  title: {
-    color: "#183142",
-    fontSize: 28,
+  learnerHero: {
+    alignItems: "center",
+    paddingVertical: spacing.xxl,
+    backgroundColor: palette.primarySoft,
+    gap: spacing.xl,
+  },
+  hero: {
+    minHeight: 180,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    borderRadius: radii.large,
+    backgroundColor: palette.primarySoft,
+    padding: spacing.lg,
+  },
+  heroCopy: {
+    flexShrink: 1,
+    alignSelf: "stretch",
+    gap: spacing.xs,
+  },
+  eyebrow: {
+    color: palette.primary,
+    fontSize: 11,
     fontWeight: "900",
-    letterSpacing: -0.5,
+    letterSpacing: 1,
+  },
+  greeting: {
+    color: palette.primaryDark,
+    fontSize: 25,
+    fontWeight: "900",
+    letterSpacing: -0.4,
+  },
+  heroTitle: {
+    color: palette.ink,
+    fontSize: 17,
+    fontWeight: "900",
   },
   subtitle: {
-    color: "#526A7B",
-    fontSize: 14,
-    lineHeight: 21,
-  },
-  period: {
-    color: "#176B5B",
+    color: palette.muted,
     fontSize: 13,
-    fontWeight: "700",
+    lineHeight: 19,
   },
   summaryCard: {
-    borderRadius: 18,
-    backgroundColor: "#183142",
-    padding: 18,
+    gap: spacing.md,
+    borderRadius: radii.large,
+    backgroundColor: palette.surface,
+    borderWidth: 1,
+    borderColor: palette.outline,
+    padding: spacing.lg,
+    ...softShadow,
+  },
+  summaryTopRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: spacing.md,
+  },
+  summaryCount: {
+    flexShrink: 0,
   },
   summaryValue: {
-    color: "#FFFFFF",
-    fontSize: 34,
+    color: palette.primary,
+    fontSize: 38,
     fontWeight: "900",
   },
   summaryLabel: {
-    color: "#D8E6EE",
+    color: palette.muted,
+    fontSize: 14,
+  },
+  periodBadge: {
+    flexShrink: 1,
+    alignItems: "flex-end",
+    borderRadius: radii.medium,
+    backgroundColor: palette.primarySoft,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 9,
+  },
+  periodBadgeLabel: {
+    color: palette.primaryDark,
+    fontSize: 12,
+    fontWeight: "700",
+  },
+  period: {
+    color: palette.primaryDark,
     fontSize: 13,
+    fontWeight: "800",
+    textAlign: "right",
+  },
+  summaryPrompt: {
+    color: palette.primaryDark,
+    fontSize: 14,
+    fontWeight: "900",
   },
   context: {
-    color: "#B9F0E4",
-    fontSize: 12,
-    lineHeight: 17,
-    marginTop: 10,
+    color: palette.ink,
+    fontSize: 14,
+    lineHeight: 22,
   },
   section: {
-    gap: 10,
+    gap: spacing.md,
+  },
+  sectionHeadingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+  },
+  sectionMark: {
+    width: 8,
+    height: 24,
+    borderRadius: 4,
+    backgroundColor: palette.coral,
   },
   sectionTitle: {
-    color: "#183142",
-    fontSize: 19,
-    fontWeight: "800",
+    color: palette.ink,
+    fontSize: 20,
+    fontWeight: "900",
   },
   sectionDescription: {
-    color: "#667C8B",
+    color: palette.muted,
     fontSize: 13,
     lineHeight: 19,
   },
   limitations: {
-    gap: 8,
-    borderRadius: 16,
-    backgroundColor: "#FFFFFF",
-    padding: 16,
+    gap: spacing.sm,
+    borderRadius: radii.large,
+    backgroundColor: palette.blueSoft,
+    padding: spacing.lg,
+  },
+  limitationsMark: {
+    backgroundColor: palette.blue,
   },
   limitation: {
-    color: "#40596B",
+    color: palette.ink,
     fontSize: 13,
     lineHeight: 19,
   },
   disclaimer: {
-    color: "#5F4A20",
+    color: palette.yellow,
     fontSize: 12,
     fontWeight: "700",
     lineHeight: 18,
     textAlign: "center",
-    paddingHorizontal: 12,
+    borderRadius: radii.medium,
+    backgroundColor: palette.yellowSoft,
+    padding: spacing.lg,
   },
 });

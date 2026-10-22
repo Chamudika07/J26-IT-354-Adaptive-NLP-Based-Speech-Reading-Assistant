@@ -1,5 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { palette, radii, spacing } from "../theme";
 import type { ReportingPeriodDays } from "../types";
 
 interface PeriodSelectorProps {
@@ -11,8 +12,8 @@ const PERIODS: readonly ReportingPeriodDays[] = [7, 30, 90];
 
 export function PeriodSelector({ selectedDays, onSelectDays }: PeriodSelectorProps) {
   return (
-    <View style={styles.row}>
-      <Text style={styles.prompt}>Reporting period</Text>
+    <View accessibilityLabel="Choose a reporting period" style={styles.row}>
+      <Text style={styles.prompt}>Show progress from</Text>
       <View accessibilityRole="radiogroup" style={styles.group}>
         {PERIODS.map((days) => {
           const selected = days === selectedDays;
@@ -23,7 +24,11 @@ export function PeriodSelector({ selectedDays, onSelectDays }: PeriodSelectorPro
               accessibilityState={{ checked: selected }}
               key={days}
               onPress={() => onSelectDays(days)}
-              style={[styles.button, selected && styles.selectedButton]}
+              style={({ pressed }) => [
+                styles.button,
+                selected && styles.selectedButton,
+                pressed && styles.pressedButton,
+              ]}
             >
               <Text style={[styles.label, selected && styles.selectedLabel]}>{days}d</Text>
             </Pressable>
@@ -39,32 +44,42 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+    flexWrap: "wrap",
+    gap: spacing.xs,
   },
   prompt: {
-    color: "#40596B",
+    flexShrink: 1,
+    color: palette.ink,
     fontSize: 13,
-    fontWeight: "600",
+    fontWeight: "800",
   },
   group: {
     flexDirection: "row",
-    gap: 6,
+    gap: spacing.xs,
   },
   button: {
     minWidth: 48,
-    minHeight: 40,
+    paddingHorizontal: 8,
+    minHeight: 48,
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 20,
-    backgroundColor: "#E4EBF1",
+    borderRadius: radii.pill,
+    borderWidth: 1,
+    borderColor: palette.outline,
+    backgroundColor: palette.surface,
   },
   selectedButton: {
-    backgroundColor: "#CDECE5",
+    borderColor: palette.teal,
+    backgroundColor: palette.tealSoft,
+  },
+  pressedButton: {
+    opacity: 0.78,
   },
   label: {
-    color: "#526A7B",
-    fontWeight: "700",
+    color: palette.muted,
+    fontWeight: "800",
   },
   selectedLabel: {
-    color: "#0E5B4E",
+    color: palette.teal,
   },
 });

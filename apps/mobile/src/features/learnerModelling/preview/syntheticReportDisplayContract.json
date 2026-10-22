@@ -1,0 +1,21 @@
+{
+  "role": "learner",
+  "reportingStartUtc": "2026-01-01T00:00:00+00:00",
+  "reportingEndUtc": "2026-01-31T00:00:00+00:00",
+  "statements": [
+    "Reporting period [2026-01-01T00:00:00+00:00, 2026-01-31T00:00:00+00:00); UTC.",
+    "The reporting period contains 6 recorded sessions.",
+    "Descriptive educational observations only. They do not establish causes or assess health or ability.",
+    "Evidence is limited to the supplied role projection; unavailable fields are not inferred.",
+    "Advisory only. This report never changes support, difficulty or learner settings.",
+    "Context 1: Independent reading; observed Intermediate level; Adaptive support.",
+    "Context 1, reading_accuracy: first 0.6500, latest 0.8500; unit proportion.",
+    "Context 1, reading_accuracy: measurements increased in comparable observations; this does not establish improvement in ability.",
+    "Context 1, reading_fluency_wpm: first 100.00, latest 100.00; unit words_per_minute.",
+    "Context 1, reading_fluency_wpm: measurements showed no observed change in comparable observations; this does not establish improvement in ability.",
+    "Context 1, hesitation_rate_per_word: first 0.0900, latest 0.0500; unit hesitations_per_attempted_word.",
+    "Context 1, hesitation_rate_per_word: insufficient comparable evidence for a trend.",
+    "Observed difficulty labels: Intermediate level. No unlocked levels are inferred.",
+    "Observed Adaptive support: 6 recorded sessions."
+  ]
+}

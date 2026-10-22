@@ -1,0 +1,33 @@
+{
+  "schema_version": "synthetic-recommendation-v1",
+  "synthetic": true,
+  "source": "backend-recommendation-engine",
+  "engine_version": "v0.1-research-heuristic",
+  "role": "learner",
+  "context": "independent_reading/intermediate/adaptive",
+  "reporting_start": "2026-01-01T00:00:00+00:00",
+  "reporting_end": "2026-01-31T00:00:00+00:00",
+  "presentation": {
+    "status": "available",
+    "task_type": "independent_reading",
+    "current": "intermediate / Adaptive support",
+    "action": "Try a harder reading level",
+    "proposed": [
+      "Reading level: advanced"
+    ],
+    "reasons": [
+      "Recent sessions show consistent reading accuracy (96%) above the configured progression threshold (92%), and reading pace supports trying the next difficulty level."
+    ],
+    "limitations": [],
+    "evidence_state": "sufficient",
+    "fixed_baseline": false,
+    "manual_override_active": false,
+    "global_lock": false,
+    "manual_control_prevents_adjustment": false,
+    "blocked_by_manual_override": false,
+    "advisory_only": true,
+    "changes_applied": false,
+    "automatic_application_allowed": false,
+    "disclaimer": "Adaptive reading recommendations are experimental educational heuristics for software scaffolding only. They do not constitute a clinical assessment, diagnosis, or any determination of a learner's psychological or neurological state."
+  }
+}

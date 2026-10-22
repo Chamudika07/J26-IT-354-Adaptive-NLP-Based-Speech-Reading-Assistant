@@ -1,0 +1,687 @@
+[{
+  "schemaVersion": "role-scenario-v1",
+  "synthetic": true,
+  "scenarioId": "[0,\"fd5455bf3433ae788b862362faa18d4b9257191d3e8594b352d20eb0b5376218\",\"2026-01-01T00:00:00Z\",\"2026-01-31T00:00:00Z\",\"independent_reading\",\"intermediate\",\"adaptive\",\"2026-10-21T22:29:02.362376Z\"]",
+  "role": "guardian",
+  "projection": {
+    "reporting_period": {
+      "start_at_utc": "2026-01-01T00:00:00Z",
+      "end_at_utc": "2026-01-31T00:00:00Z"
+    },
+    "included_session_count": 0,
+    "contexts": [],
+    "support_exposures": [],
+    "difficulty_history": [],
+    "evidence_limitations": [
+      "Trends require at least six valid observations in one comparable context.",
+      "Sessions are compared only when task, difficulty, and observed support mode match.",
+      "Observed support and difficulty context do not explain why measurements changed."
+    ],
+    "disclaimer": "These descriptive observations do not show that a support mode caused a change and should be considered with other educational information."
+  }
+},{
+  "schemaVersion": "role-scenario-v1",
+  "synthetic": true,
+  "scenarioId": "[1,\"aa7a0eb8f4f5c17da4492c4c41f947d4b2c5c64c89542e2f7878271b9ba725a4\",\"2026-01-01T00:00:00Z\",\"2026-01-31T00:00:00Z\",\"independent_reading\",\"intermediate\",\"adaptive\",\"2026-10-21T22:29:02.362376Z\"]",
+  "role": "guardian",
+  "projection": {
+    "reporting_period": {
+      "start_at_utc": "2026-01-01T00:00:00Z",
+      "end_at_utc": "2026-01-31T00:00:00Z"
+    },
+    "included_session_count": 1,
+    "contexts": [
+      {
+        "task_type": "independent_reading",
+        "task_label": "Independent reading",
+        "difficulty_tier": "intermediate",
+        "difficulty_label": "Intermediate level",
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "session_count": 1,
+        "first_session_at": "2026-01-01T09:00:00Z",
+        "latest_session_at": "2026-01-01T09:00:00Z",
+        "metrics": [
+          {
+            "metric_name": "reading_accuracy",
+            "display_label": "Reading accuracy",
+            "unit": "proportion",
+            "valid_observation_count": 1,
+            "missing_observation_count": 0,
+            "first_value": "0.9300",
+            "latest_value": "0.9300",
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "explanation": "There are not enough comparable observations to describe a trend."
+          },
+          {
+            "metric_name": "reading_fluency_wpm",
+            "display_label": "Reading speed",
+            "unit": "words_per_minute",
+            "valid_observation_count": 1,
+            "missing_observation_count": 0,
+            "first_value": "85.71",
+            "latest_value": "85.71",
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "explanation": "There are not enough comparable observations to describe a trend."
+          },
+          {
+            "metric_name": "hesitation_rate_per_word",
+            "display_label": "Hesitation rate",
+            "unit": "hesitations_per_attempted_word",
+            "valid_observation_count": 1,
+            "missing_observation_count": 0,
+            "first_value": "0.0500",
+            "latest_value": "0.0500",
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "explanation": "There are not enough comparable observations to describe a trend."
+          }
+        ]
+      }
+    ],
+    "support_exposures": [
+      {
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "session_count": 1,
+        "first_observed_at": "2026-01-01T09:00:00Z",
+        "latest_observed_at": "2026-01-01T09:00:00Z",
+        "description": "Reading sessions were recorded using adaptive support."
+      }
+    ],
+    "difficulty_history": [
+      {
+        "observed_at": "2026-01-01T09:00:00Z",
+        "task_type": "independent_reading",
+        "task_label": "Independent reading",
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "previous_difficulty_tier": null,
+        "difficulty_tier": "intermediate",
+        "difficulty_label": "Intermediate level",
+        "description": "Intermediate level reading sessions were observed for independent reading with adaptive support."
+      }
+    ],
+    "evidence_limitations": [
+      "Trends require at least six valid observations in one comparable context.",
+      "Sessions are compared only when task, difficulty, and observed support mode match.",
+      "Observed support and difficulty context do not explain why measurements changed."
+    ],
+    "disclaimer": "These descriptive observations do not show that a support mode caused a change and should be considered with other educational information."
+  }
+},{
+  "schemaVersion": "role-scenario-v1",
+  "synthetic": true,
+  "scenarioId": "[2,\"d76b492574b481b983fed0770b233edd5c8dfa6295277e9009694a9e4a788a37\",\"2026-01-01T00:00:00Z\",\"2026-01-31T00:00:00Z\",\"independent_reading\",\"intermediate\",\"adaptive\",\"2026-10-21T22:29:02.362376Z\"]",
+  "role": "guardian",
+  "projection": {
+    "reporting_period": {
+      "start_at_utc": "2026-01-01T00:00:00Z",
+      "end_at_utc": "2026-01-31T00:00:00Z"
+    },
+    "included_session_count": 2,
+    "contexts": [
+      {
+        "task_type": "independent_reading",
+        "task_label": "Independent reading",
+        "difficulty_tier": "intermediate",
+        "difficulty_label": "Intermediate level",
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "session_count": 2,
+        "first_session_at": "2026-01-01T09:00:00Z",
+        "latest_session_at": "2026-01-02T09:00:00Z",
+        "metrics": [
+          {
+            "metric_name": "reading_accuracy",
+            "display_label": "Reading accuracy",
+            "unit": "proportion",
+            "valid_observation_count": 2,
+            "missing_observation_count": 0,
+            "first_value": "0.9300",
+            "latest_value": "0.9400",
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "explanation": "There are not enough comparable observations to describe a trend."
+          },
+          {
+            "metric_name": "reading_fluency_wpm",
+            "display_label": "Reading speed",
+            "unit": "words_per_minute",
+            "valid_observation_count": 2,
+            "missing_observation_count": 0,
+            "first_value": "85.71",
+            "latest_value": "92.31",
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "explanation": "There are not enough comparable observations to describe a trend."
+          },
+          {
+            "metric_name": "hesitation_rate_per_word",
+            "display_label": "Hesitation rate",
+            "unit": "hesitations_per_attempted_word",
+            "valid_observation_count": 2,
+            "missing_observation_count": 0,
+            "first_value": "0.0500",
+            "latest_value": "0.0400",
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "explanation": "There are not enough comparable observations to describe a trend."
+          }
+        ]
+      }
+    ],
+    "support_exposures": [
+      {
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "session_count": 2,
+        "first_observed_at": "2026-01-01T09:00:00Z",
+        "latest_observed_at": "2026-01-02T09:00:00Z",
+        "description": "Reading sessions were recorded using adaptive support."
+      }
+    ],
+    "difficulty_history": [
+      {
+        "observed_at": "2026-01-01T09:00:00Z",
+        "task_type": "independent_reading",
+        "task_label": "Independent reading",
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "previous_difficulty_tier": null,
+        "difficulty_tier": "intermediate",
+        "difficulty_label": "Intermediate level",
+        "description": "Intermediate level reading sessions were observed for independent reading with adaptive support."
+      }
+    ],
+    "evidence_limitations": [
+      "Trends require at least six valid observations in one comparable context.",
+      "Sessions are compared only when task, difficulty, and observed support mode match.",
+      "Observed support and difficulty context do not explain why measurements changed."
+    ],
+    "disclaimer": "These descriptive observations do not show that a support mode caused a change and should be considered with other educational information."
+  }
+},{
+  "schemaVersion": "role-scenario-v1",
+  "synthetic": true,
+  "scenarioId": "[3,\"7f7be9b0c22af335f1da72d4bb0edd7826cb08eac3327ac3366a716fbbc06cb7\",\"2026-01-01T00:00:00Z\",\"2026-01-31T00:00:00Z\",\"independent_reading\",\"intermediate\",\"adaptive\",\"2026-10-21T22:29:02.362376Z\"]",
+  "role": "guardian",
+  "projection": {
+    "reporting_period": {
+      "start_at_utc": "2026-01-01T00:00:00Z",
+      "end_at_utc": "2026-01-31T00:00:00Z"
+    },
+    "included_session_count": 3,
+    "contexts": [
+      {
+        "task_type": "independent_reading",
+        "task_label": "Independent reading",
+        "difficulty_tier": "intermediate",
+        "difficulty_label": "Intermediate level",
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "session_count": 3,
+        "first_session_at": "2026-01-01T09:00:00Z",
+        "latest_session_at": "2026-01-03T09:00:00Z",
+        "metrics": [
+          {
+            "metric_name": "reading_accuracy",
+            "display_label": "Reading accuracy",
+            "unit": "proportion",
+            "valid_observation_count": 3,
+            "missing_observation_count": 0,
+            "first_value": "0.9300",
+            "latest_value": "0.9500",
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "explanation": "There are not enough comparable observations to describe a trend."
+          },
+          {
+            "metric_name": "reading_fluency_wpm",
+            "display_label": "Reading speed",
+            "unit": "words_per_minute",
+            "valid_observation_count": 3,
+            "missing_observation_count": 0,
+            "first_value": "85.71",
+            "latest_value": "96.77",
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "explanation": "There are not enough comparable observations to describe a trend."
+          },
+          {
+            "metric_name": "hesitation_rate_per_word",
+            "display_label": "Hesitation rate",
+            "unit": "hesitations_per_attempted_word",
+            "valid_observation_count": 3,
+            "missing_observation_count": 0,
+            "first_value": "0.0500",
+            "latest_value": "0.0300",
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "explanation": "There are not enough comparable observations to describe a trend."
+          }
+        ]
+      }
+    ],
+    "support_exposures": [
+      {
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "session_count": 3,
+        "first_observed_at": "2026-01-01T09:00:00Z",
+        "latest_observed_at": "2026-01-03T09:00:00Z",
+        "description": "Reading sessions were recorded using adaptive support."
+      }
+    ],
+    "difficulty_history": [
+      {
+        "observed_at": "2026-01-01T09:00:00Z",
+        "task_type": "independent_reading",
+        "task_label": "Independent reading",
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "previous_difficulty_tier": null,
+        "difficulty_tier": "intermediate",
+        "difficulty_label": "Intermediate level",
+        "description": "Intermediate level reading sessions were observed for independent reading with adaptive support."
+      }
+    ],
+    "evidence_limitations": [
+      "Trends require at least six valid observations in one comparable context.",
+      "Sessions are compared only when task, difficulty, and observed support mode match.",
+      "Observed support and difficulty context do not explain why measurements changed."
+    ],
+    "disclaimer": "These descriptive observations do not show that a support mode caused a change and should be considered with other educational information."
+  }
+},{
+  "schemaVersion": "role-scenario-v1",
+  "synthetic": true,
+  "scenarioId": "[4,\"29f5900faa2f63ff9a1732109bf3cc9f8f2c2ce77dc9feae7840fa4c67e718f7\",\"2026-01-01T00:00:00Z\",\"2026-01-31T00:00:00Z\",\"independent_reading\",\"intermediate\",\"adaptive\",\"2026-10-21T22:29:02.362376Z\"]",
+  "role": "guardian",
+  "projection": {
+    "reporting_period": {
+      "start_at_utc": "2026-01-01T00:00:00Z",
+      "end_at_utc": "2026-01-31T00:00:00Z"
+    },
+    "included_session_count": 4,
+    "contexts": [
+      {
+        "task_type": "independent_reading",
+        "task_label": "Independent reading",
+        "difficulty_tier": "intermediate",
+        "difficulty_label": "Intermediate level",
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "session_count": 4,
+        "first_session_at": "2026-01-01T09:00:00Z",
+        "latest_session_at": "2026-01-04T09:00:00Z",
+        "metrics": [
+          {
+            "metric_name": "reading_accuracy",
+            "display_label": "Reading accuracy",
+            "unit": "proportion",
+            "valid_observation_count": 4,
+            "missing_observation_count": 0,
+            "first_value": "0.9300",
+            "latest_value": "0.9600",
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "explanation": "There are not enough comparable observations to describe a trend."
+          },
+          {
+            "metric_name": "reading_fluency_wpm",
+            "display_label": "Reading speed",
+            "unit": "words_per_minute",
+            "valid_observation_count": 4,
+            "missing_observation_count": 0,
+            "first_value": "85.71",
+            "latest_value": "100.00",
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "explanation": "There are not enough comparable observations to describe a trend."
+          },
+          {
+            "metric_name": "hesitation_rate_per_word",
+            "display_label": "Hesitation rate",
+            "unit": "hesitations_per_attempted_word",
+            "valid_observation_count": 4,
+            "missing_observation_count": 0,
+            "first_value": "0.0500",
+            "latest_value": "0.0200",
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "explanation": "There are not enough comparable observations to describe a trend."
+          }
+        ]
+      }
+    ],
+    "support_exposures": [
+      {
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "session_count": 4,
+        "first_observed_at": "2026-01-01T09:00:00Z",
+        "latest_observed_at": "2026-01-04T09:00:00Z",
+        "description": "Reading sessions were recorded using adaptive support."
+      }
+    ],
+    "difficulty_history": [
+      {
+        "observed_at": "2026-01-01T09:00:00Z",
+        "task_type": "independent_reading",
+        "task_label": "Independent reading",
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "previous_difficulty_tier": null,
+        "difficulty_tier": "intermediate",
+        "difficulty_label": "Intermediate level",
+        "description": "Intermediate level reading sessions were observed for independent reading with adaptive support."
+      }
+    ],
+    "evidence_limitations": [
+      "Trends require at least six valid observations in one comparable context.",
+      "Sessions are compared only when task, difficulty, and observed support mode match.",
+      "Observed support and difficulty context do not explain why measurements changed."
+    ],
+    "disclaimer": "These descriptive observations do not show that a support mode caused a change and should be considered with other educational information."
+  }
+},{
+  "schemaVersion": "role-scenario-v1",
+  "synthetic": true,
+  "scenarioId": "[5,\"3be79ca3aa387352faa2ecb552ca3d854f13e92f5a8775333743e3091958dec0\",\"2026-01-01T00:00:00Z\",\"2026-01-31T00:00:00Z\",\"independent_reading\",\"intermediate\",\"adaptive\",\"2026-10-21T22:29:02.362376Z\"]",
+  "role": "guardian",
+  "projection": {
+    "reporting_period": {
+      "start_at_utc": "2026-01-01T00:00:00Z",
+      "end_at_utc": "2026-01-31T00:00:00Z"
+    },
+    "included_session_count": 5,
+    "contexts": [
+      {
+        "task_type": "independent_reading",
+        "task_label": "Independent reading",
+        "difficulty_tier": "intermediate",
+        "difficulty_label": "Intermediate level",
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "session_count": 5,
+        "first_session_at": "2026-01-01T09:00:00Z",
+        "latest_session_at": "2026-01-05T09:00:00Z",
+        "metrics": [
+          {
+            "metric_name": "reading_accuracy",
+            "display_label": "Reading accuracy",
+            "unit": "proportion",
+            "valid_observation_count": 5,
+            "missing_observation_count": 0,
+            "first_value": "0.9300",
+            "latest_value": "0.9600",
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "explanation": "There are not enough comparable observations to describe a trend."
+          },
+          {
+            "metric_name": "reading_fluency_wpm",
+            "display_label": "Reading speed",
+            "unit": "words_per_minute",
+            "valid_observation_count": 5,
+            "missing_observation_count": 0,
+            "first_value": "85.71",
+            "latest_value": "100.00",
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "explanation": "There are not enough comparable observations to describe a trend."
+          },
+          {
+            "metric_name": "hesitation_rate_per_word",
+            "display_label": "Hesitation rate",
+            "unit": "hesitations_per_attempted_word",
+            "valid_observation_count": 5,
+            "missing_observation_count": 0,
+            "first_value": "0.0500",
+            "latest_value": "0.0200",
+            "change_direction": "insufficient_evidence",
+            "evidence_sufficient": false,
+            "fluctuation_detected": null,
+            "explanation": "There are not enough comparable observations to describe a trend."
+          }
+        ]
+      }
+    ],
+    "support_exposures": [
+      {
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "session_count": 5,
+        "first_observed_at": "2026-01-01T09:00:00Z",
+        "latest_observed_at": "2026-01-05T09:00:00Z",
+        "description": "Reading sessions were recorded using adaptive support."
+      }
+    ],
+    "difficulty_history": [
+      {
+        "observed_at": "2026-01-01T09:00:00Z",
+        "task_type": "independent_reading",
+        "task_label": "Independent reading",
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "previous_difficulty_tier": null,
+        "difficulty_tier": "intermediate",
+        "difficulty_label": "Intermediate level",
+        "description": "Intermediate level reading sessions were observed for independent reading with adaptive support."
+      }
+    ],
+    "evidence_limitations": [
+      "Trends require at least six valid observations in one comparable context.",
+      "Sessions are compared only when task, difficulty, and observed support mode match.",
+      "Observed support and difficulty context do not explain why measurements changed."
+    ],
+    "disclaimer": "These descriptive observations do not show that a support mode caused a change and should be considered with other educational information."
+  }
+},{
+  "schemaVersion": "role-scenario-v1",
+  "synthetic": true,
+  "scenarioId": "[6,\"33659d1c6947d7687a7d74e00f4540da065a2450b357805c90566ec71fda0ad7\",\"2026-01-01T00:00:00Z\",\"2026-01-31T00:00:00Z\",\"independent_reading\",\"intermediate\",\"adaptive\",\"2026-10-21T22:29:02.362376Z\"]",
+  "role": "guardian",
+  "projection": {
+    "reporting_period": {
+      "start_at_utc": "2026-01-01T00:00:00Z",
+      "end_at_utc": "2026-01-31T00:00:00Z"
+    },
+    "included_session_count": 6,
+    "contexts": [
+      {
+        "task_type": "independent_reading",
+        "task_label": "Independent reading",
+        "difficulty_tier": "intermediate",
+        "difficulty_label": "Intermediate level",
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "session_count": 6,
+        "first_session_at": "2026-01-01T09:00:00Z",
+        "latest_session_at": "2026-01-06T09:00:00Z",
+        "metrics": [
+          {
+            "metric_name": "reading_accuracy",
+            "display_label": "Reading accuracy",
+            "unit": "proportion",
+            "valid_observation_count": 6,
+            "missing_observation_count": 0,
+            "first_value": "0.9300",
+            "latest_value": "0.9600",
+            "change_direction": "increased",
+            "evidence_sufficient": true,
+            "fluctuation_detected": false,
+            "explanation": "Measured accuracy increased in comparable sessions."
+          },
+          {
+            "metric_name": "reading_fluency_wpm",
+            "display_label": "Reading speed",
+            "unit": "words_per_minute",
+            "valid_observation_count": 6,
+            "missing_observation_count": 0,
+            "first_value": "85.71",
+            "latest_value": "100.00",
+            "change_direction": "increased",
+            "evidence_sufficient": true,
+            "fluctuation_detected": false,
+            "explanation": "Reading-speed measurements increased in comparable sessions."
+          },
+          {
+            "metric_name": "hesitation_rate_per_word",
+            "display_label": "Hesitation rate",
+            "unit": "hesitations_per_attempted_word",
+            "valid_observation_count": 6,
+            "missing_observation_count": 0,
+            "first_value": "0.0500",
+            "latest_value": "0.0200",
+            "change_direction": "decreased",
+            "evidence_sufficient": true,
+            "fluctuation_detected": false,
+            "explanation": "Measured hesitation frequency decreased in comparable sessions."
+          }
+        ]
+      }
+    ],
+    "support_exposures": [
+      {
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "session_count": 6,
+        "first_observed_at": "2026-01-01T09:00:00Z",
+        "latest_observed_at": "2026-01-06T09:00:00Z",
+        "description": "Reading sessions were recorded using adaptive support."
+      }
+    ],
+    "difficulty_history": [
+      {
+        "observed_at": "2026-01-01T09:00:00Z",
+        "task_type": "independent_reading",
+        "task_label": "Independent reading",
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "previous_difficulty_tier": null,
+        "difficulty_tier": "intermediate",
+        "difficulty_label": "Intermediate level",
+        "description": "Intermediate level reading sessions were observed for independent reading with adaptive support."
+      }
+    ],
+    "evidence_limitations": [
+      "Trends require at least six valid observations in one comparable context.",
+      "Sessions are compared only when task, difficulty, and observed support mode match.",
+      "Observed support and difficulty context do not explain why measurements changed."
+    ],
+    "disclaimer": "These descriptive observations do not show that a support mode caused a change and should be considered with other educational information."
+  }
+},{
+  "schemaVersion": "role-scenario-v1",
+  "synthetic": true,
+  "scenarioId": "[-1,\"33659d1c6947d7687a7d74e00f4540da065a2450b357805c90566ec71fda0ad7\",\"2026-01-01T00:00:00Z\",\"2026-01-31T00:00:00Z\",\"independent_reading\",\"intermediate\",\"adaptive\",\"2026-10-21T22:29:02.362376Z\"]",
+  "role": "guardian",
+  "projection": {
+    "reporting_period": {
+      "start_at_utc": "2026-01-01T00:00:00Z",
+      "end_at_utc": "2026-01-31T00:00:00Z"
+    },
+    "included_session_count": 6,
+    "contexts": [
+      {
+        "task_type": "independent_reading",
+        "task_label": "Independent reading",
+        "difficulty_tier": "intermediate",
+        "difficulty_label": "Intermediate level",
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "session_count": 6,
+        "first_session_at": "2026-01-01T09:00:00Z",
+        "latest_session_at": "2026-01-06T09:00:00Z",
+        "metrics": [
+          {
+            "metric_name": "reading_accuracy",
+            "display_label": "Reading accuracy",
+            "unit": "proportion",
+            "valid_observation_count": 6,
+            "missing_observation_count": 0,
+            "first_value": "0.9300",
+            "latest_value": "0.9600",
+            "change_direction": "increased",
+            "evidence_sufficient": true,
+            "fluctuation_detected": false,
+            "explanation": "Measured accuracy increased in comparable sessions."
+          },
+          {
+            "metric_name": "reading_fluency_wpm",
+            "display_label": "Reading speed",
+            "unit": "words_per_minute",
+            "valid_observation_count": 6,
+            "missing_observation_count": 0,
+            "first_value": "85.71",
+            "latest_value": "100.00",
+            "change_direction": "increased",
+            "evidence_sufficient": true,
+            "fluctuation_detected": false,
+            "explanation": "Reading-speed measurements increased in comparable sessions."
+          },
+          {
+            "metric_name": "hesitation_rate_per_word",
+            "display_label": "Hesitation rate",
+            "unit": "hesitations_per_attempted_word",
+            "valid_observation_count": 6,
+            "missing_observation_count": 0,
+            "first_value": "0.0500",
+            "latest_value": "0.0200",
+            "change_direction": "decreased",
+            "evidence_sufficient": true,
+            "fluctuation_detected": false,
+            "explanation": "Measured hesitation frequency decreased in comparable sessions."
+          }
+        ]
+      }
+    ],
+    "support_exposures": [
+      {
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "session_count": 6,
+        "first_observed_at": "2026-01-01T09:00:00Z",
+        "latest_observed_at": "2026-01-06T09:00:00Z",
+        "description": "Reading sessions were recorded using adaptive support."
+      }
+    ],
+    "difficulty_history": [
+      {
+        "observed_at": "2026-01-01T09:00:00Z",
+        "task_type": "independent_reading",
+        "task_label": "Independent reading",
+        "support_mode": "adaptive",
+        "support_label": "Adaptive support",
+        "previous_difficulty_tier": null,
+        "difficulty_tier": "intermediate",
+        "difficulty_label": "Intermediate level",
+        "description": "Intermediate level reading sessions were observed for independent reading with adaptive support."
+      }
+    ],
+    "evidence_limitations": [
+      "Trends require at least six valid observations in one comparable context.",
+      "Sessions are compared only when task, difficulty, and observed support mode match.",
+      "Observed support and difficulty context do not explain why measurements changed."
+    ],
+    "disclaimer": "These descriptive observations do not show that a support mode caused a change and should be considered with other educational information."
+  }
+}]

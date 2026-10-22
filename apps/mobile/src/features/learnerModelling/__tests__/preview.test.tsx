@@ -10,8 +10,8 @@ describe("Component 4 synthetic mobile preview", () => {
   it("shows an explicit synthetic-data banner and advisory-only recommendation", async () => {
     render(<App />);
 
-    expect(screen.getByText("DEMO — SYNTHETIC DATA")).toBeTruthy();
-    expect(await screen.findByText("My reading progress")).toBeTruthy();
+    expect(screen.getByText("Sample Data")).toBeTruthy();
+    expect(await screen.findByText("Hi, Reader!")).toBeTruthy();
     expect(await screen.findByText("ADVISORY ONLY")).toBeTruthy();
     expect(
       screen.getByText("This preview never applies a learner-setting change automatically."),
@@ -21,13 +21,14 @@ describe("Component 4 synthetic mobile preview", () => {
   it("switches only among fixed synthetic role projections", async () => {
     render(<App />);
 
-    await screen.findByText("My reading progress");
+    await screen.findByText("Hi, Reader!");
 
-    fireEvent.press(screen.getByRole("tab", { name: "Guardian synthetic preview" }));
+    fireEvent.press(screen.getByRole("tab", { name: "Guardian sample preview" }));
     expect(await screen.findByText("Guardian progress summary")).toBeTruthy();
-    expect(screen.queryByText("My reading progress")).toBeNull();
+    expect(screen.queryByText("Hi, Reader!")).toBeNull();
 
-    fireEvent.press(screen.getByRole("tab", { name: "Educator synthetic preview" }));
+    fireEvent.press(screen.getByRole("tab", { name: "Educator sample preview" }));
+    fireEvent.press(await screen.findByRole("button", { name: "View separate example" }));
     expect(await screen.findByText("Educator reading analytics")).toBeTruthy();
     expect(screen.getAllByText(/formula version v1/)).toHaveLength(3);
   });

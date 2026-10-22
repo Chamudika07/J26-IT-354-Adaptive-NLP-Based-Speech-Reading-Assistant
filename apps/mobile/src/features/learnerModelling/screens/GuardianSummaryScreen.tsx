@@ -1,4 +1,6 @@
+import { RoleScenarioView } from "../components/RoleScenarioView";
 import { useCallback } from "react";
+import { DashboardModeBoundary, type LiveScreenProps } from "../components/DashboardModeBoundary";
 
 import { DashboardStateView } from "../components/DashboardStateView";
 import {
@@ -8,12 +10,16 @@ import {
 import { useDashboardPresentation } from "../data/useDashboardPresentation";
 import type { ReportingPeriodDays } from "../types";
 
-interface GuardianSummaryScreenProps {
+interface GuardianSummaryScreenProps extends LiveScreenProps {
   periodDays: ReportingPeriodDays;
   provider?: Component4DashboardProvider;
 }
 
-export function GuardianSummaryScreen({
+export function GuardianSummaryScreen(props: GuardianSummaryScreenProps) {
+  return <DashboardModeBoundary {...props} role="guardian"><DemoGuardianSummaryScreen {...props} /></DashboardModeBoundary>;
+}
+
+function DemoGuardianSummaryScreen({
   periodDays,
   provider = demoDashboardProvider,
 }: GuardianSummaryScreenProps) {
@@ -23,5 +29,7 @@ export function GuardianSummaryScreen({
   );
   const state = useDashboardPresentation(loadDashboard, provider.mode);
 
-  return <DashboardStateView state={state} />;
+  const fallback = <DashboardStateView state={state} />;
+  return state.status === "ready" && state.provenance === "demo" && state.dashboard.role === "guardian"
+    ? <RoleScenarioView role="guardian">{fallback}</RoleScenarioView> : fallback;
 }

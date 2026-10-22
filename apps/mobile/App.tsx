@@ -4,6 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { PeriodSelector } from "./src/features/learnerModelling/components/PeriodSelector";
+import { Component4AccountBoundary } from "./src/features/learnerModelling/components/Component4AccountBoundary";
 import { RoleSwitcher } from "./src/features/learnerModelling/components/RoleSwitcher";
 import { EducatorAnalyticsScreen } from "./src/features/learnerModelling/screens/EducatorAnalyticsScreen";
 import { GuardianSummaryScreen } from "./src/features/learnerModelling/screens/GuardianSummaryScreen";
@@ -21,6 +22,7 @@ export default function App() {
     <SafeAreaProvider>
       <SafeAreaView edges={["top", "bottom"]} style={styles.safeArea}>
         <StatusBar style="dark" />
+        <Component4AccountBoundary periodDays={periodDays} onSelectDays={setPeriodDays}>
         <View style={styles.controls}>
           <RoleSwitcher selectedRole={role} onSelectRole={setRole} />
           <PeriodSelector selectedDays={periodDays} onSelectDays={setPeriodDays} />
@@ -28,6 +30,7 @@ export default function App() {
         {role === "learner" ? <LearnerProgressScreen periodDays={periodDays} /> : null}
         {role === "guardian" ? <GuardianSummaryScreen periodDays={periodDays} /> : null}
         {role === "educator" ? <EducatorAnalyticsScreen periodDays={periodDays} /> : null}
+        </Component4AccountBoundary>
       </SafeAreaView>
     </SafeAreaProvider>
   );
