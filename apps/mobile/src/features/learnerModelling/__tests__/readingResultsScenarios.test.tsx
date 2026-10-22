@@ -25,11 +25,12 @@ it("guides one scenario from editable profile through analytics, evidence-based 
     await start(2);
     const sample = selectConnectedReplay({ index: 2, development: true, demoMode: true, role: "learner" })!;
     expect(screen.getByRole("header", { name: "My Profile" })).toBeTruthy();
+    button("Profile Details");
     expect(screen.getByText("Applied scenario: Sample 2")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Edit Profile" })).toBeTruthy();
     expect(screen.getAllByRole("button", { name: "Reading Settings" })).toHaveLength(1);
     expect(screen.queryByRole("button", { name: "View Learner Profile" })).toBeNull();
-    button("Next: My Analytics");
+    button("View Analytics");
     expect(screen.getByRole("header", { name: "My Reading Analytics" })).toBeTruthy();
     for (const title of ["Reading Performance", "Reading Behaviour", "Reading Progress"]) expect(screen.getByRole("header", { name: title })).toBeTruthy();
     fireEvent.press(screen.getByRole("button", { name: "View Reading History" }));
@@ -72,7 +73,7 @@ it("applies another matching backend decision and keeps other-role data separate
 });
 
 it("resets history, tips and the current report without replacing identity or inventing measurements", async () => {
-  await start(3); button("Next: My Analytics"); const confirm = jest.spyOn(Alert, "alert"); button("Reset Journey");
+  await start(3); button("View Analytics"); const confirm = jest.spyOn(Alert, "alert"); button("Reset Journey");
   act(() => confirm.mock.calls.at(-1)![2]!.find(b => b.text === "Reset Journey")!.onPress!());
   confirm.mockRestore();
   button("View Behaviour Details"); button("About these results");

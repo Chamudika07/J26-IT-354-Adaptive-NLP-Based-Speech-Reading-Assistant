@@ -71,7 +71,7 @@ it("selects one source, context, period and generation timestamp across all four
     expect(screen.queryByText("Hi, reader!")).toBeNull();
   }
   fireEvent.press(screen.getByRole("button", { name: "Back to Reading Home" }));
-  expect(screen.getByText("Choose your reading settings.")).toBeTruthy();
+  expect(screen.getByText("Reading Settings")).toBeTruthy();
   expect(fetchSpy).not.toHaveBeenCalled();
   expect(fs.readAsStringAsync).not.toHaveBeenCalled();
 });
@@ -326,7 +326,7 @@ it("keeps normal scenario selection separate from developer input tooling", asyn
   expect(screen.queryByRole("button", { name: "Calculate My Results" })).toBeNull();
   fireEvent.press(screen.getByRole("radio", { name: "Sample scenario: Sample 1" }));
   fireEvent.press(screen.getByRole("button", { name: "Update My Progress" }));
-  fireEvent.press(screen.getByRole("button", { name: "Next: My Analytics" }));
+  fireEvent.press(screen.getByRole("button", { name: "View Analytics" }));
   fireEvent.press(screen.getByRole("button", { name: "View Reading Tips" }));
   fireEvent.press(screen.getByRole("button", { name: "Next: My Reading Report" }));
   fireEvent.press(screen.getByRole("button", { name: "Read Current Summary" }));
@@ -340,7 +340,7 @@ it("shows the backend action first and keeps full explanation optional", async (
   fireEvent.press(screen.getByRole("button", { name: "Reading Results" }));
   fireEvent.press(screen.getByRole("radio", { name: `Sample scenario: Sample ${replay.length - 1}` }));
   fireEvent.press(screen.getByRole("button", { name: "Update My Progress" }));
-  fireEvent.press(screen.getByRole("button", { name: "Next: My Analytics" }));
+  fireEvent.press(screen.getByRole("button", { name: "View Analytics" }));
   fireEvent.press(screen.getByRole("button", { name: "View Reading Tips" }));
   expect(screen.getByText(replay.at(-1)!.recommendation!.action)).toBeTruthy();
   const why = screen.getByRole("button", { name: "Why This Tip?" });

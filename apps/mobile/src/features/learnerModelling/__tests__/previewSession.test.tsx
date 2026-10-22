@@ -98,7 +98,7 @@ it("discards drafts when the feature unmounts; uses no network and never changes
     open("Support Settings"); chooseSettings(); home();
     open("Session Feedback"); chooseFeedback(); home();
     open("My Profile");
-    expect(screen.getByText("Choose your reading settings.")).toBeTruthy();
+    expect(screen.getByText("Reading Settings")).toBeTruthy();
     expect(JSON.stringify(buildSyntheticDashboard("learner", 30))).toBe(before);
     expect(fetchSpy).not.toHaveBeenCalled();
     view.unmount();

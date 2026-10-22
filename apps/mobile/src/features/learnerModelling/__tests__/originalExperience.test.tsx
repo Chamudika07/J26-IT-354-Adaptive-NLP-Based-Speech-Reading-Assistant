@@ -43,7 +43,7 @@ it("discovers all original areas without adding secondary bottom tabs", async ()
     expect(StyleSheet.flatten(link.props.style).minHeight).toBeGreaterThanOrEqual(48);
     fireEvent.press(link);
     expect(screen.getByRole("header", { name: title === "My Reading Analytics" ? "My Reading Analytics" : title === "My Reading Report" ? "My Reading Report" : title })).toBeTruthy();
-    expect(screen.getByText(title === "My Reading Analytics" ? "Demo \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
+    expect(screen.getByText(["My Reading Analytics", "My Profile"].includes(title) ? "Demo \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
     fireEvent.press(screen.getByRole("button", { name: "Back to reading Home" }));
   }
   const navigation = within(screen.getByLabelText("Learner feature navigation"));
@@ -77,8 +77,8 @@ it("previews font, highlighting and audio preferences across navigation until ex
   expect(screen.getByText("Audio support preferred in this local preview. Audio playback is not connected.")).toBeTruthy();
   fireEvent.press(screen.getByRole("button", { name: "Back to reading Home" }));
   fireEvent.press(screen.getByRole("tab", { name: "Profile learner view" }));
-  expect(screen.getByText("Choose your reading settings.")).toBeTruthy();
-  fireEvent.press(screen.getByRole("button", { name: "Try local Support Settings" }));
+  expect(screen.getByText("Reading Settings")).toBeTruthy();
+  fireEvent.press(screen.getByRole("button", { name: "Reading Settings" }));
   expect(StyleSheet.flatten(screen.getByTestId("support-sample-text").props.style).fontSize).toBe(28);
   expect(screen.getByRole("switch", { name: "Audio-support preference" }).props.value).toBe(true);
   expect(screen.getByText("Highlighting is on in this sample.")).toBeTruthy();

@@ -21,7 +21,7 @@ import type { DashboardPresentationState, LearnerDashboardPreview, ReportingPeri
 
 function SampleSourceLabel({ destination }: { destination: string }) {
   const session = useDeveloperTest();
-  if (session?.source !== "laptop" || ["report", "home", "test", "progress"].includes(destination)) return null;
+  if (session?.source !== "laptop" || ["report", "home", "test", "progress", "profile"].includes(destination)) return null;
   return <Text accessibilityLiveRegion="polite" style={{ paddingHorizontal: 16 }}>{session.connected.artifact ? "Synthetic Sample Data \u00b7 Calculated on laptop" : "Synthetic Sample Data \u00b7 Choose Reading Results to update"}</Text>;
 }
 
@@ -74,7 +74,7 @@ export function LearnerNavigation({ state, periodDays }: {
                 destination === "home" ? <LearnerHomeScreen {...props} onNavigate={setDestination} /> :
                 destination === "progress" ? <LearnerProgressHistoryScreen {...props} onTips={() => setDestination("suggestions")} /> :
                 destination === "suggestions" ? <LearnerSuggestionsScreen {...props} /> :
-                destination === "profile" ? <LearnerProfileScreen {...props} onOpenSettings={() => setDestination("settings")} /> :
+                destination === "profile" ? <LearnerProfileScreen {...props} onAnalytics={() => setDestination("progress")} onOpenSettings={() => setDestination("settings")} /> :
                 !props.demoMode || props.dashboard.role !== "learner" ? <DashboardStateView state={{ status: "temporarily_unavailable", provenance: state.provenance }} /> :
                 destination === "test" && __DEV__ ? <ReadingSessionTestScreen onNavigate={setDestination} /> :
                 destination === "settings" ? <SupportSettingsScreen /> :

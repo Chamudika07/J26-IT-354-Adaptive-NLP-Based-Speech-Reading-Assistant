@@ -26,7 +26,7 @@ it("opens four destinations with selected tabs, discovery links and a consistent
     fireEvent.press(screen.getByRole("tab", { name: `${tab} learner view` }));
     expect(screen.getByRole("header", { name: title })).toBeTruthy();
     expect(screen.getByRole("tab", { name: `${tab} learner view` }).props.accessibilityState.selected).toBe(true);
-    expect(screen.getByText(tab === "Analytics" ? "Demo \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
+    expect(screen.getByText(["Analytics", "Profile"].includes(tab!) ? "Demo \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
     const home = screen.getByRole("tab", { name: "Home learner view" });
     expect(home.props.accessibilityState.selected).toBe(false);
     expect(StyleSheet.flatten(home.props.style).minHeight).toBeGreaterThanOrEqual(48);
@@ -61,10 +61,12 @@ it("uses the shared reporting controls on Progress and retains the period across
   expect(screen.getByText(buildSyntheticDashboard("learner", 90).recommendation.supportSuggestion)).toBeTruthy();
   expect(screen.getByText("Review this suggestion with a parent or teacher before making changes.")).toBeTruthy();
   fireEvent.press(screen.getByRole("tab", { name: "Profile learner view" }));
+  fireEvent.press(screen.getByRole("button", { name: "Profile Details" }));
   expect(screen.getByText("90-day reporting period")).toBeTruthy();
   expect(screen.getByText("Latest observed difficulty: intermediate")).toBeTruthy();
-  expect(screen.getByText("Choose your reading settings.")).toBeTruthy();
-  expect(screen.getByText(/Your demo choices stay on this device/)).toBeTruthy();
+  expect(screen.getByText("Reading Settings")).toBeTruthy();
+  fireEvent.press(screen.getByRole("button", { name: "Reading Preferences" }));
+  expect(screen.getByText(/Highlighting:/)).toBeTruthy();
   expect(screen.queryByRole("switch")).toBeNull();
 });
 
@@ -72,8 +74,9 @@ it("keeps observed difficulty and missing preference states distinct when no obs
   const dashboard = { ...buildSyntheticDashboard("learner", 30), difficultyProgression: [] };
   render(<LearnerNavigation state={{ status: "ready", provenance: "demo", dashboard }} periodDays={30} />);
   fireEvent.press(screen.getByRole("tab", { name: "Profile learner view" }));
+  fireEvent.press(screen.getByRole("button", { name: "Profile Details" }));
   expect(screen.getByText("Observed difficulty unavailable.")).toBeTruthy();
-  expect(screen.getByText("Choose your reading settings.")).toBeTruthy();
+  expect(screen.getByText("Reading Settings")).toBeTruthy();
   expect(screen.queryByText("Latest observed difficulty: intermediate")).toBeNull();
 });
 

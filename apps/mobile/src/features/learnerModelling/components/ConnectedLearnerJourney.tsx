@@ -4,7 +4,7 @@ import type { ConnectedArtifact } from "../preview/connectedSessionPreview";
 import { useDeveloperTest } from "../preview/DeveloperTestSession";
 import type { LearnerDestination } from "../navigation/learnerDestinations";
 import { AIProgressReportScreen } from "../screens/AIProgressReportScreen";
-import { DemoLearnerCard, DemoPreferencesCard } from "./DemoLearnerCard";
+import { LearnerProfileView } from "./LearnerProfileView";
 import { HomeHero } from "./HomeHero";
 import { LocalPreviewLayout } from "./LocalPreviewLayout";
 import { ConfirmJourneyReset, ReadingProgress } from "./ReadingProgress";
@@ -28,6 +28,10 @@ export function ConnectedLearnerJourney({ artifact: a, destination, onNavigate, 
     <Pressable accessibilityRole="button" onPress={() => setSaved(false)} style={s.previewLink}><Text style={s.body}>Back to Current Reading Summary</Text></Pressable>
     <AIProgressReportScreen {...reportProps} initialSaved />
   </View>;
+  if (destination === "profile") return <LearnerProfileView demoMode sessions={a.includedSessionCount} accuracy={latest.accuracy === null ? "Unavailable" : `${format(latest.accuracy)}%`} speed={latest.speed === null ? "Unavailable" : `${format(latest.speed)} WPM`}
+    history={a.history.map(h => ({ id: String(h.sequence), label: `Sample ${h.sequence}`, date: new Date(h.recordedAt).toLocaleDateString("en-GB", { timeZone: "UTC" }), accuracy: h.accuracy === null ? "Unavailable" : `${format(number(h.accuracy, 100))}%`, speed: h.wpm === null ? "Unavailable" : `${format(number(h.wpm))} WPM`, hesitation: h.hesitation === null ? "Unavailable" : `${format(number(h.hesitation, 100))} per 100 attempted words` }))}
+    onAnalytics={() => onNavigate?.("progress")} onSettings={() => onNavigate?.("settings")}
+    details={<><Text style={s.period}>{applied}</Text><Text style={s.body}>Level: {a.context.tier}. Activity: {a.context.task.replaceAll("_", " ")}.</Text></>} />;
   if (destination === "progress") return <ReadingProgress rows={a.history.map(h => ({ label: `S${h.sequence}`, accuracy: number(h.accuracy, 100), speed: number(h.wpm), hesitation: number(h.hesitation, 100) }))}
     latest={latest} completedCount={a.includedSessionCount} engagement={a.history.at(-1)?.experimentalEngagement}
     insufficientHistory={a.metrics.some(m => m.change_direction === "insufficient_evidence")}
@@ -39,7 +43,7 @@ export function ConnectedLearnerJourney({ artifact: a, destination, onNavigate, 
         <ConfirmJourneyReset onReset={() => session.replay(0)} />
       </> : null}
     </View>} />;
-  return <LocalPreviewLayout title={destination === "profile" ? "My Profile" : destination === "suggestions" ? "My Reading Tips" : destination === "report" ? "My Reading Report" : "Reading Home"}
+  return <LocalPreviewLayout title={destination === "suggestions" ? "My Reading Tips" : destination === "report" ? "My Reading Report" : "Reading Home"}
     disclosure="" introduction="" homeHeader={destination === "home" ? <HomeHero sessions={a.includedSessionCount} accuracy={latest.accuracy === null ? "Not measured" : `${format(latest.accuracy)}%`} speed={format(latest.speed)} onStart={() => onNavigate?.("test")} /> : undefined}>
     {destination === "report" && session.source === "laptop" ? <Text style={s.period}>{"Synthetic Sample Data \u00b7 Calculated on laptop"}</Text> : null}
     {destination === "suggestions" ? <View style={s.card}>
@@ -56,22 +60,6 @@ export function ConnectedLearnerJourney({ artifact: a, destination, onNavigate, 
       <Text style={s.body}>{a.recommendation?.manual_control_prevents_adjustment ? "Manual control keeps support unchanged." : "Review this tip with a parent or teacher. No settings are changed."}</Text>
     </View> : null}
     <Text style={s.period}>{applied}</Text>
-    {destination === "profile" ? <>
-      <DemoLearnerCard editable />
-      <View style={s.card}>
-        <Text accessibilityRole="header" style={s.heading}>Latest Reading Results</Text>
-        <Text style={s.body}>Accuracy: {format(latest.accuracy)}{latest.accuracy === null ? "" : "%"} · Speed: {format(latest.speed)} WPM</Text>
-        <Text style={s.body}>Hesitation frequency: {format(latest.hesitation)} per 100 attempted words</Text>
-        <Text style={s.body}>Level: {a.context.tier}. Activity: {a.context.task.replaceAll("_", " ")}.</Text>
-        <Text style={s.body}>{a.includedSessionCount} completed sessions. These observations do not verify your identity or ability.</Text>
-      </View>
-      <DemoPreferencesCard />
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>{action("Reading Settings", "settings", false)}{action("Reading Feedback", "feedback", false)}</View>
-      <View style={s.card}><Text accessibilityRole="header" style={s.heading}>Reading History</Text>
-        {a.history.length ? a.history.map(h => <Text key={h.sequence} style={s.body}>Sample {h.sequence} · {h.recordedAt.slice(0, 10)} · Completed</Text>) : <Text style={s.body}>No completed sessions yet.</Text>}
-      </View>
-      {action("Next: My Analytics", "progress")}
-    </> : null}
     {destination === "suggestions" ? action("Next: My Reading Report", "report") : null}
     {destination === "report" ? <>
       <View style={s.card}>

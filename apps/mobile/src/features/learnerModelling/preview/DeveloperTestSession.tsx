@@ -11,6 +11,8 @@ function useDeveloperState() {
   const connection = usePp1Connection();
   const source = connection ? "laptop" : "offline";
   const lastSavedRequest = useRef<number | undefined>(undefined);
+  const [progressUpdated, setProgressUpdated] = useState(false);
+  const dismissProgressUpdate = useCallback(() => setProgressUpdated(false), []);
   const [savedMessage, setSavedMessage] = useState("");
   const [calculationError, setCalculationError] = useState("");
   const [calculating, setCalculating] = useState(false);
@@ -74,6 +76,7 @@ function useDeveloperState() {
   const replay = (index: number) => {
     if (!alive.current || running.current || !__DEV__) return;
     const artifact = selectConnectedReplay({ index, development: __DEV__, demoMode: true, role: "learner" });
+    setProgressUpdated(Boolean(artifact));
     publishScenario(index, artifact); setReplayIndex(index); setConnected({ attempted: true, artifact }); setSelected(false);
   };
   const applyScenario = async (index: number) => {
@@ -120,7 +123,7 @@ function useDeveloperState() {
     catch { if (alive.current) setMessage("Sample export unavailable. Your saved inputs are unchanged. Try exporting again."); return false; }
     finally { running.current = false; if (alive.current) setBusy(false); }
   };
-  return { savedMessage, savedProgress, source, connectedAvailable: Boolean(connection), retrySavedProgress: () => savedProgress(lastSavedRequest.current), applyScenario, calculationError, calculating, cancelCalculation, replayIndex, replayLength: connectedReplayLength, replay: (index: number) => { if (source === "laptop") { void savedProgress(index); } else replay(index); }, connected, selectConnected, exportSaved, records, selected, asOf, message, busy, run, returnToDemo: () => { cancelCalculation(); setCalculationError(""); publishScenario(null); setReplayIndex(null); setSelected(false); setConnected({ attempted: Boolean(connection), artifact: null }); } };
+  return { progressUpdated, dismissProgressUpdate, savedMessage, savedProgress, source, connectedAvailable: Boolean(connection), retrySavedProgress: () => savedProgress(lastSavedRequest.current), applyScenario, calculationError, calculating, cancelCalculation, replayIndex, replayLength: connectedReplayLength, replay: (index: number) => { if (source === "laptop") { void savedProgress(index); } else replay(index); }, connected, selectConnected, exportSaved, records, selected, asOf, message, busy, run, returnToDemo: () => { cancelCalculation(); setCalculationError(""); publishScenario(null); setReplayIndex(null); setSelected(false); setConnected({ attempted: Boolean(connection), artifact: null }); } };
 }
 const Context = createContext<ReturnType<typeof useDeveloperState> | null>(null);
 function Active({ children }: { children: ReactNode }) {

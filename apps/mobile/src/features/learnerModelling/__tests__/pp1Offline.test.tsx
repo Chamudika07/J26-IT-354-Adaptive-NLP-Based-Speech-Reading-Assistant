@@ -22,7 +22,7 @@ it("rehearses PP1 with changing backend evidence, all roles and saved reports wi
     for (const key of ["accuracy", "wpm", "hesitation"] as const) expect(new Set(artifact.history.map(h => h[key])).size).toBeGreaterThan(1);
     expect(artifact.metrics.map(m => m.change_direction)).toEqual(["increased", "increased", "decreased"]);
     expect(screen.getByRole("header", { name: "My Profile" })).toBeTruthy();
-    button("Next: My Analytics");
+    button("View Analytics");
     for (const title of ["Reading Performance", "Reading Behaviour", "Reading Progress"]) expect(screen.getByRole("header", { name: title })).toBeTruthy();
     fireEvent.press(screen.getByRole("button", { name: "View Reading History" }));
     expect(screen.getByText(/S6.*Completed/)).toBeTruthy();
