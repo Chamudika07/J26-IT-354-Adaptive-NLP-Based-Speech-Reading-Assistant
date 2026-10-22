@@ -26,7 +26,7 @@ it("opens four destinations with selected tabs, discovery links and a consistent
     fireEvent.press(screen.getByRole("tab", { name: `${tab} learner view` }));
     expect(screen.getByRole("header", { name: title })).toBeTruthy();
     expect(screen.getByRole("tab", { name: `${tab} learner view` }).props.accessibilityState.selected).toBe(true);
-    expect(screen.getByText(["Analytics", "Profile"].includes(tab!) ? "Demo \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
+    expect(screen.getByText(["Analytics", "Profile", "Suggestions"].includes(tab!) ? "Demo \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
     const home = screen.getByRole("tab", { name: "Home learner view" });
     expect(home.props.accessibilityState.selected).toBe(false);
     expect(StyleSheet.flatten(home.props.style).minHeight).toBeGreaterThanOrEqual(48);
@@ -56,6 +56,7 @@ it("uses the shared reporting controls on Progress and retains the period across
 
   }
   fireEvent.press(screen.getByRole("tab", { name: "Suggestions learner view" }));
+  fireEvent.press(screen.getByRole("button", { name: "Why This Tip?" }));
   expect(screen.getByText("90-day reporting period")).toBeTruthy();
   expect(screen.getByText("ADVISORY ONLY")).toBeTruthy();
   expect(screen.getByText(buildSyntheticDashboard("learner", 90).recommendation.supportSuggestion)).toBeTruthy();

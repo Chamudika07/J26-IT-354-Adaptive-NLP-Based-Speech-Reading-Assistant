@@ -57,7 +57,8 @@ it("requires explicit selection and keeps the saved period separate from dashboa
   expect(screen.getByText("No settings were changed. Review ideas with a parent or teacher.")).toBeTruthy();
   expect(JSON.stringify(dashboard)).toBe(before);
   fireEvent.press(screen.getByRole("button", { name: "Return to demo suggestions" }));
-  expect(screen.getByText(/Observed reading context:/)).toBeTruthy();
+  fireEvent.press(screen.getByRole("button", { name: "Why This Tip?" }));
+  expect(screen.getByText(/Reading context:/)).toBeTruthy();
 });
 it("does not render a learner snapshot in live mode or for other roles", () => {
   const { rerender } = render(<LearnerSuggestionsScreen dashboard={buildSyntheticDashboard("learner", 30)} demoMode={false} periodDays={30} />);
@@ -83,7 +84,8 @@ it("hides the selector in a production build", () => {
   try {
     render(<LearnerSuggestionsScreen dashboard={buildSyntheticDashboard("learner", 30)} demoMode periodDays={30} />);
     expect(screen.queryByRole("button", { name: "View backend synthetic recommendation" })).toBeNull();
-    expect(screen.getByText(/Observed reading context:/)).toBeTruthy();
+    fireEvent.press(screen.getByRole("button", { name: "Why This Tip?" }));
+    expect(screen.getByText(/Reading context:/)).toBeTruthy();
   } finally { jest.restoreAllMocks(); }
 });
 

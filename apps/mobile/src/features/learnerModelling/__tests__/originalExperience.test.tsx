@@ -43,7 +43,7 @@ it("discovers all original areas without adding secondary bottom tabs", async ()
     expect(StyleSheet.flatten(link.props.style).minHeight).toBeGreaterThanOrEqual(48);
     fireEvent.press(link);
     expect(screen.getByRole("header", { name: title === "Support Settings" ? "Reading Settings" : title === "My Reading Analytics" ? "My Reading Analytics" : title === "My Reading Report" ? "My Reading Report" : title })).toBeTruthy();
-    expect(screen.getByText(["My Reading Analytics", "My Profile", "Support Settings"].includes(title) ? "Demo \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
+    expect(screen.getByText(["My Reading Analytics", "My Profile", "Support Settings", "My Reading Tips"].includes(title) ? "Demo \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
     fireEvent.press(screen.getByRole("button", { name: "Back to reading Home" }));
   }
   const navigation = within(screen.getByLabelText("Learner feature navigation"));
@@ -167,7 +167,8 @@ it("does not reload other role projections or change recommendations after local
   fireEvent.press(screen.getByRole("radio", { name: "Was it easy, okay, or difficult?: Difficult" }));
   fireEvent.press(screen.getByRole("tab", { name: "Suggestions learner view" }));
   expect(screen.getByText(buildSyntheticDashboard("learner", 7).recommendation.supportSuggestion)).toBeTruthy();
-  expect(screen.getByText(/Authoritative recommended support level unavailable/)).toBeTruthy();
+  fireEvent.press(screen.getByRole("button", { name: "Why This Tip?" }));
+  expect(screen.getByText("Exact rule conditions: Unavailable.")).toBeTruthy();
   expect(provider.loadLearnerProgress).toHaveBeenCalledTimes(1);
   expect(provider.loadGuardianSummary).not.toHaveBeenCalled();
   expect(provider.loadEducatorAnalytics).not.toHaveBeenCalled();

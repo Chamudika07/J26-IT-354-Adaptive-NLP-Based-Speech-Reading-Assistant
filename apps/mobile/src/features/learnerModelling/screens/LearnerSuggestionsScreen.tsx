@@ -2,11 +2,11 @@ import { developerToolsEnabled } from "../preview/developerTools";
 import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
-import { LearnerReportLayout, reportStyles, type LearnerReportProps } from "../components/LearnerReportLayout";
+import { reportStyles, type LearnerReportProps } from "../components/LearnerReportLayout";
 import { DashboardStateView } from "../components/DashboardStateView";
 import { LocalPreviewLayout } from "../components/LocalPreviewLayout";
 import { selectBackendRecommendation } from "../preview/backendRecommendationSnapshot";
-import { RecommendationPanel } from "../components/RecommendationPanel";
+import { ReadingTipsView } from "../components/ReadingTipsView";
 
 export function LearnerSuggestionsScreen(props: LearnerReportProps) {
   const [selected, setSelected] = useState(false);
@@ -44,26 +44,10 @@ export function LearnerSuggestionsScreen(props: LearnerReportProps) {
       {toggle}
     </LocalPreviewLayout>;
   }
-  return (
-    <LearnerReportLayout {...props} title="My Reading Tips"
-      introduction="Explore suggestions with a parent or teacher. Your reading level and support choices stay unchanged.">
-      {developerToolsEnabled() ? toggle : null}
-      <View style={reportStyles.card}>
-        <Text accessibilityRole="header" style={reportStyles.heading}>Support Level & Recommendations</Text>
-        <Text style={reportStyles.body}>Observed reading context: {props.dashboard.contextSummary}</Text>
-        <Text style={reportStyles.body}>Authoritative recommended support level unavailable. The existing suggestion below is advisory, not a saved support level.</Text>
-      </View>
-      <RecommendationPanel recommendation={props.dashboard.recommendation} playful collapsibleDetails />
-      <View style={reportStyles.card}>
-        <Text accessibilityRole="header" style={reportStyles.heading}>What supports this idea?</Text>
-        {props.dashboard.metrics.map((metric) => (
-          <View key={metric.key} style={{ gap: 8 }}>
-            <Text style={reportStyles.heading}>{metric.label}</Text>
-            <Text style={reportStyles.body}>{metric.explanation}</Text>
-            <Text style={reportStyles.body}>{metric.evidenceLabel}</Text>
-          </View>
-        ))}
-      </View>
-    </LearnerReportLayout>
-  );
+  const recommendation = props.dashboard.recommendation;
+  const titles = { maintain: "Keep current support", adjust_support: "Review reading support", adjust_difficulty: "Review reading level" };
+  return <ReadingTipsView disclosure={"Demo \u00b7 Fictional data"} developerAction={developerToolsEnabled() ? toggle : undefined} title={titles[recommendation.action]}
+    metrics={[{ label: "Completed Sessions", value: String(props.dashboard.includedSessionCount) }, ...props.dashboard.metrics.map(metric => ({ label: metric.key === "reading_accuracy" ? "Reading Accuracy (%)" : metric.key === "reading_fluency_wpm" ? "Reading Speed (WPM)" : "Hesitations per 100 attempted words", value: props.dashboard.includedSessionCount ? `${metric.latestValue}${metric.key === "reading_accuracy" ? "%" : metric.key === "reading_fluency_wpm" ? " WPM" : ""}` : "Unavailable", evidence: metric.evidenceLabel, explanation: metric.explanation, observations: metric.validObservationCount !== undefined && metric.missingObservationCount !== undefined ? `Valid observations: ${metric.validObservationCount}; missing measurements: ${metric.missingObservationCount}` : undefined }))]}
+    limitations={[...props.dashboard.limitations, props.dashboard.disclaimer]} reasons={[recommendation.explanation]} reasonCodes={recommendation.reasonCodes} current={props.dashboard.contextSummary} currentLabel="Reading context" periodLabel={`${props.periodDays}-day reporting period`}
+    nextSteps={[recommendation.supportSuggestion, ...(recommendation.action === "adjust_difficulty" ? [`Suggested reading level: ${recommendation.recommendedTier}`] : []), "Review this suggestion with a parent or teacher before making changes."]} />;
 }
