@@ -109,12 +109,12 @@ it("shows class and individual actions, updates class counts, and opens the mock
   jest.mocked(Sharing.shareAsync).mockResolvedValue(undefined);
   publishScenario(3, sample(3));
   render(<EducatorStudents><Text>Independent example</Text></EducatorStudents>);
-  expect(screen.getByText("3 students · 11 completed sessions in available records")).toBeTruthy();
+  expect(screen.getByLabelText("Completed Sessions: 11")).toBeTruthy();
   fireEvent.press(screen.getByRole("button", { name: "Download Class Analytics Report" }));
   await waitFor(() => expect(Sharing.shareAsync).toHaveBeenCalledTimes(1));
   await screen.findByRole("alert", { name: /Share sheet closed/ });
   act(() => publishScenario(4, sample(4)));
-  expect(screen.getByText("3 students · 12 completed sessions in available records")).toBeTruthy();
+  expect(screen.getByLabelText("Completed Sessions: 12")).toBeTruthy();
   fireEvent.press(screen.getByRole("button", { name: "View Alex Storybook" }));
   fireEvent.press(screen.getByRole("button", { name: "Download Student Analytics Report" }));
   await waitFor(() => expect(Sharing.shareAsync).toHaveBeenCalledTimes(2));

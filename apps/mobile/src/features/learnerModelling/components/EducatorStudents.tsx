@@ -1,10 +1,9 @@
 import { useState, type ReactNode } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { useSelectedScenario } from "../preview/selectedScenario";
-import { educatorReportStudents, educatorClassOverview, educatorStudentNames, educatorMetrics, educatorValue, type EducatorReportSelection } from "../export/educatorReports";
+import { educatorReportStudents, educatorClassOverview, educatorStudentNames, educatorMetrics, educatorValue, educatorHasMissing, type EducatorReportSelection } from "../export/educatorReports";
 import { EducatorReportButton } from "./EducatorReportButton";
 import { EducatorReadingOverview } from "./EducatorReadingOverview";
-import { DemoBanner } from "./DemoBanner";
 import { reportStyles as s } from "./LearnerReportLayout";
 import { palette } from "../theme";
 
@@ -24,25 +23,36 @@ export function EducatorStudents({ children, enabled = true }: { children: React
     const projection = records[student]?.projection;
     let selection = "Individual reading history";
     if (student === 0 && id) { try { const index: unknown = JSON.parse(id)[0]; selection = typeof index === "number" && index >= 0 ? `Scenario ${index}` : "Selected reading results"; } catch { /* Fail closed below. */ } }
-    return <View style={{ flex: 1 }}>{back}{projection ? <EducatorReadingOverview key={student} projection={projection} studentName={students[student]} reportAction={<EducatorReportButton selection={reportSelection} />} selection={selection} onSeparate={() => setSeparate(true)} /> : <ScrollView contentContainerStyle={s.content}><DemoBanner /><Text style={s.title}>{students[student]}</Text><EducatorReportButton selection={reportSelection} unavailable /><Text accessibilityRole="alert" style={s.body}>These sample results are unavailable. Choose reading results in Learner view, then try again.</Text><Pressable accessibilityRole="button" onPress={() => setSeparate(true)} style={s.previewLink}><Text style={s.body}>View separate example</Text></Pressable></ScrollView>}</View>;
+    return <View style={{ flex: 1 }}>{back}{projection ? <EducatorReadingOverview key={student} projection={projection} studentName={students[student]} reportAction={<EducatorReportButton selection={reportSelection} />} selection={selection} onSeparate={() => setSeparate(true)} /> : <ScrollView contentContainerStyle={[s.content, { paddingBottom: 128 }]}><Text style={{ color: palette.muted, fontSize: 12 }}>{"Demo \u00b7 Fictional classroom data"}</Text><Text style={s.title}>{students[student]}</Text><EducatorReportButton selection={reportSelection} unavailable /><Text accessibilityRole="alert" style={s.body}>These sample results are unavailable. Choose reading results in Learner view, then try again.</Text><Pressable accessibilityRole="button" onPress={() => setSeparate(true)} style={s.previewLink}><Text style={s.body}>View separate example</Text></Pressable></ScrollView>}</View>;
   }
-  return <ScrollView style={s.scroll} contentContainerStyle={[s.content, { gap: 12, paddingBottom: 80 }]}>
-    <DemoBanner /><Text accessibilityRole="header" style={s.title}>Teacher Dashboard</Text>
-    <View style={[s.card, { padding: 12, gap: 8, backgroundColor: palette.tealSoft }]}>
-      <Text accessibilityRole="header" style={s.heading}>Class Overview</Text>
-      <Text style={s.body}>{totals.students} students · {totals.sessions} completed sessions in available records</Text>
-      <Text style={s.body}>{totals.trends} with progress trends · {totals.missing} with missing measurements</Text>
-      {totals.unavailable ? <Text style={s.body}>{totals.unavailable} student results unavailable. Session totals are incomplete.</Text> : null}
-      <Text style={s.body}>Each student has a separate reading history. Compare results within the same activity, level and support.</Text>
-      <EducatorReportButton selection={{ ...reportSelection, student: null }} />
+  return <ScrollView style={s.scroll} contentContainerStyle={[s.content, { gap: 12, paddingBottom: 128 }]}>
+    <Text accessibilityRole="header" style={[s.title, { fontSize: 22 }]}>Teacher Dashboard</Text>
+    <Text style={{ color: palette.muted, fontSize: 12, lineHeight: 18 }}>{"Demo \u00b7 Fictional classroom data"}</Text>
+    <Text accessibilityRole="header" style={[s.heading, { fontSize: 17 }]}>Class Overview</Text>
+    <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+      {[{ key: "students", label: "Students", value: totals.students }, { key: "sessions", label: "Completed Sessions", value: totals.sessions }, { key: "trends", label: "Students with supported trends", value: totals.trends }, { key: "missing", label: "Students with missing measurements", value: totals.missing }].map(m => <View key={m.key} testID={`class-${m.key}`} accessibilityLabel={`${m.label}: ${m.value}`} style={[s.card, { flexBasis: 130, flexGrow: 1, padding: 10, gap: 4 }]}><Text style={[s.heading, { fontSize: 23 }]}>{m.value}</Text><Text style={s.body}>{m.label}</Text></View>)}
     </View>
+    {totals.unavailable ? <Text style={s.body}>{totals.unavailable} {totals.unavailable === 1 ? "student's results are" : "students' results are"} unavailable. Session totals are incomplete.</Text> : null}
+    <EducatorReportButton selection={{ ...reportSelection, student: null }} />
     <Text accessibilityRole="header" style={s.heading}>My Students</Text>
-    <Text style={s.body}>Explore three fictional students. This is not a real class list.</Text>
-    {students.map((name, index) => <Pressable key={name} accessibilityRole="button" accessibilityLabel={`View ${name}`} onPress={() => setStudent(index)} style={[s.card, { borderLeftWidth: 5, borderLeftColor: [palette.primary, palette.teal, palette.orange][index], minHeight: 64, padding: 12 }]}>
-      <Text style={s.heading}>{name}</Text><Text style={s.body}>{index === 0 ? "Follows your selected reading results" : "A different reading history"}</Text><Text style={s.body}>{records[index]!.projection ? `${records[index]!.projection!.included_session_count} completed sessions` : "Reading results unavailable"}</Text>
-      {records[index]!.projection?.partitions.length === 1 ? <Text style={s.body}>{educatorMetrics.map(d => { const m = records[index]!.projection!.partitions[0]!.metrics.find(m => m.metric_name === d.key); return `${educatorValue(m?.latest_value, d.scale)} ${d.unit}`; }).join(" · ")}</Text> : null}
-      <Text style={{ color: palette.primary }}>View reading progress</Text>
-    </Pressable>)}
+    <Text style={{ color: palette.muted, fontSize: 12, lineHeight: 18 }}>Separate reading histories; results are not student rankings.</Text>
+    {students.map((name, index) => {
+      const p = records[index]!.projection;
+      const context = p?.partitions.length === 1 ? p.partitions[0] : undefined;
+      const metric = (key: string) => {
+        const d = educatorMetrics.find(d => d.key === key)!; const v = context?.metrics.find(m => m.metric_name === key)?.latest_value;
+        return v == null ? "Unavailable" : `${educatorValue(v, d.scale)}${d.unit === "%" ? "" : " "}${d.unit}`;
+      };
+      return <Pressable key={name} testID={`student-card-${index}`} accessibilityRole="button" accessibilityLabel={`View ${name}`} accessibilityHint="View Reading Progress" onPress={() => setStudent(index)} style={[s.card, { borderLeftWidth: 4, borderLeftColor: [palette.primary, palette.teal, palette.orange][index], minHeight: 44, padding: 12, gap: 6 }]}>
+        <Text style={[s.heading, { fontSize: 18 }]}>{name}</Text>
+        <Text style={s.body}>{p ? `${p.included_session_count} completed ${p.included_session_count === 1 ? "session" : "sessions"}` : "Reading results: Unavailable"}</Text>
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}><Text style={s.body}>Accuracy: {metric("reading_accuracy")}</Text><Text style={s.body}>Speed: {metric("reading_fluency_wpm")}</Text></View>
+        {p && educatorHasMissing(p) ? <Text style={{ color: palette.muted, fontSize: 12 }}>Some measurements unavailable</Text> : null}
+        {p && p.partitions.length > 1 ? <Text style={s.body}>Different reading contexts; view progress for each.</Text> : null}
+        <Text style={{ color: palette.muted, fontSize: 12 }}>{index === 0 ? "Follows selected reading results" : "Independent reading history"}</Text>
+        <Text style={{ color: palette.primary, fontSize: 15, fontWeight: "700" }}>View Reading Progress</Text>
+      </Pressable>;
+    })}
     <Pressable accessibilityRole="button" onPress={() => setSeparate(true)} style={s.previewLink}><Text style={s.body}>View separate example</Text></Pressable>
   </ScrollView>;
 }

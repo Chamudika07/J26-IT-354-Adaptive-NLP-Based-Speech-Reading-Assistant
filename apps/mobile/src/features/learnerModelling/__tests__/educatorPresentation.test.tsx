@@ -1,0 +1,61 @@
+import { act, fireEvent, render, screen, within } from "@testing-library/react-native";
+import { Dimensions, ScrollView, StyleSheet, Text } from "react-native";
+import { EducatorStudents } from "../components/EducatorStudents";
+import { educatorClassOverview, educatorReportStudents } from "../export/educatorReports";
+import { publishScenario, scenarioId } from "../preview/selectedScenario";
+import { selectConnectedReplay } from "../preview/connectedSessionPreview";
+const sample = (index: number) => selectConnectedReplay({ index, development: true, demoMode: true, role: "learner" })!;
+beforeEach(() => publishScenario(null));
+afterEach(() => { publishScenario(null); jest.restoreAllMocks(); });
+it.each([0, 1, 3, 6])("shows compact validated class totals and separate student histories for scenario %s", index => {
+  publishScenario(index, sample(index));
+  const id = scenarioId(index, sample(index));
+  const records = educatorReportStudents({ development: true, demoMode: true, role: "educator", scenarioId: id, student: null });
+  const totals = educatorClassOverview(records);
+  render(<EducatorStudents><Text>Independent example</Text></EducatorStudents>);
+  expect(screen.getByRole("header", { name: "Teacher Dashboard" })).toBeTruthy();
+  expect(screen.getAllByText("Demo \u00b7 Fictional classroom data")).toHaveLength(1);
+  expect(screen.queryByText("Sample Data")).toBeNull();
+  for (const key of ["students", "sessions", "trends", "missing"] as const) expect(within(screen.getByTestId(`class-${key}`)).getByText(String(totals[key]))).toBeTruthy();
+  for (const record of records) {
+    const card = within(screen.getByTestId(`student-card-${record.index}`));
+    expect(card.getByText(record.name)).toBeTruthy();
+    expect(card.getByText(`${record.projection!.included_session_count} completed ${record.projection!.included_session_count === 1 ? "session" : "sessions"}`)).toBeTruthy();
+    expect(card.getByText("View Reading Progress")).toBeTruthy();
+    const context = record.projection!.partitions[0];
+    const accuracy = context?.metrics.find(m => m.metric_name === "reading_accuracy")?.latest_value;
+    const speed = context?.metrics.find(m => m.metric_name === "reading_fluency_wpm")?.latest_value;
+    expect(card.getByText(`Accuracy: ${accuracy == null ? "Unavailable" : `${Number((Number(accuracy) * 100).toFixed(2))}%`}`)).toBeTruthy();
+    expect(card.getByText(`Speed: ${speed == null ? "Unavailable" : `${Number(Number(speed).toFixed(2))} WPM`}`)).toBeTruthy();
+  }
+  expect(screen.queryByText(/1 completed sessions/)).toBeNull();
+  expect(screen.getByRole("button", { name: "Download Class Analytics Report" })).toBeTruthy();
+  fireEvent.press(screen.getByRole("button", { name: "View Alex Storybook" }));
+  expect(screen.getByRole("header", { name: "Alex Storybook" })).toBeTruthy();
+  expect(screen.getByText(`${index} completed ${index === 1 ? "session" : "sessions"}`)).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Download Student Analytics Report" })).toBeTruthy();
+  expect(screen.queryByText(/1 completed sessions|1 sessions/)).toBeNull();
+  fireEvent.press(screen.getByRole("button", { name: "Back to My Students" }));
+  fireEvent.press(screen.getByRole("button", { name: "View Jamie Bookmark" }));
+  expect(screen.getAllByText("Unavailable").length).toBeGreaterThan(0);
+});
+it("keeps Robin and Jamie independent while Alex follows the selected scenario", () => {
+  publishScenario(1, sample(1)); render(<EducatorStudents><Text>Independent example</Text></EducatorStudents>);
+  const before = [1, 2].map(i => within(screen.getByTestId(`student-card-${i}`)).getAllByText(/Accuracy:|Speed:|completed sessions/).map(t => t.props.children));
+  act(() => publishScenario(6, sample(6)));
+  expect(within(screen.getByTestId("student-card-0")).getByText("6 completed sessions")).toBeTruthy();
+  for (const i of [1, 2]) expect(within(screen.getByTestId(`student-card-${i}`)).getAllByText(/Accuracy:|Speed:|completed sessions/).map(t => t.props.children)).toEqual(before[i - 1]);
+});
+it("keeps missing evidence honest and actions reachable on small screens with larger text", () => {
+  Dimensions.set({ window: { width: 320, height: 568, scale: 2, fontScale: 2 } });
+  render(<EducatorStudents><Text>Independent example</Text></EducatorStudents>);
+  expect(within(screen.getByTestId("student-card-0")).getByText("Reading results: Unavailable")).toBeTruthy();
+  expect(within(screen.getByTestId("student-card-2")).getByText("Some measurements unavailable")).toBeTruthy();
+  for (const button of screen.getAllByRole("button")) expect(StyleSheet.flatten(button.props.style).minHeight).toBeGreaterThanOrEqual(44);
+  expect(StyleSheet.flatten(screen.UNSAFE_getByType(ScrollView).props.contentContainerStyle).paddingBottom).toBeGreaterThanOrEqual(128);
+  fireEvent.press(screen.getByRole("button", { name: "View separate example" }));
+  expect(screen.getByText("Independent example")).toBeTruthy();
+  fireEvent.press(screen.getByRole("button", { name: "Back to My Students" }));
+  expect(screen.getByText("My Students")).toBeTruthy();
+  Dimensions.set({ window: { width: 390, height: 844, scale: 2, fontScale: 1 } });
+});

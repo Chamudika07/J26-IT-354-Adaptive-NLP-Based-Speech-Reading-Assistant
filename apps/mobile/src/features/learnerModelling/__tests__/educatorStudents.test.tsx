@@ -26,7 +26,7 @@ it("switches fictional students without sharing learner-only fields and follows 
   fireEvent.press(screen.getByText("Back to My Students"));
   fireEvent.press(screen.getByRole("button", { name: "View Jamie Bookmark" }));
   expect(screen.getByText("2 completed sessions")).toBeTruthy();
-  expect(screen.getAllByText("Not measured").length).toBeGreaterThan(0);
+  expect(screen.getAllByText("Unavailable").length).toBeGreaterThan(0);
   expect(screen.queryByText(/engagement|Why This Tip|Download AI Report/i)).toBeNull();
   fireEvent.press(screen.getByText("Back to My Students"));
   fireEvent.press(screen.getByRole("button", { name: "View Alex Storybook" }));

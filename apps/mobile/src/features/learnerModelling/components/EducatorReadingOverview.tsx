@@ -1,7 +1,6 @@
 import { useState, type ReactNode } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import type { EducatorArtifact } from "../preview/roleScenarioResults";
-import { DemoBanner } from "./DemoBanner";
 import { reportStyles as s } from "./LearnerReportLayout";
 import { educatorFactualSummary } from "../export/educatorReports";
 import { palette } from "../theme";
@@ -14,7 +13,7 @@ const METRICS = [
 ] as const;
 const shortDate = (v: string) => new Date(v).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric", timeZone: "UTC" });
 const supportLabel = (v: string) => v === "adaptive" ? "Adaptive support" : v === "baseline_fixed" ? "Fixed support" : v === "manual_override" ? "Manually chosen support" : "Recorded support";
-const value = (v: string | null | undefined, scale: number) => v == null ? "Not measured" : String(Number((Number(v) * scale).toFixed(2)));
+const value = (v: string | null | undefined, scale: number) => v == null ? "Unavailable" : String(Number((Number(v) * scale).toFixed(2)));
 
 /** Presentation only. Trend flags and comparison averages come from the role projection. */
 export function EducatorReadingOverview({ projection: p, selection, onSeparate, studentName, reportAction }: {
@@ -22,18 +21,18 @@ export function EducatorReadingOverview({ projection: p, selection, onSeparate, 
 }) {
   const [details, setDetails] = useState(false);
   const dateRange = `${shortDate(p.reporting_period.start_at_utc)} to before ${shortDate(p.reporting_period.end_at_utc)}`;
-  return <ScrollView style={s.scroll} contentContainerStyle={[s.content, { gap: 12, paddingBottom: 80 }]}>
-    <DemoBanner />
+  return <ScrollView style={s.scroll} contentContainerStyle={[s.content, { gap: 12, paddingBottom: 128 }]}>
+    <Text style={{ color: palette.muted, fontSize: 12 }}>{"Demo \u00b7 Fictional classroom data"}</Text>
     <View style={{ gap: 4 }}>
       <Text accessibilityRole="header" style={[s.title, { fontSize: 22 }]}>{studentName ?? "Teacher Dashboard"}</Text>
       <Text style={s.body}>{selection.replace("Sample ", "Scenario ")} · {dateRange}</Text>
     </View>
     <View style={[s.card, { padding: 12, gap: 4, backgroundColor: palette.tealSoft }]}>
       <Text accessibilityRole="header" style={s.heading}>Completed Sessions</Text>
-      <Text accessibilityLiveRegion="polite" style={s.body}>{p.included_session_count} completed sessions</Text>
+      <Text accessibilityLiveRegion="polite" style={s.body}>{p.included_session_count} completed {p.included_session_count === 1 ? "session" : "sessions"}</Text>
       <Text style={s.body}>Results use this scenario’s reading period.</Text>
     </View>
-    <View style={[s.card, { padding: 12, gap: 8 }]}><Text accessibilityRole="header" style={s.heading}>Reading Summary</Text><Text style={s.body}>{educatorFactualSummary(p)}</Text>{reportAction}</View>
+    <View style={[s.card, { padding: 12, gap: 8 }]}><Text accessibilityRole="header" style={s.heading}>Reading Summary</Text><Text style={s.body}>{educatorFactualSummary(p).replace(/^1 completed sessions/, "1 completed session")}</Text>{reportAction}</View>
     {p.partitions.length === 0 ? <Text style={s.body}>No completed reading sessions in this period.</Text> : null}
     {p.partitions.map((context, i) => {
       const comparable = context.metrics.filter(m => m.evidence_sufficient && m.change_direction !== "insufficient_evidence");
@@ -52,7 +51,7 @@ export function EducatorReadingOverview({ projection: p, selection, onSeparate, 
         </View>
         <View style={[s.card, { padding: 14, gap: 8 }]}>
           <Text accessibilityRole="header" style={s.heading}>Progress Summary</Text>
-          <Text style={s.body}>{context.session_count} completed sessions with the same activity, level and support.</Text>
+          <Text style={s.body}>{context.session_count} completed {context.session_count === 1 ? "session" : "sessions"} with the same activity, level and support.</Text>
           {comparable.length === 0 ? <Text style={s.body}>Not enough reading sessions to show a reliable trend yet.</Text> : comparable.map(metric => {
             const display = METRICS.find(m => m.key === metric.metric_name)!;
             const change = metric.change_direction === "increased" ? "increased" : metric.change_direction === "decreased" ? "decreased" : "showed no measured change";
@@ -91,7 +90,7 @@ export function EducatorReadingOverview({ projection: p, selection, onSeparate, 
       <Text accessibilityRole="header" style={s.heading}>Support History</Text>
       {p.support_mode_exposures.length === 0 ? <Text style={s.body}>No recorded support use yet.</Text> : p.support_mode_exposures.map((item, i) => <View key={i} style={{ gap: 4 }}>
         <Text style={[s.body, { fontWeight: "700" }]}>{supportLabel(item.support_mode)}</Text>
-        <Text style={s.body}>{item.session_count} sessions · {shortDate(item.first_observed_at)} to {shortDate(item.latest_observed_at)}</Text>
+        <Text style={s.body}>{item.session_count} {item.session_count === 1 ? "session" : "sessions"} · {shortDate(item.first_observed_at)} to {shortDate(item.latest_observed_at)}</Text>
         <Text style={s.body}>Active reading: {item.active_duration_ms / 1000} seconds · Total session time: {item.total_duration_ms / 1000} seconds</Text>
       </View>)}
       <Text style={s.body}>This shows support used, not a recommended change.</Text>

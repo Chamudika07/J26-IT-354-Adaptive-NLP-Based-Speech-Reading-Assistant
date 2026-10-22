@@ -8,7 +8,7 @@ it("shows prominent permitted measurements and an honest insufficient-evidence s
   const p = fixtures[3]!.projection;
   const separate = jest.fn();
   render(<EducatorReadingOverview projection={p} selection="Scenario 3" onSeparate={separate} />);
-  expect(screen.getAllByText("Sample Data")).toHaveLength(1);
+  expect(screen.getAllByText("Demo \u00b7 Fictional classroom data")).toHaveLength(1);
   expect(screen.getByText("3 completed sessions")).toBeTruthy();
   expect(within(screen.getByTestId("teacher-reading_accuracy")).getByText("95")).toBeTruthy();
   expect(within(screen.getByTestId("teacher-reading_accuracy")).getByText("%")).toBeTruthy();
