@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import * as Print from "expo-print";
@@ -175,6 +176,7 @@ interface SampleStory {
   accentColor: string;
   backgroundColor: string;
   borderColor: string;
+  image: number;
   text: string;
 }
 
@@ -601,6 +603,7 @@ const SAMPLE_STORIES: SampleStory[] = [
     accentColor: "#059669",
     backgroundColor: "#ECFDF5",
     borderColor: "#A7F3D0",
+    image: require("./assets/home/emerald-dragon.png"),
     text: "Deep within the Whispering Caverns, an ancient emerald dragon named Zephyr guarded a chamber of luminescent crystals. These dazzling stones emitted a mysterious radiant glow that illuminated subterranean pathways. The cautious villagers believed the dragon's territory was perilous, yet Zephyr simply sought tranquility and nourishment from geothermal springs.",
   },
   {
@@ -611,6 +614,7 @@ const SAMPLE_STORIES: SampleStory[] = [
     accentColor: "#2563EB",
     backgroundColor: "#EFF6FF",
     borderColor: "#BFDBFE",
+    image: require("./assets/home/mission-mars.png"),
     text: "Astronaut Maya adjusted her pressurized helmet as the planetary rover traversed the treacherous terrain of Mars. Colossal dust storms threatened communication satellites in orbit. Her autonomous companion robot detected subterranean ice reservoirs beneath the oxidized bedrock, signaling a triumphant breakthrough for the interplanetary expedition.",
   },
   {
@@ -621,6 +625,7 @@ const SAMPLE_STORIES: SampleStory[] = [
     accentColor: "#7C3AED",
     backgroundColor: "#F5F3FF",
     borderColor: "#DDD6FE",
+    image: require("./assets/home/coral-dolphin.png"),
     text: "Beneath the turquoise waves of the Caribbean sea, an adventurous dolphin named Echo investigated an ancient Spanish galleon. Encrusted with vibrant polyps and delicate sea anemones, the wooden vessel sheltered elusive marine creatures from pelagic predators navigating the tempestuous currents.",
   },
 ];
@@ -1788,19 +1793,15 @@ export default function App() {
   );
 
   // ─────────────────────────────────────────────────────────────────────────────
-  // ILLUSTRATION: Children Reading Together (home screen accent)
+  // ICON: Open storybook used by the primary home action.
   // ─────────────────────────────────────────────────────────────────────────────
-  const renderChildrenReading = () => (
-    <View style={styles.childrenReadWrap}>
-      {/* Book being held open */}
-      <View style={styles.childBookOpen}>
-        <View style={styles.childBookPageL} />
-        <View style={styles.childBookSpine} />
-        <View style={styles.childBookPageR} />
+  const renderOpenBookIcon = () => (
+    <View style={styles.startBookIcon}>
+      <View style={styles.startBookPages}>
+        <View style={styles.startBookPageLeft} />
+        <View style={styles.startBookPageRight} />
       </View>
-      {/* Reading light / glow above book */}
-      <View style={styles.childBookGlow} />
-      <Text style={styles.childBookSpark}>✨</Text>
+      <View style={styles.startBookSpine} />
     </View>
   );
 
@@ -1845,7 +1846,21 @@ export default function App() {
                 </View>
               </View>
 
-              {/* Session toggle */}
+              <View
+                style={styles.readerProfile}
+                accessible
+                accessibilityLabel={isSessionActive ? "Reader profile ready" : "Reader profile needs setup"}
+              >
+                <Text style={styles.readerAvatar}>🙂</Text>
+                <View
+                  style={[
+                    styles.readerStatusDot,
+                    isSessionActive ? styles.sessionDotActive : styles.sessionDotInactive,
+                  ]}
+                />
+              </View>
+
+              {/* Settings opens the existing session configuration drawer. */}
               <TouchableOpacity
                 onPress={() => {
                   if (!showSessionConfig) {
@@ -1859,20 +1874,9 @@ export default function App() {
                 }}
                 accessibilityRole="button"
                 accessibilityLabel="Toggle test session settings"
-                style={[
-                  styles.sessionPill,
-                  isSessionActive && styles.sessionPillActive,
-                ]}
+                style={styles.settingsButton}
               >
-                <View
-                  style={[
-                    styles.sessionDot,
-                    isSessionActive ? styles.sessionDotActive : styles.sessionDotInactive,
-                  ]}
-                />
-                <Text style={styles.sessionPillText}>
-                  {showSessionConfig ? "Close" : isSessionActive ? "Ready" : "Setup"}
-                </Text>
+                <Text style={styles.settingsButtonIcon}>{showSessionConfig ? "×" : "⚙️"}</Text>
               </TouchableOpacity>
             </View>
 
@@ -1954,22 +1958,48 @@ export default function App() {
                 : styles.screenHidden,
             ]}
           >
-            {/* Hero welcome card */}
-            <View style={styles.heroCard}>
-              {/* Left: Buddy large mascot */}
-              <View style={styles.heroLeft}>
-                {renderBuddyMascot("welcome")}
+            <View style={styles.homeCanvas}>
+              <View style={styles.homeCloudOne} />
+              <View style={styles.homeCloudTwo} />
+              <View style={styles.homeHillBack} />
+              <View style={styles.homeHillFront} />
+              <View style={styles.homeFlowerOne}>
+                <View style={[styles.flowerPetal, styles.flowerPetalTop]} />
+                <View style={[styles.flowerPetal, styles.flowerPetalLeft]} />
+                <View style={[styles.flowerPetal, styles.flowerPetalRight]} />
+                <View style={styles.flowerCenter} />
+              </View>
+              <View style={styles.homeFlowerTwo}>
+                <View style={[styles.flowerPetal, styles.flowerPetalTop]} />
+                <View style={[styles.flowerPetal, styles.flowerPetalLeft]} />
+                <View style={[styles.flowerPetal, styles.flowerPetalRight]} />
+                <View style={styles.flowerCenter} />
               </View>
 
-              {/* Right: Welcome copy */}
-              <View style={styles.heroRight}>
-                <View style={styles.heroBadge}>
-                  <Text style={styles.heroBadgeText}>✨ WELCOME!</Text>
+              {/* Hero welcome card */}
+              <View style={styles.heroCard}>
+                <View style={styles.heroRight}>
+                  <View style={styles.heroBadge}>
+                    <Text style={styles.heroBadgeText}>HELLO, READING EXPLORER!</Text>
+                  </View>
+                  <Text style={styles.heroHeading}>Welcome! Let’s make reading fun together!</Text>
+                  <Text style={styles.heroSub}>
+                    Pick a story and Buddy will help make every page feel friendlier.
+                  </Text>
                 </View>
-                <Text style={styles.heroHeading}>Make Any Story Fun to Read!</Text>
-                <Text style={styles.heroSub}>
-                  Buddy turns hard words into easy, breezy sentences for you!
-                </Text>
+                <View
+                  style={styles.heroIllustration}
+                  accessible
+                  accessibilityLabel="A cheerful child reading a book"
+                >
+                  <View style={styles.heroIllustrationGlow} />
+                  <Image
+                    source={require("./assets/home/reading-child.png")}
+                    style={styles.heroIllustrationImage}
+                    resizeMode="contain"
+                    accessibilityIgnoresInvertColors
+                  />
+                </View>
                 <TouchableOpacity
                   style={styles.heroBtn}
                   onPress={() => {
@@ -1978,59 +2008,130 @@ export default function App() {
                   }}
                   accessibilityRole="button"
                   accessibilityLabel="Start My Reading Adventure"
+                  accessibilityHint="Opens the reading support choices"
                 >
-                  <Text style={styles.heroBtnText}>Start Reading 🚀</Text>
+                  {renderOpenBookIcon()}
+                  <Text style={styles.heroBtnText}>Start Reading</Text>
+                  <Text style={styles.heroBtnArrow}>→</Text>
                 </TouchableOpacity>
               </View>
-            </View>
 
-            {/* Children reading decoration + feature chips */}
-            <View style={styles.featuresCard}>
-              <View style={styles.featuresRow}>
-                <View style={[styles.featureChip, { backgroundColor: "#ECFDF5", borderColor: "#A7F3D0" }]}>
-                  <Text style={styles.featureChipIcon}>🎯</Text>
-                  <Text style={styles.featureChipLabel}>Pick{"\n"}Your Level</Text>
+              <View style={styles.homeSectionHeader}>
+                <View>
+                  <Text style={styles.homeSectionEyebrow}>YOUR READING TOOLS</Text>
+                  <Text style={styles.homeSectionTitle}>Choose Your Adventure</Text>
                 </View>
-                <View style={[styles.featureChip, { backgroundColor: "#FFFBEB", borderColor: "#FDE68A" }]}>
-                  <Text style={styles.featureChipIcon}>🪄</Text>
-                  <Text style={styles.featureChipLabel}>Reading{"\n"}Magic</Text>
-                </View>
-                <View style={[styles.featureChip, { backgroundColor: "#F5F3FF", borderColor: "#DDD6FE" }]}>
-                  <Text style={styles.featureChipIcon}>🔍</Text>
-                  <Text style={styles.featureChipLabel}>Word{"\n"}Detective</Text>
-                </View>
-                <View style={[styles.featureChip, { backgroundColor: "#FFF1F2", borderColor: "#FECDD3" }]}>
-                  <Text style={styles.featureChipIcon}>📖</Text>
-                  <Text style={styles.featureChipLabel}>Read at{"\n"}Your Pace</Text>
+                <Text style={styles.homeSectionSpark}>✨</Text>
+              </View>
+
+              <View style={styles.featuresCard}>
+                <View style={styles.featuresRow}>
+                  {[
+                    {
+                      title: "Pick Your Level",
+                      description: "Choose how much reading support feels right.",
+                      icon: "🎯",
+                      backgroundColor: "#E7F8EF",
+                      borderColor: "#89D6AD",
+                      iconColor: "#D1FAE5",
+                      step: 1 as const,
+                    },
+                    {
+                      title: "Reading Magic",
+                      description: "Choose how Buddy makes tricky text friendlier.",
+                      icon: "🪄",
+                      backgroundColor: "#FFF4D6",
+                      borderColor: "#F7C95C",
+                      iconColor: "#FEF3C7",
+                      step: 3 as const,
+                    },
+                    {
+                      title: "Word Detective",
+                      description: "Simplify a story, then explore helpful words.",
+                      icon: "🔍",
+                      backgroundColor: "#EEE9FF",
+                      borderColor: "#B8A5F7",
+                      iconColor: "#DDD6FE",
+                      step: 2 as const,
+                    },
+                    {
+                      title: "Read at Your Pace",
+                      description: "Choose your support and take your time—there’s no timer.",
+                      icon: "📖",
+                      backgroundColor: "#FFE8E2",
+                      borderColor: "#F5A893",
+                      iconColor: "#FED7CC",
+                      step: 1 as const,
+                    },
+                  ].map((feature) => (
+                    <TouchableOpacity
+                      key={feature.title}
+                      style={[
+                        styles.featureChip,
+                        { backgroundColor: feature.backgroundColor, borderColor: feature.borderColor },
+                      ]}
+                      onPress={() => {
+                        setCurrentScreen("guided");
+                        setGuidedStep(feature.step);
+                      }}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Open ${feature.title}`}
+                      accessibilityHint={feature.description}
+                    >
+                      <View style={[styles.featureIconBubble, { backgroundColor: feature.iconColor }]}>
+                        <Text style={styles.featureChipIcon}>{feature.icon}</Text>
+                      </View>
+                      <Text style={styles.featureChipLabel}>{feature.title}</Text>
+                      <Text style={styles.featureChipArrow}>→</Text>
+                    </TouchableOpacity>
+                  ))}
                 </View>
               </View>
-            </View>
 
-            {/* Quick-Try Sample Stories */}
-            <View style={styles.sampleCard}>
-              <View style={styles.sampleCardHeader}>
-                <Text style={styles.sampleCardTitle}>📚 Try a Sample Story</Text>
-                <Text style={styles.sampleCardSub}>Tap any story — no typing needed!</Text>
-              </View>
-              <View style={styles.sampleStoriesGrid}>
-                {SAMPLE_STORIES.map((story) => (
-                  <TouchableOpacity
-                    key={story.id}
-                    style={[
-                      styles.sampleStoryCard,
-                      { backgroundColor: story.backgroundColor, borderColor: story.borderColor },
-                    ]}
-                    onPress={() => handleSelectSampleStory(story)}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Load sample story: ${story.title}`}
-                  >
-                    <Text style={styles.sampleEmoji}>{story.emoji}</Text>
-                    <Text style={[styles.sampleTitle, { color: story.accentColor }]}>{story.title}</Text>
-                    <View style={[styles.sampleTag, { backgroundColor: story.borderColor }]}>
-                      <Text style={[styles.sampleTagText, { color: story.accentColor }]}>{story.tag}</Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
+              {/* Quick-Try Sample Stories */}
+              <View style={styles.sampleCard}>
+                <View style={styles.sampleCardHeader}>
+                  <View>
+                    <Text style={styles.homeSectionEyebrow}>JUMP INTO A STORY</Text>
+                    <Text style={styles.sampleCardTitle}>Try a Sample Story</Text>
+                  </View>
+                  <Text style={styles.sampleCardSub}>Swipe to explore →</Text>
+                </View>
+                <ScrollView
+                  horizontal
+                  nestedScrollEnabled
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={styles.sampleStoriesGrid}
+                >
+                  {SAMPLE_STORIES.map((story) => (
+                    <TouchableOpacity
+                      key={story.id}
+                      style={[
+                        styles.sampleStoryCard,
+                        { backgroundColor: story.backgroundColor, borderColor: story.borderColor },
+                      ]}
+                      onPress={() => handleSelectSampleStory(story)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Load sample story: ${story.title}`}
+                      accessibilityHint={`Loads the ${story.tag} passage into the reading workflow`}
+                    >
+                      <View style={[styles.sampleCover, { backgroundColor: story.borderColor }]}>
+                        <View style={styles.sampleCoverCloud} />
+                        <View style={[styles.sampleCoverHill, { backgroundColor: story.accentColor }]} />
+                        <Image
+                          source={story.image}
+                          style={styles.sampleArtwork}
+                          resizeMode="contain"
+                          accessibilityIgnoresInvertColors
+                        />
+                      </View>
+                      <Text style={[styles.sampleTitle, { color: story.accentColor }]}>{story.title}</Text>
+                      <View style={[styles.sampleTag, { backgroundColor: story.borderColor }]}>
+                        <Text style={[styles.sampleTagText, { color: story.accentColor }]}>{story.tag}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
               </View>
             </View>
           </View>
@@ -3022,12 +3123,12 @@ const styles = StyleSheet.create({
 
   // ── header ──────────────────────────────────────────────────────────────────
   header: {
-    backgroundColor: "#FFFFFF",
+    backgroundColor: "#FFFDF5",
     borderBottomWidth: 1,
-    borderBottomColor: "#EDE9FE",
+    borderBottomColor: "#D8D1F2",
     paddingHorizontal: 16,
-    paddingTop: 8,
-    paddingBottom: 8,
+    paddingTop: 9,
+    paddingBottom: 9,
   },
   headerInner: {
     flexDirection: "row",
@@ -3085,9 +3186,8 @@ const styles = StyleSheet.create({
   },
   headerBrand: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
+    alignItems: "flex-start",
+    gap: 2,
   },
   headerTitle: {
     fontSize: 22,
@@ -3096,18 +3196,57 @@ const styles = StyleSheet.create({
     letterSpacing: -0.5,
   },
   headerKidsBadge: {
-    backgroundColor: "#EDE9FE",
+    backgroundColor: "#FFF0C2",
     borderRadius: 20,
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 2,
     borderWidth: 1,
-    borderColor: "#DDD6FE",
+    borderColor: "#F3C861",
   },
   headerKidsBadgeText: {
     fontSize: 10,
     fontWeight: "700",
-    color: "#7C3AED",
+    color: "#8A4B08",
     letterSpacing: 0.3,
+  },
+  readerProfile: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "#DDF7EC",
+    borderWidth: 2,
+    borderColor: "#72C9A6",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+  },
+  readerAvatar: {
+    fontSize: 24,
+  },
+  readerStatusDot: {
+    position: "absolute",
+    right: -1,
+    bottom: 1,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    borderWidth: 2,
+    borderColor: "#FFFDF5",
+  },
+  settingsButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: "#F0ECFF",
+    borderWidth: 1.5,
+    borderColor: "#C8BAF4",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  settingsButtonIcon: {
+    fontSize: 20,
+    color: "#5B3BB5",
+    fontWeight: "800",
   },
   sessionPill: {
     flexDirection: "row",
@@ -4045,94 +4184,171 @@ const styles = StyleSheet.create({
     letterSpacing: 0.8,
   },
 
-  // ── CHILDREN READING ─────────────────────────────────────────────────────
-  childrenReadWrap: {
-    width: 80,
-    height: 70,
+  // ── START BUTTON BOOK ICON ────────────────────────────────────────────────
+  startBookIcon: {
+    width: 31,
+    height: 25,
+    position: "relative",
+    justifyContent: "center",
+  },
+  startBookPages: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  startBookPageLeft: {
+    width: 15,
+    height: 20,
+    backgroundColor: "#FFFFFF",
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 5,
+    transform: [{ rotate: "-7deg" }],
+  },
+  startBookPageRight: {
+    width: 15,
+    height: 20,
+    backgroundColor: "#FFF7ED",
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
+    transform: [{ rotate: "7deg" }],
+  },
+  startBookSpine: {
+    position: "absolute",
+    left: 14,
+    bottom: 2,
+    width: 3,
+    height: 19,
+    borderRadius: 2,
+    backgroundColor: "#FFD3B8",
+  },
+
+  // ── HOME SCREEN ──────────────────────────────────────────────────────────────
+  homeCanvas: {
+    paddingTop: 14,
+    paddingBottom: 30,
+    backgroundColor: "#7CCCF1",
+    overflow: "hidden",
+    position: "relative",
+  },
+  homeCloudOne: {
+    position: "absolute",
+    top: 24,
+    left: -24,
+    width: 105,
+    height: 42,
+    borderRadius: 30,
+    backgroundColor: "rgba(255,255,255,0.52)",
+  },
+  homeCloudTwo: {
+    position: "absolute",
+    top: 205,
+    right: -32,
+    width: 124,
+    height: 48,
+    borderRadius: 30,
+    backgroundColor: "rgba(255,255,255,0.44)",
+  },
+  homeHillBack: {
+    position: "absolute",
+    top: 270,
+    left: -80,
+    width: 270,
+    height: 160,
+    borderRadius: 140,
+    backgroundColor: "#6BCB8E",
+    opacity: 0.62,
+  },
+  homeHillFront: {
+    position: "absolute",
+    top: 310,
+    right: -95,
+    width: 300,
+    height: 175,
+    borderRadius: 150,
+    backgroundColor: "#38A96B",
+    opacity: 0.48,
+  },
+  homeFlowerOne: {
+    position: "absolute",
+    top: 390,
+    left: 14,
+    width: 30,
+    height: 30,
+  },
+  homeFlowerTwo: {
+    position: "absolute",
+    top: 455,
+    right: 17,
+    width: 30,
+    height: 30,
+    transform: [{ scale: 0.82 }],
+  },
+  flowerPetal: {
+    position: "absolute",
+    width: 13,
+    height: 13,
+    borderRadius: 7,
+    backgroundColor: "#FFF4A8",
+  },
+  flowerPetalTop: { top: 0, left: 8 },
+  flowerPetalLeft: { top: 11, left: 1 },
+  flowerPetalRight: { top: 11, right: 1 },
+  flowerCenter: {
+    position: "absolute",
+    top: 10,
+    left: 10,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: "#F59E0B",
+  },
+  heroCard: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    marginHorizontal: 16,
+    backgroundColor: "#FFF9E9",
+    borderRadius: 28,
+    padding: 17,
+    shadowColor: "#2D5A48",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.16,
+    shadowRadius: 14,
+    elevation: 7,
+    borderWidth: 2,
+    borderColor: "#F2E4BD",
+    gap: 10,
+  },
+  heroRight: {
+    flex: 1,
+    minWidth: 158,
+    gap: 6,
+  },
+  heroIllustration: {
+    width: 130,
+    height: 145,
     alignItems: "center",
     justifyContent: "center",
     position: "relative",
   },
-  childBookOpen: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  childBookPageL: {
-    width: 30,
-    height: 42,
-    backgroundColor: "#FFFFFF",
-    borderTopLeftRadius: 4,
-    borderBottomLeftRadius: 4,
-    borderWidth: 1.5,
-    borderColor: "#DDD6FE",
-    transform: [{ rotate: "-5deg" }],
-  },
-  childBookSpine: {
-    width: 6,
-    height: 44,
-    backgroundColor: "#7C3AED",
-    borderRadius: 2,
-    zIndex: 2,
-  },
-  childBookPageR: {
-    width: 30,
-    height: 42,
-    backgroundColor: "#F5F3FF",
-    borderTopRightRadius: 4,
-    borderBottomRightRadius: 4,
-    borderWidth: 1.5,
-    borderColor: "#DDD6FE",
-    transform: [{ rotate: "5deg" }],
-  },
-  childBookGlow: {
+  heroIllustrationGlow: {
     position: "absolute",
-    top: 0,
-    width: 40,
-    height: 16,
-    backgroundColor: "#FDE68A",
-    borderRadius: 8,
-    opacity: 0.7,
+    width: 124,
+    height: 124,
+    borderRadius: 62,
+    backgroundColor: "#FFF0B4",
   },
-  childBookSpark: {
-    position: "absolute",
-    top: -4,
-    right: 4,
-    fontSize: 14,
-  },
-
-  // ── HOME SCREEN ──────────────────────────────────────────────────────────────
-  heroCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginHorizontal: 16,
-    marginTop: 16,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 24,
-    padding: 18,
-    shadowColor: "#7C3AED",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 6,
-    borderWidth: 1.5,
-    borderColor: "#EDE9FE",
-    gap: 14,
-  },
-  heroLeft: {
-    alignItems: "center",
-  },
-  heroRight: {
-    flex: 1,
-    gap: 8,
+  heroIllustrationImage: {
+    width: 146,
+    height: 146,
   },
   heroBadge: {
     alignSelf: "flex-start",
-    backgroundColor: "#EDE9FE",
+    backgroundColor: "#E9E3FF",
     borderRadius: 20,
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderWidth: 1,
-    borderColor: "#DDD6FE",
+    borderColor: "#C5B7F3",
   },
   heroBadgeText: {
     fontSize: 11,
@@ -4141,25 +4357,30 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   heroHeading: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "900",
-    color: "#1E1B4B",
-    lineHeight: 24,
+    color: "#2F235A",
+    lineHeight: 25,
   },
   heroSub: {
     fontSize: 13,
-    color: "#6B7280",
-    lineHeight: 18,
+    color: "#5D5870",
+    lineHeight: 20,
   },
   heroBtn: {
-    backgroundColor: "#7C3AED",
-    borderRadius: 14,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    width: "100%",
+    minHeight: 54,
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 10,
+    backgroundColor: "#F47C35",
+    borderRadius: 18,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
     alignItems: "center",
     borderBottomWidth: 4,
-    borderBottomColor: "#5B21B6",
-    shadowColor: "#7C3AED",
+    borderBottomColor: "#C65318",
+    shadowColor: "#B94B14",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.35,
     shadowRadius: 6,
@@ -4168,19 +4389,46 @@ const styles = StyleSheet.create({
   heroBtnText: {
     color: "#FFFFFF",
     fontWeight: "900",
-    fontSize: 15,
+    fontSize: 18,
+  },
+  heroBtnArrow: {
+    color: "#FFFFFF",
+    fontSize: 22,
+    fontWeight: "900",
+  },
+  homeSectionHeader: {
+    marginHorizontal: 18,
+    marginTop: 17,
+    marginBottom: 8,
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+  },
+  homeSectionEyebrow: {
+    fontSize: 10,
+    fontWeight: "900",
+    color: "#493586",
+    letterSpacing: 1.2,
+    marginBottom: 3,
+  },
+  homeSectionTitle: {
+    fontSize: 19,
+    fontWeight: "900",
+    color: "#2F235A",
+  },
+  homeSectionSpark: {
+    fontSize: 24,
   },
 
   // feature chips
   featuresCard: {
     marginHorizontal: 16,
-    marginTop: 14,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    padding: 16,
-    borderWidth: 1.5,
-    borderColor: "#EDE9FE",
-    shadowColor: "#7C3AED",
+    backgroundColor: "#FFFDF5",
+    borderRadius: 22,
+    padding: 10,
+    borderWidth: 2,
+    borderColor: "#E8DDBD",
+    shadowColor: "#315A48",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
@@ -4188,80 +4436,136 @@ const styles = StyleSheet.create({
   },
   featuresRow: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: 8,
   },
   featureChip: {
-    flex: 1,
-    borderRadius: 14,
+    flexGrow: 1,
+    flexBasis: "46%",
+    minWidth: 128,
+    minHeight: 92,
+    borderRadius: 17,
     padding: 10,
+    paddingRight: 32,
+    alignItems: "flex-start",
+    justifyContent: "center",
+    gap: 5,
+    borderWidth: 2,
+    position: "relative",
+  },
+  featureIconBubble: {
+    width: 36,
+    height: 36,
+    borderRadius: 12,
     alignItems: "center",
-    gap: 4,
-    borderWidth: 1.5,
+    justifyContent: "center",
   },
   featureChipIcon: {
-    fontSize: 22,
+    fontSize: 20,
   },
   featureChipLabel: {
-    fontSize: 11,
-    fontWeight: "700",
-    color: "#374151",
-    textAlign: "center",
-    lineHeight: 14,
+    fontSize: 13,
+    fontWeight: "900",
+    color: "#30264F",
+    lineHeight: 16,
+  },
+  featureChipArrow: {
+    position: "absolute",
+    right: 10,
+    bottom: 9,
+    color: "#5B3BB5",
+    fontWeight: "900",
+    fontSize: 18,
   },
 
   // sample stories card
   sampleCard: {
     marginHorizontal: 16,
     marginTop: 14,
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    padding: 16,
-    borderWidth: 1.5,
-    borderColor: "#EDE9FE",
-    shadowColor: "#7C3AED",
+    backgroundColor: "#FFFDF5",
+    borderRadius: 24,
+    paddingVertical: 16,
+    borderWidth: 2,
+    borderColor: "#E8DDBD",
+    shadowColor: "#315A48",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 8,
     elevation: 3,
   },
   sampleCardHeader: {
-    marginBottom: 12,
+    marginBottom: 13,
+    paddingHorizontal: 16,
+    flexDirection: "row",
+    alignItems: "flex-end",
+    justifyContent: "space-between",
+    gap: 10,
   },
   sampleCardTitle: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "900",
-    color: "#1E1B4B",
-    marginBottom: 2,
+    color: "#2F235A",
   },
   sampleCardSub: {
-    fontSize: 12,
-    color: "#6B7280",
+    fontSize: 11,
+    color: "#6D6182",
+    fontWeight: "700",
+    paddingBottom: 2,
   },
   sampleStoriesGrid: {
-    flexDirection: "row",
+    paddingHorizontal: 16,
+    paddingBottom: 3,
     gap: 10,
   },
   sampleStoryCard: {
-    flex: 1,
-    borderRadius: 16,
-    padding: 12,
-    alignItems: "center",
-    gap: 6,
-    borderWidth: 1.5,
+    width: 150,
+    minHeight: 190,
+    borderRadius: 19,
+    padding: 10,
+    alignItems: "flex-start",
+    gap: 7,
+    borderWidth: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
   },
-  sampleEmoji: {
-    fontSize: 26,
+  sampleCover: {
+    width: "100%",
+    height: 100,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    overflow: "hidden",
+    position: "relative",
+  },
+  sampleCoverCloud: {
+    position: "absolute",
+    width: 60,
+    height: 22,
+    top: 12,
+    right: -8,
+    borderRadius: 14,
+    backgroundColor: "rgba(255,255,255,0.65)",
+  },
+  sampleCoverHill: {
+    position: "absolute",
+    width: 135,
+    height: 70,
+    borderRadius: 70,
+    bottom: -45,
+    opacity: 0.58,
+  },
+  sampleArtwork: {
+    width: 118,
+    height: 108,
+    zIndex: 3,
   },
   sampleTitle: {
-    fontSize: 11,
-    fontWeight: "800",
-    textAlign: "center",
-    lineHeight: 14,
+    fontSize: 13,
+    fontWeight: "900",
+    lineHeight: 17,
   },
   sampleTag: {
     borderRadius: 10,

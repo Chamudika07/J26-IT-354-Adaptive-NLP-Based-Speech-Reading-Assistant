@@ -96,7 +96,7 @@ function harness(initialSession = {
   };
   const native = Object.fromEntries([
     "Text", "View", "SafeAreaView", "ScrollView", "TextInput", "TouchableOpacity",
-    "KeyboardAvoidingView", "ActivityIndicator",
+    "KeyboardAvoidingView", "ActivityIndicator", "Image",
   ].map((name) => [name, name]));
   native.StyleSheet = { create: (value) => value };
   native.Platform = { OS: "ios" };
@@ -129,6 +129,10 @@ function harness(initialSession = {
     "expo-status-bar": { StatusBar: "StatusBar" },
     "expo-print": print,
     "expo-sharing": sharing,
+    "./assets/home/reading-child.png": 1,
+    "./assets/home/emerald-dragon.png": 2,
+    "./assets/home/mission-mars.png": 3,
+    "./assets/home/coral-dolphin.png": 4,
     "./src/config/env": { API_BASE_URL: "http://localhost:8000" },
     "./src/services/api": {
       simplificationClient: api,
@@ -155,6 +159,12 @@ function harness(initialSession = {
     return node && typeof node === "object"
       ? node.children.map((child) => text(child)).join("")
       : (node || "").toString();
+  }
+  function visibleText(node = tree) {
+    if (!node || typeof node !== "object") return (node || "").toString();
+    const nodeStyles = Array.isArray(node.props.style) ? node.props.style : [node.props.style];
+    if (nodeStyles.some((style) => style?.display === "none")) return "";
+    return node.children.map((child) => visibleText(child)).join("");
   }
   function press(label) {
     render();
@@ -204,7 +214,7 @@ function harness(initialSession = {
     });
   }
   render();
-  return { calls, nativeCalls, press, enter, render, simplify, text, textByAccessibilityLabel,
+  return { calls, nativeCalls, press, enter, render, simplify, text, visibleText, textByAccessibilityLabel,
     nodeByAccessibilityLabel, backgroundColorsByAccessibilityLabel,
     calculatePassageHighlights: appModule.calculatePassageHighlights,
     getReadingLevelSuggestion: appModule.getReadingLevelSuggestion,
@@ -314,6 +324,81 @@ test("reading-level suggestions map every feedback signal across all four levels
     assert.equal(skipped.kind, "none");
     assert.equal(skipped.suggestedLevel, null);
   }
+});
+
+test("home screen presents the child-friendly reading journey and honest tool descriptions", () => {
+  const app = harness();
+  const screen = app.visibleText();
+
+  assert.match(screen, /ReadBuddy/);
+  assert.match(screen, /Ages 9–12/);
+  assert.match(screen, /Welcome! Let’s make reading fun together!/);
+  assert.match(screen, /Start Reading/);
+  assert.match(screen, /Pick Your Level/);
+  assert.match(screen, /Reading Magic/);
+  assert.match(screen, /Word Detective/);
+  assert.match(screen, /Read at Your Pace/);
+  assert.match(
+    app.nodeByAccessibilityLabel("Open Word Detective").props.accessibilityHint,
+    /Simplify a story, then explore helpful words/,
+  );
+  assert.match(
+    app.nodeByAccessibilityLabel("Open Read at Your Pace").props.accessibilityHint,
+    /there’s no timer/,
+  );
+  assert.match(screen, /The Emerald Dragon/);
+  assert.match(screen, /Mission to Mars/);
+  assert.match(screen, /Coral Reef Mystery/);
+});
+
+for (const [action, expectedStep] of [
+  ["Start My Reading Adventure", "Choose Your Reading Support"],
+  ["Open Pick Your Level", "Choose Your Reading Support"],
+  ["Open Reading Magic", "How should Buddy help?"],
+  ["Open Word Detective", "What shall we read?"],
+  ["Open Read at Your Pace", "Choose Your Reading Support"],
+]) {
+  test(`${action} opens the intended existing reading step without an API request`, () => {
+    const app = harness();
+    app.press(action);
+
+    assert.match(app.visibleText(), new RegExp(expectedStep.replace(/[?]/g, "\\?")));
+    assert.equal(app.calls.length, 0);
+  });
+}
+
+for (const [title, passage] of [
+  [
+    "The Emerald Dragon",
+    "Deep within the Whispering Caverns, an ancient emerald dragon named Zephyr guarded a chamber of luminescent crystals.",
+  ],
+  [
+    "Mission to Mars",
+    "Astronaut Maya adjusted her pressurized helmet as the planetary rover traversed the treacherous terrain of Mars.",
+  ],
+  [
+    "Coral Reef Mystery",
+    "Beneath the turquoise waves of the Caribbean sea, an adventurous dolphin named Echo investigated an ancient Spanish galleon.",
+  ],
+]) {
+  test(`${title} loads its synthetic passage into the existing workflow`, () => {
+    const app = harness();
+    app.press(`Load sample story: ${title}`);
+
+    const input = app.nodeByAccessibilityLabel("Reading passage input");
+    assert.match(input.props.value, new RegExp(passage.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    assert.match(app.visibleText(), /What shall we read\?/);
+    assert.equal(app.calls.length, 0);
+  });
+}
+
+test("home settings button opens the existing session configuration", () => {
+  const app = harness();
+  app.press("Toggle test session settings");
+
+  assert.match(app.visibleText(), /Test Learner Credentials/);
+  assert.match(app.visibleText(), /Apply Session/);
+  assert.equal(app.calls.length, 0);
 });
 
 test("reading-level copy describes support without measuring ability", () => {
