@@ -163,14 +163,16 @@ it("replays actual backend prefixes through analytics, history, suggestions and 
   for (const statement of replay.at(-1)!.reportStatements) expect(screen.getByText(statement)).toBeTruthy();
   fireEvent.press(screen.getByRole("button", { name: "Open Saved AI Report" }));
   expect(screen.getByText("This saved AI report is separate from your current reading journey.")).toBeTruthy();
-  expect(screen.getByRole("button", { name: "Download AI Report PDF" })).toBeDisabled();
+  expect(screen.queryByRole("button", { name: "Download AI Report PDF" })).toBeNull();
+  fireEvent.press(screen.getByRole("button", { name: "View Saved AI Report" }));
+  expect(screen.getByRole("button", { name: "Download AI Report PDF" })).toBeEnabled();
   fireEvent.press(screen.getByRole("button", { name: "Back to Reading Summary" }));
   fireEvent.press(screen.getByRole("button", { name: "Reset Journey" }));
   expect(screen.getByText(/0 eligible completed sessions/)).toBeTruthy();
   fireEvent.press(screen.getByRole("button", { name: "Reset connected demo" }));
   await screen.findByText("My Reading Report");
-  fireEvent.press(screen.getByRole("button", { name: "Developer Details" }));
-  expect(screen.getByText("AI GENERATION NOT CONNECTED")).toBeTruthy();
+  expect(screen.getByText("Current Progress Report")).toBeTruthy();
+  expect(screen.getByText(/This summary is not AI-written/)).toBeTruthy();
   expect(screen.queryByText(/eligible completed sessions/)).toBeNull();
   expect(mockDisk).toBeNull(); expect(fetchSpy).not.toHaveBeenCalled();
 });
@@ -329,7 +331,7 @@ it("keeps normal scenario selection separate from developer input tooling", asyn
   fireEvent.press(screen.getByRole("button", { name: "View Analytics" }));
   fireEvent.press(screen.getByRole("button", { name: "View Reading Tips" }));
   fireEvent.press(screen.getByRole("button", { name: "Next: My Reading Report" }));
-  fireEvent.press(screen.getByRole("button", { name: "Read Current Summary" }));
+  fireEvent.press(screen.getByRole("button", { name: "View Current Summary" }));
   for (const text of replay[1]!.reportStatements) expect(screen.getByText(text)).toBeTruthy();
   expect(sharing.shareAsync).not.toHaveBeenCalled();
 });

@@ -33,9 +33,9 @@ it("rehearses PP1 with changing backend evidence, all roles and saved reports wi
     button("Why This Tip?");
     expect(screen.getByText("ADVISORY ONLY")).toBeTruthy();
     button("Next: My Reading Report");
-    button("Read Current Summary");
+    button("View Current Summary");
     for (const statement of artifact.reportStatements) expect(screen.getByText(statement)).toBeTruthy();
-    button("Open Saved AI Report");
+    button("View Saved AI Report");
     expect(screen.getByText("Created earlier using sample reading data.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Download AI Report PDF" })).toBeTruthy();
     const html = buildLocalAiReportHtml(aiSnapshot, { development: true, demoMode: true, role: "learner", enabled: true });

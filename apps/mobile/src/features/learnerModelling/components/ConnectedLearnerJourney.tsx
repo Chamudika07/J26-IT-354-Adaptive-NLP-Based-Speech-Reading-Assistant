@@ -1,9 +1,8 @@
-import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import type { ConnectedArtifact } from "../preview/connectedSessionPreview";
 import { useDeveloperTest } from "../preview/DeveloperTestSession";
 import type { LearnerDestination } from "../navigation/learnerDestinations";
-import { AIProgressReportScreen } from "../screens/AIProgressReportScreen";
+import { LearnerReadingReportView } from "./LearnerReadingReportView";
 import { LearnerProfileView } from "./LearnerProfileView";
 import { HomeHero } from "./HomeHero";
 import { LocalPreviewLayout } from "./LocalPreviewLayout";
@@ -16,17 +15,16 @@ export function ConnectedLearnerJourney({ artifact: a, destination, onNavigate, 
   artifact: ConnectedArtifact; destination: string; onNavigate?: (target: LearnerDestination) => void; reportProps?: LearnerReportProps;
 }) {
   const session = useDeveloperTest()!;
-  const [summary, setSummary] = useState(false);
-  const [saved, setSaved] = useState(false);
   const number = (v: string | null | undefined, scale = 1) => v == null ? null : Number(v) * scale;
   const metric = (key: string, scale = 1) => number(a.metrics.find(m => m.metric_name === key)?.latest_value, scale);
   const format = (v: number | null) => v === null ? "Not measured" : String(Number(v.toFixed(2)));
   const latest = { label: "Latest", accuracy: metric("reading_accuracy", 100), speed: metric("reading_fluency_wpm"), hesitation: metric("hesitation_rate_per_word", 100) };
   const applied = session.replayIndex === null ? "Applied: imported sample results" : `Applied scenario: Sample ${session.replayIndex}`;
-  if (saved && reportProps) return <View style={{ flex: 1 }}>
-    <Pressable accessibilityRole="button" onPress={() => setSaved(false)} style={s.previewLink}><Text style={s.body}>Back to Current Reading Summary</Text></Pressable>
-    <AIProgressReportScreen {...reportProps} initialSaved />
-  </View>;
+  if (destination === "report") return <LearnerReadingReportView allowSaved={Boolean(reportProps?.demoMode && reportProps.dashboard.role === "learner")}
+    periodStart={a.reportingStartUtc} periodEnd={a.reportingEndUtc}
+    metrics={[{ label: "Completed Sessions", value: String(a.includedSessionCount) }, { label: "Reading Accuracy (%)", value: latest.accuracy === null ? "Unavailable" : `${format(latest.accuracy)}%` }, { label: "Reading Speed (WPM)", value: latest.speed === null ? "Unavailable" : `${format(latest.speed)} WPM` }, { label: "Hesitations per 100 attempted words", value: latest.hesitation === null ? "Unavailable" : format(latest.hesitation) }]}
+    currentSummary={<View style={{ gap: 10 }}>{a.reportStatements.map(text => <Text key={text} style={s.body}>{text}</Text>)}</View>}
+    currentDetails={<Text style={s.body}>{a.disclaimer}</Text>} />;
   if (destination === "suggestions") return <ReadingTipsView
     disclosure={session.source === "laptop" ? "Synthetic Sample Data \u00b7 Calculated on laptop" : "Demo \u00b7 Fictional data"}
     title={a.recommendation?.action ?? "Keep reading to find a helpful tip."}
@@ -59,20 +57,6 @@ export function ConnectedLearnerJourney({ artifact: a, destination, onNavigate, 
     </View>} />;
   return <LocalPreviewLayout title={destination === "suggestions" ? "My Reading Tips" : destination === "report" ? "My Reading Report" : "Reading Home"}
     disclosure="" introduction="" homeHeader={destination === "home" ? <HomeHero sessions={a.includedSessionCount} accuracy={latest.accuracy === null ? "Not measured" : `${format(latest.accuracy)}%`} speed={format(latest.speed)} onStart={() => onNavigate?.("test")} /> : undefined}>
-    {destination === "report" && session.source === "laptop" ? <Text style={s.period}>{"Synthetic Sample Data \u00b7 Calculated on laptop"}</Text> : null}
     <Text style={s.period}>{applied}</Text>
-    {destination === "report" ? <>
-      <View style={s.card}>
-        <Text accessibilityRole="header" style={s.heading}>Current Reading Summary</Text>
-        <Text style={s.body}>Uses your selected sample results. This summary is not AI-written.</Text>
-        <Pressable accessibilityRole="button" accessibilityState={{ expanded: summary }} onPress={() => setSummary(!summary)} style={s.primaryAction}><Text style={s.primaryLabel}>Read Current Summary</Text></Pressable>
-        {summary ? a.reportStatements.map(t => <Text key={t} style={s.body}>{t}</Text>) : null}
-      </View>
-      <View style={s.card}>
-        <Text accessibilityRole="header" style={s.heading}>Saved AI Reading Report</Text>
-        <Text style={s.body}>Created earlier from separate sample data. It does not use this journey.</Text>
-        {reportProps ? <Pressable accessibilityRole="button" onPress={() => setSaved(true)} style={s.previewLink}><Text style={s.body}>Open Saved AI Report</Text></Pressable> : null}
-      </View>
-    </> : null}
   </LocalPreviewLayout>;
 }

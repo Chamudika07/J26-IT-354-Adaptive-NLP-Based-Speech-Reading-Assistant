@@ -8,13 +8,13 @@ it("shows one small sample disclosure and keeps developer tools out of normal na
     const tab = ({ "My Profile": "Profile", "My Reading Analytics": "Analytics", "My Reading Tips": "Suggestions" } as Record<string, string>)[title];
     fireEvent.press(tab ? screen.getByRole("tab", { name: `${tab} learner view` }) : screen.getByRole("button", { name: `Open ${title}` }));
     expect(screen.getByRole("header", { name: title === "Support Settings" ? "Reading Settings" : title })).toBeTruthy();
-    expect(screen.getAllByText(["My Reading Analytics", "My Profile", "Support Settings", "My Reading Tips"].includes(title) ? "Demo \u00b7 Fictional data" : "Sample Data")).toHaveLength(1);
+    expect(screen.getAllByText(["My Reading Analytics", "My Profile", "Support Settings", "My Reading Tips", "My Reading Report"].includes(title) ? "Demo \u00b7 Fictional data" : "Sample Data")).toHaveLength(1);
     expect(screen.queryByRole("button", { name: "Developer Details" })).toBeNull();
     expect(screen.queryByRole("button", { name: /Export.*JSON|Select connected backend/ })).toBeNull();
     if (title === "My Reading Report") {
-      fireEvent.press(screen.getByRole("button", { name: "Open saved AI report" }));
+      fireEvent.press(screen.getByRole("button", { name: "View Saved AI Report" }));
       expect(screen.getByText("Created earlier using sample reading data.")).toBeTruthy();
-      expect(screen.getAllByText("Sample Data")).toHaveLength(1);
+      expect(screen.getAllByText("Demo \u00b7 Fictional data")).toHaveLength(1);
       expect(screen.queryByRole("button", { name: "Developer Details" })).toBeNull();
       expect(screen.getByRole("button", { name: "Download AI Report PDF" })).toBeTruthy();
     }

@@ -101,25 +101,26 @@ it.each(["ios", "android"] as const)("connects the installed Expo adapter to the
   jest.mocked(Sharing.shareAsync).mockResolvedValue(undefined);
   expect(pdf.installedPdfModules()?.printToFileAsync).toBe(Print.printToFileAsync);
   expect(pdf.installedPdfModules()?.shareAsync).toBe(Sharing.shareAsync);
-  render(<AIProgressReportScreen dashboard={buildSyntheticDashboard("learner", 30)} demoMode periodDays={30} />);
-  expect(screen.getByRole("button", { name: "Download AI Report PDF" })).toBeDisabled();
-  fireEvent.press(screen.getByRole("button", { name: "Open saved AI report" }));
+  const view = render(<AIProgressReportScreen dashboard={buildSyntheticDashboard("learner", 30)} demoMode periodDays={30} />);
+  expect(screen.queryByRole("button", { name: "Download AI Report PDF" })).toBeNull();
+  fireEvent.press(screen.getByRole("button", { name: "View Saved AI Report" }));
   const button = screen.getByRole("button", { name: "Download AI Report PDF" });
   expect(button).not.toBeDisabled();
   expect(button).toBeVisible();
-  // The action must be a sticky first child, before long metadata and statements.
   const scroll = screen.UNSAFE_getByType(ScrollView);
-  expect(scroll.props.stickyHeaderIndices).toEqual([0]);
-  expect(scroll.props.children[0].props.testID).toBe("local-preview-actions");
-  expect(within(screen.getByTestId("local-preview-actions")).getByRole("button", {
-    name: "Download AI Report PDF",
-  })).toBe(button);
+  expect(scroll.props.stickyHeaderIndices).toBeUndefined();
+  expect(within(screen.getByTestId("previously-saved-ai-report")).getByRole("button", { name: "Download AI Report PDF" })).toBe(button);
+  const source = screen.getByTestId("saved-ai-report-content");
+  const tree = JSON.stringify(view.toJSON());
+  expect(tree.indexOf(JSON.stringify(snapshot().statements.at(-1)))).toBeLessThan(tree.indexOf("Download AI Report PDF"));
+  expect(within(source).getByText(snapshot().statements.at(-1)!)).toBeTruthy();
   fireEvent.press(button);
   await waitFor(() => expect(Sharing.shareAsync).toHaveBeenCalledWith("file:///cache/native.pdf", {
     mimeType: "application/pdf", UTI: "com.adobe.pdf", dialogTitle: "Save ReadBuddy synthetic AI report",
   }));
   await screen.findByRole("alert");
   const html = jest.mocked(Print.printToFileAsync).mock.calls.at(-1)![0]!.html!;
+  for (const statement of snapshot().statements) expect(html).toContain(pdf.escapeHtml(statement));
   expect(html).toContain("2026-01-01 to 2026-01-31");
   expect(html).not.toContain("2026-10-15");
 });
@@ -167,9 +168,9 @@ it("disables the action until opt-in, a valid snapshot and native dependencies e
   jest.spyOn(pdf, "installedPdfModules").mockReturnValue(null);
   const read = jest.spyOn(local, "readBundledLocalSnapshot").mockReturnValue(snapshot());
   render(<AIProgressReportScreen dashboard={buildSyntheticDashboard("learner", 30)} demoMode periodDays={30} />);
-  expect(screen.getByRole("button", { name: "Download AI Report PDF" })).toBeDisabled();
+  expect(screen.queryByRole("button", { name: "Download AI Report PDF" })).toBeNull();
   expect(read).not.toHaveBeenCalled();
-  fireEvent.press(screen.getByRole("button", { name: "Open saved AI report" }));
+  fireEvent.press(screen.getByRole("button", { name: "View Saved AI Report" }));
   expect(screen.getByRole("button", { name: "Download AI Report PDF" })).toBeDisabled();
   expect(screen.getByText(/PDF download is not available in this build/)).toBeTruthy();
 });

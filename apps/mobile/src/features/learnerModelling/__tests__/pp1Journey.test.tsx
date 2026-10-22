@@ -82,10 +82,10 @@ it("keeps Profile, Analytics, Tips and Summary on the returned scenario", async 
   fireEvent.press(screen.getByRole("button", { name: "View Reading Tips" }));
   expect(screen.getByText(replay[3]!.recommendation!.action)).toBeTruthy();
   fireEvent.press(screen.getByRole("button", { name: "Next: My Reading Report" }));
-  fireEvent.press(screen.getByRole("button", { name: "Read Current Summary" }));
+  fireEvent.press(screen.getByRole("button", { name: "View Current Summary" }));
   for (const text of replay[3]!.reportStatements) expect(screen.getByText(text)).toBeTruthy();
   expect(calculate).toHaveBeenCalledTimes(1);
-  fireEvent.press(screen.getByRole("button", { name: "Open Saved AI Report" }));
+  fireEvent.press(screen.getByRole("button", { name: "View Saved AI Report" }));
   expect(screen.getByText("Created earlier using sample reading data.")).toBeTruthy();
   expect(screen.queryByText("Synthetic Sample Data \u00b7 Calculated on laptop")).toBeNull();
 });

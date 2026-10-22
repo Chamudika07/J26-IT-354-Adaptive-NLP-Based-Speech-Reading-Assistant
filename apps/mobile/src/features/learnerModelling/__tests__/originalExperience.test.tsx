@@ -43,7 +43,7 @@ it("discovers all original areas without adding secondary bottom tabs", async ()
     expect(StyleSheet.flatten(link.props.style).minHeight).toBeGreaterThanOrEqual(48);
     fireEvent.press(link);
     expect(screen.getByRole("header", { name: title === "Support Settings" ? "Reading Settings" : title === "My Reading Analytics" ? "My Reading Analytics" : title === "My Reading Report" ? "My Reading Report" : title })).toBeTruthy();
-    expect(screen.getByText(["My Reading Analytics", "My Profile", "Support Settings", "My Reading Tips"].includes(title) ? "Demo \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
+    expect(screen.getByText(["My Reading Analytics", "My Profile", "Support Settings", "My Reading Tips", "My Reading Report"].includes(title) ? "Demo \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
     fireEvent.press(screen.getByRole("button", { name: "Back to reading Home" }));
   }
   const navigation = within(screen.getByLabelText("Learner feature navigation"));
@@ -121,12 +121,12 @@ it("renders the deterministic report from the current projection for every repor
   for (const days of [7, 30, 90] as const) {
     fireEvent.press(screen.getByRole("radio", { name: `${days} day reporting period` }));
     await screen.findByText("My Reading Report");
-    fireEvent.press(screen.getByRole("button", { name: "Read reading summary" }));
-    fireEvent.press(screen.getByRole("button", { name: "Developer Details" }));
+    fireEvent.press(screen.getByRole("button", { name: "View Current Summary" }));
+    fireEvent.press(screen.getByRole("button", { name: "Report Details" }));
     expect(screen.getByText(`${days}-day reporting period`)).toBeTruthy();
-    expect(screen.getByText("Reading Progress Summary")).toBeTruthy();
-    expect(screen.getByText("AI GENERATION NOT CONNECTED")).toBeTruthy();
-    expect(screen.getByText("Sample Data")).toBeTruthy();
+    expect(screen.getByText("Current Progress Report")).toBeTruthy();
+    expect(screen.getByText(/This summary is not AI-written/)).toBeTruthy();
+    expect(screen.getByText("Demo \u00b7 Fictional data")).toBeTruthy();
     const dashboard = buildSyntheticDashboard("learner", days);
     for (const metric of dashboard.metrics) {
       const card = within(screen.getByTestId(`${metric.key}-card`));
@@ -146,7 +146,7 @@ it("renders the deterministic report from the current projection for every repor
       expect(screen.queryByText(/Early-window mean/)).toBeNull();
     }
     // No export is available from the deterministic demo or without native packages.
-    expect(screen.getByRole("button", { name: "Download AI Report PDF" })).toBeDisabled();
+    expect(screen.queryByRole("button", { name: "Download AI Report PDF" })).toBeNull();
   }
   expect(fetchSpy).not.toHaveBeenCalled();
 });

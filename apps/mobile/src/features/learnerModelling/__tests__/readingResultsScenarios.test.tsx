@@ -41,16 +41,16 @@ it("guides one scenario from editable profile through analytics, evidence-based 
     button("Why This Tip?");
     for (const text of sample.recommendationExplanation) expect(screen.getByText(text)).toBeTruthy();
     button("Next: My Reading Report");
-    button("Read Current Summary");
+    button("View Current Summary");
     for (const text of sample.reportStatements) expect(screen.getByText(text)).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Download AI Report PDF" })).toBeNull();
-    button("Open Saved AI Report");
+    button("View Saved AI Report");
     expect(screen.getByText("Created earlier using sample reading data.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Download AI Report PDF" })).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Open saved AI report" })).toBeNull();
-    expect(screen.queryByRole("header", { name: "Current Reading Summary" })).toBeNull();
-    button("Back to Current Reading Summary");
-    expect(screen.getByRole("header", { name: "Current Reading Summary" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Hide Saved AI Report" })).toBeTruthy();
+    expect(screen.getByRole("header", { name: "Current Progress Report" })).toBeTruthy();
+    button("Hide Saved AI Report");
+    expect(screen.getByRole("header", { name: "Current Progress Report" })).toBeTruthy();
     expect(network).not.toHaveBeenCalled();
   } finally { network.mockRestore(); }
 });
@@ -83,7 +83,7 @@ it("resets history, tips and the current report without replacing identity or in
   expect(screen.queryByText(/S3.*Completed/)).toBeNull();
   button("View Reading Tips");
   expect(screen.getByText("Keep reading to find a helpful tip.")).toBeTruthy();
-  button("Next: My Reading Report"); button("Read Current Summary");
+  button("Next: My Reading Report"); button("View Current Summary");
   const empty = selectConnectedReplay({ index: 0, development: true, demoMode: true, role: "learner" })!;
   for (const text of empty.reportStatements) expect(screen.getByText(text)).toBeTruthy();
   tab("Profile");

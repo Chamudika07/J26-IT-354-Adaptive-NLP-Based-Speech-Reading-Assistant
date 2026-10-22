@@ -43,82 +43,70 @@ it.each([
   expect(local.validateLocalReportSnapshot(value, "learner")).toBeNull();
 });
 
-it("defaults to the existing demo and opts in to an explicitly saved offline report without networking", () => {
+it("keeps the current summary primary and opens an independent saved report without networking", () => {
   const read = jest.spyOn(local, "readBundledLocalSnapshot").mockReturnValue(snapshot());
   const fetch = jest.spyOn(globalThis, "fetch");
   render(<AIProgressReportScreen {...props} />);
-  expect(screen.getByText("Reading Progress Summary")).toBeTruthy();
-  expect(screen.queryByText("SAVED AI REPORT")).toBeNull();
+  expect(screen.getByRole("header", { name: "Current Progress Report" })).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "Download AI Report PDF" })).toBeNull();
   expect(read).not.toHaveBeenCalled();
-  fireEvent.press(screen.getByRole("button", { name: "Open saved AI report" }));
-  expect(screen.getByText("My Reading Report")).toBeTruthy();
+  fireEvent.press(screen.getByRole("button", { name: "View Saved AI Report" }));
   expect(screen.getByText("Created earlier using sample reading data.")).toBeTruthy();
-  expect(screen.getByText("See your reading progress, strengths and helpful tips.")).toBeTruthy();
-  expect(screen.getByText("SAVED AI REPORT")).toBeTruthy();
+  expect(screen.getByRole("header", { name: "Previously Saved AI Report" })).toBeTruthy();
+  expect(screen.getByRole("header", { name: "Current Progress Report" })).toBeTruthy();
   expect(screen.queryByText(/Source: local-ollama/)).toBeNull();
-  expect(screen.queryByText(/Fixed sample period/)).toBeNull();
-  expect(screen.queryByText("Production learner AI generation is not connected.")).toBeNull();
-  expect(screen.getByText(/Opening it does not create a new report/)).toBeTruthy();
+  expect(screen.getByText(/no new AI report is generated/)).toBeTruthy();
   fireEvent.press(screen.getByRole("button", { name: "Developer Details" }));
   expect(screen.getByText(/Model: qwen3:4b/)).toBeTruthy();
   expect(screen.getByText(/does not use the selected dashboard reporting period/)).toBeTruthy();
   expect(screen.getByText("Production learner AI generation is not connected.")).toBeTruthy();
-  fireEvent.press(screen.getByRole("button", { name: "Developer Details" }));
-  expect(screen.queryByText(/Model: qwen3:4b/)).toBeNull();
   expect(screen.getByText("ADVISORY ONLY")).toBeTruthy();
   for (const text of contract.statements) expect(screen.getByText(text)).toBeTruthy();
   expect(screen.queryByRole("button", { name: /generate/i })).toBeNull();
   expect(fetch).not.toHaveBeenCalled();
-  fireEvent.press(screen.getByRole("button", { name: "Return to reading summary" }));
-  expect(screen.getByText("Reading Progress Summary")).toBeTruthy();
+  fireEvent.press(screen.getByRole("button", { name: "Hide Saved AI Report" }));
+  expect(screen.getByRole("header", { name: "Current Progress Report" })).toBeTruthy();
+  expect(screen.queryByTestId("saved-ai-report-content")).toBeNull();
+  expect(screen.queryByRole("button", { name: /Back to|Return to/ })).toBeNull();
 });
-
-it("shows unavailable state and clearly retains the deterministic demo for missing artifacts", () => {
+it("shows unavailable saved content without substituting the factual summary as AI", () => {
   jest.spyOn(local, "readBundledLocalSnapshot").mockReturnValue(null);
   render(<AIProgressReportScreen {...props} />);
-  fireEvent.press(screen.getByRole("button", { name: "Open saved AI report" }));
+  fireEvent.press(screen.getByRole("button", { name: "View Saved AI Report" }));
   expect(screen.getByRole("alert")).toHaveTextContent(/The saved AI report is unavailable/);
-  expect(screen.getByText("Reading Progress Summary")).toBeTruthy();
-  expect(screen.queryByText("SAVED AI REPORT")).toBeNull();
+  expect(screen.getByRole("header", { name: "Current Progress Report" })).toBeTruthy();
+  expect(screen.queryByTestId("saved-ai-report-content")).toBeNull();
+  expect(screen.queryByRole("button", { name: "Download AI Report PDF" })).toBeNull();
 });
-
 it("removes snapshot content immediately when leaving demo or learner mode", () => {
   const read = jest.spyOn(local, "readBundledLocalSnapshot").mockReturnValue(snapshot());
   const view = render(<AIProgressReportScreen {...props} />);
-  fireEvent.press(screen.getByRole("button", { name: "Open saved AI report" }));
+  fireEvent.press(screen.getByRole("button", { name: "View Saved AI Report" }));
   view.rerender(<AIProgressReportScreen {...props} demoMode={false} />);
-  expect(screen.queryByText("SAVED AI REPORT")).toBeNull();
+  expect(screen.queryByTestId("saved-ai-report-content")).toBeNull();
   expect(screen.getByText("Report temporarily unavailable")).toBeTruthy();
   read.mockClear();
   view.rerender(<AIProgressReportScreen {...props} dashboard={{ ...props.dashboard, role: "guardian" } as never} />);
-  expect(screen.queryByText("SAVED AI REPORT")).toBeNull();
+  expect(screen.queryByTestId("saved-ai-report-content")).toBeNull();
   expect(read).not.toHaveBeenCalled();
 });
-
-
-it("hides the opt-in in release mode even with a valid saved artifact", () => {
+it("hides the saved preview in release mode even with a valid artifact", () => {
   jest.replaceProperty(globalThis as typeof globalThis & { __DEV__: boolean }, "__DEV__", false);
   const read = jest.spyOn(local, "readBundledLocalSnapshot").mockReturnValue(snapshot());
   render(<AIProgressReportScreen {...props} />);
-  expect(screen.queryByRole("button", { name: "Open saved AI report" })).toBeNull();
-  expect(screen.getByText("Reading Progress Summary")).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "View Saved AI Report" })).toBeNull();
+  expect(screen.getByRole("header", { name: "Current Progress Report" })).toBeTruthy();
   expect(read).not.toHaveBeenCalled();
 });
-
-
-it("keeps technical details collapsed when switching between the summary and saved report", () => {
+it("resets optional saved metadata when collapsing and reopening without adding navigation", () => {
   jest.spyOn(local, "readBundledLocalSnapshot").mockReturnValue(snapshot());
   render(<AIProgressReportScreen {...props} />);
-  expect(screen.queryByText("Created earlier using sample reading data.")).toBeNull();
-  fireEvent.press(screen.getByRole("button", { name: "Developer Details" }));
-  expect(screen.getByText("AI GENERATION NOT CONNECTED")).toBeTruthy();
-  fireEvent.press(screen.getByRole("button", { name: "Open saved AI report" }));
-  expect(screen.getByText("Created earlier using sample reading data.")).toBeTruthy();
-  expect(screen.queryByText(/Model: qwen3:4b/)).toBeNull();
-  expect(screen.getByRole("button", { name: "Developer Details" }).props.accessibilityState.expanded).toBe(false);
+  fireEvent.press(screen.getByRole("button", { name: "View Saved AI Report" }));
   fireEvent.press(screen.getByRole("button", { name: "Developer Details" }));
   expect(screen.getByText(/Model: qwen3:4b/)).toBeTruthy();
-  fireEvent.press(screen.getByRole("button", { name: "Return to reading summary" }));
-  expect(screen.queryByText("AI GENERATION NOT CONNECTED")).toBeNull();
-  expect(screen.getByText("Reading Progress Summary")).toBeTruthy();
+  fireEvent.press(screen.getByRole("button", { name: "Hide Saved AI Report" }));
+  fireEvent.press(screen.getByRole("button", { name: "View Saved AI Report" }));
+  expect(screen.queryByText(/Model: qwen3:4b/)).toBeNull();
+  expect(screen.getByRole("button", { name: "Developer Details" }).props.accessibilityState.expanded).toBe(false);
+  expect(screen.getAllByText("Demo \u00b7 Fictional data")).toHaveLength(1);
 });
