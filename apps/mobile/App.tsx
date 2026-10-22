@@ -12,6 +12,8 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import * as Print from "expo-print";
+import * as Sharing from "expo-sharing";
 import type {
   ReadingLevel,
   FeedbackSignal,
@@ -112,6 +114,133 @@ interface TextRange {
   start: number;
   end: number;
 }
+
+export interface LearningPackSnapshot {
+  originalText: string | null;
+  simplifiedText: string;
+  readingLevel: string;
+  strategy: string;
+  vocabularyItems: Array<{
+    term: string;
+    simplifiedDefinition: string;
+    exampleSentence: string | null;
+    synonyms: string[];
+  }>;
+}
+
+export const escapeLearningPackHtml = (value: string): string =>
+  value.replace(
+    /[&<>"']/g,
+    (character) =>
+      ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;",
+      })[character] ?? character
+  );
+
+const formatLearningPackLabel = (value: string): string =>
+  value
+    .split("_")
+    .filter(Boolean)
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join(" ");
+
+export const buildLearningPackHtml = (snapshot: LearningPackSnapshot): string => {
+  const vocabularyHtml = snapshot.vocabularyItems.length
+    ? snapshot.vocabularyItems
+        .map((item, index) => {
+          const example = item.exampleSentence;
+          const hasExample = Boolean(example && example.trim().length > 0);
+          const synonyms = item.synonyms.filter((synonym) => synonym.trim().length > 0);
+          return `
+            <section class="word-card word-card-${index % 4}">
+              <h3>${escapeLearningPackHtml(item.term)}</h3>
+              <p class="definition-label">What it means</p>
+              <p class="definition">${escapeLearningPackHtml(item.simplifiedDefinition)}</p>
+              ${
+                hasExample && example
+                  ? `<p class="detail-label">Example</p><p class="example">${escapeLearningPackHtml(example)}</p>`
+                  : ""
+              }
+              ${
+                synonyms.length
+                  ? `<p class="detail-label">Similar words</p><p class="synonyms">${synonyms
+                      .map((synonym) => `<span>${escapeLearningPackHtml(synonym)}</span>`)
+                      .join("")}</p>`
+                  : ""
+              }
+            </section>`;
+        })
+        .join("")
+    : `<p class="empty-words">No extra vocabulary words were needed for this passage.</p>`;
+
+  const originalHtml =
+    snapshot.originalText !== null
+      ? `<section class="passage-card original">
+          <h2>Original Passage</h2>
+          <p class="passage">${escapeLearningPackHtml(snapshot.originalText)}</p>
+        </section>`
+      : "";
+
+  return `<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ReadBuddy Learning Pack</title>
+    <style>
+      @page { margin: 28px; }
+      * { box-sizing: border-box; }
+      body { margin: 0; color: #1e293b; background: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 16px; line-height: 1.65; }
+      header { padding: 24px; color: #ffffff; background: #6d28d9; border-radius: 22px; margin-bottom: 20px; }
+      h1 { margin: 0 0 6px; font-size: 30px; line-height: 1.2; }
+      header p { margin: 0; color: #ede9fe; }
+      .labels { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; }
+      .label { display: inline-block; padding: 6px 12px; color: #4338ca; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 999px; font-size: 13px; font-weight: 700; }
+      section { break-inside: avoid; }
+      .passage-card { padding: 20px; border: 2px solid #a7f3d0; border-radius: 18px; background: #ecfdf5; margin-bottom: 18px; }
+      .passage-card.original { border-color: #fde68a; background: #fffbeb; }
+      h2 { margin: 0 0 10px; color: #134e4a; font-size: 21px; }
+      .original h2 { color: #92400e; }
+      .passage { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+      .vocabulary-heading { margin: 26px 0 12px; color: #4c1d95; font-size: 23px; }
+      .word-card { padding: 17px; border: 2px solid #bfdbfe; border-radius: 16px; background: #eff6ff; margin-bottom: 12px; }
+      .word-card-1 { border-color: #fde68a; background: #fffbeb; }
+      .word-card-2 { border-color: #ddd6fe; background: #f5f3ff; }
+      .word-card-3 { border-color: #fbcfe8; background: #fdf2f8; }
+      h3 { margin: 0 0 8px; color: #1d4ed8; font-size: 20px; }
+      .definition-label, .detail-label { margin: 8px 0 2px; color: #64748b; font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+      .definition, .example { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+      .example { font-style: italic; }
+      .synonyms { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 0; }
+      .synonyms span { display: inline-block; padding: 3px 9px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 999px; }
+      .empty-words { padding: 16px; color: #475569; background: #f8fafc; border-radius: 14px; }
+      footer { margin-top: 24px; padding-top: 12px; color: #64748b; border-top: 1px solid #e2e8f0; font-size: 12px; text-align: center; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>ReadBuddy Learning Pack</h1>
+      <p>Your reading adventure, ready to revisit.</p>
+    </header>
+    <div class="labels">
+      <span class="label">Reading level: ${escapeLearningPackHtml(formatLearningPackLabel(snapshot.readingLevel))}</span>
+      <span class="label">Strategy: ${escapeLearningPackHtml(formatLearningPackLabel(snapshot.strategy))}</span>
+    </div>
+    <section class="passage-card">
+      <h2>Simplified Passage</h2>
+      <p class="passage">${escapeLearningPackHtml(snapshot.simplifiedText)}</p>
+    </section>
+    ${originalHtml}
+    <h2 class="vocabulary-heading">Vocabulary Helpers</h2>
+    ${vocabularyHtml}
+    <footer>Made with ReadBuddy</footer>
+  </body>
+</html>`;
+};
 
 // The exact LCS matrix is intentionally bounded. Above this limit, the
 // unmatched middle is highlighted conservatively so a long rewrite cannot
@@ -570,6 +699,10 @@ export default function App() {
   const [reviewedVocabularyItems, setReviewedVocabularyItems] = useState<Set<string>>(
     () => new Set()
   );
+  const [isLearningPackBusy, setIsLearningPackBusy] = useState(false);
+  const [learningPackError, setLearningPackError] = useState<string | null>(null);
+  const activeLearningPackRef = useRef(false);
+  const learningPackGenerationRef = useRef(0);
   const activeSimplifyAbortRef = useRef<AbortController | null>(null);
   const activeFeedbackAbortRef = useRef<AbortController | null>(null);
 
@@ -657,6 +790,8 @@ export default function App() {
     void restoreAuthSession();
     return () => {
       mounted = false;
+      learningPackGenerationRef.current += 1;
+      activeLearningPackRef.current = false;
       unsubscribe();
       activeSimplifyAbortRef.current?.abort();
       activeExplainAbortRef.current?.abort();
@@ -665,6 +800,8 @@ export default function App() {
   }, []);
 
   const resetReadingState = () => {
+    learningPackGenerationRef.current += 1;
+    activeLearningPackRef.current = false;
     activeSimplifyAbortRef.current?.abort();
     activeSimplifyAbortRef.current = null;
     activeExplainAbortRef.current?.abort();
@@ -677,6 +814,8 @@ export default function App() {
     setResultTextView("simplified");
     setShowHighlights(true);
     setReviewedVocabularyItems(new Set());
+    setIsLearningPackBusy(false);
+    setLearningPackError(null);
     setApiError(null);
     setValidationError(null);
     setExplainTerm(null);
@@ -693,11 +832,15 @@ export default function App() {
   };
 
   const handlePassageChange = (text: string) => {
+    learningPackGenerationRef.current += 1;
+    activeLearningPackRef.current = false;
     setPassage(text);
     setSubmittedSourceText(null);
     setResultTextView("simplified");
     setShowHighlights(true);
     setReviewedVocabularyItems(new Set());
+    setIsLearningPackBusy(false);
+    setLearningPackError(null);
     if (validationError) {
       setValidationError(null);
     }
@@ -1014,6 +1157,10 @@ export default function App() {
     setResultTextView("simplified");
     setShowHighlights(true);
     setReviewedVocabularyItems(new Set());
+    learningPackGenerationRef.current += 1;
+    activeLearningPackRef.current = false;
+    setIsLearningPackBusy(false);
+    setLearningPackError(null);
     setExplainTerm(null);
     setExplainItemKey(null);
     setExplainResult(null);
@@ -1120,6 +1267,67 @@ export default function App() {
       if (activeSimplifyAbortRef.current === controller) {
         activeSimplifyAbortRef.current = null;
         setIsLoading(false);
+      }
+    }
+  };
+
+  const createLearningPackSnapshot = (): LearningPackSnapshot | null => {
+    if (!simplifiedResult) return null;
+    return {
+      originalText: submittedSourceText,
+      simplifiedText: simplifiedResult.simplified_text,
+      readingLevel: simplifiedResult.target_reading_level,
+      strategy: simplifiedResult.strategy_applied,
+      vocabularyItems: simplifiedResult.vocabulary_items.map((item) => ({
+        term: item.term,
+        simplifiedDefinition: item.simplified_definition,
+        exampleSentence: item.example_sentence ?? null,
+        synonyms: [...(item.synonyms ?? [])],
+      })),
+    };
+  };
+
+  const handleLearningPackAction = async (action: "print" | "share") => {
+    if (activeLearningPackRef.current) return;
+    const snapshot = createLearningPackSnapshot();
+    if (!snapshot) return;
+
+    const generation = learningPackGenerationRef.current;
+    const html = buildLearningPackHtml(snapshot);
+    activeLearningPackRef.current = true;
+    setIsLearningPackBusy(true);
+    setLearningPackError(null);
+
+    try {
+      if (action === "print") {
+        await Print.printAsync({ html });
+        return;
+      }
+
+      const { uri } = await Print.printToFileAsync({ html });
+      if (generation !== learningPackGenerationRef.current) return;
+      const sharingAvailable = await Sharing.isAvailableAsync();
+      if (generation !== learningPackGenerationRef.current) return;
+      if (!sharingAvailable) {
+        throw new Error("Sharing is not available on this device.");
+      }
+      await Sharing.shareAsync(uri, {
+        mimeType: "application/pdf",
+        UTI: "com.adobe.pdf",
+        dialogTitle: "Share or save your ReadBuddy Learning Pack",
+      });
+    } catch (error: unknown) {
+      if (generation === learningPackGenerationRef.current) {
+        setLearningPackError(
+          error instanceof Error && error.message === "Sharing is not available on this device."
+            ? error.message
+            : "We could not prepare your learning pack. Please try again."
+        );
+      }
+    } finally {
+      if (generation === learningPackGenerationRef.current) {
+        activeLearningPackRef.current = false;
+        setIsLearningPackBusy(false);
       }
     }
   };
@@ -2481,6 +2689,67 @@ export default function App() {
                     </View>
                   )}
                 </View>
+              </View>
+
+              {/* ── PDF LEARNING PACK ── */}
+              <View style={styles.learningPackSection}>
+                <View style={styles.learningPackHeaderRow}>
+                  <View style={styles.learningPackIcon}>
+                    <Text style={styles.learningPackIconText}>PDF</Text>
+                  </View>
+                  <View style={styles.learningPackHeaderCopy}>
+                    <Text style={styles.learningPackTitle}>PDF Learning Pack</Text>
+                    <Text style={styles.learningPackSubtitle}>
+                      Keep this reading adventure to revisit, share, or print.
+                    </Text>
+                  </View>
+                </View>
+
+                <View style={styles.learningPackActions}>
+                  <TouchableOpacity
+                    style={[
+                      styles.learningPackButton,
+                      styles.learningPackPreviewButton,
+                      isLearningPackBusy && styles.learningPackButtonDisabled,
+                    ]}
+                    onPress={() => handleLearningPackAction("print")}
+                    disabled={isLearningPackBusy}
+                    accessibilityRole="button"
+                    accessibilityLabel="Preview and print learning pack"
+                    accessibilityState={{ disabled: isLearningPackBusy, busy: isLearningPackBusy }}
+                  >
+                    <Text style={styles.learningPackPreviewButtonText}>Preview &amp; Print</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.learningPackButton,
+                      styles.learningPackShareButton,
+                      isLearningPackBusy && styles.learningPackButtonDisabled,
+                    ]}
+                    onPress={() => handleLearningPackAction("share")}
+                    disabled={isLearningPackBusy}
+                    accessibilityRole="button"
+                    accessibilityLabel="Share or save PDF learning pack"
+                    accessibilityState={{ disabled: isLearningPackBusy, busy: isLearningPackBusy }}
+                  >
+                    <Text style={styles.learningPackShareButtonText}>Share or Save PDF</Text>
+                  </TouchableOpacity>
+                </View>
+
+                {isLearningPackBusy && (
+                  <View style={styles.learningPackStatus} accessibilityRole="progressbar">
+                    <ActivityIndicator size="small" color="#6D28D9" />
+                    <Text style={styles.learningPackStatusText}>
+                      Preparing your learning pack...
+                    </Text>
+                  </View>
+                )}
+                {learningPackError && (
+                  <View style={styles.learningPackError} accessibilityRole="alert">
+                    <Text style={styles.learningPackErrorText}>{learningPackError}</Text>
+                    <Text style={styles.learningPackRetryText}>Choose an option above to try again.</Text>
+                  </View>
+                )}
               </View>
 
               {/* ── FEEDBACK SECTION ── */}
@@ -4949,6 +5218,127 @@ const styles = StyleSheet.create({
   },
 
   // ── FEEDBACK SECTION ──────────────────────────────────────────────────────
+  // PDF learning pack
+  learningPackSection: {
+    marginHorizontal: 16,
+    marginTop: 14,
+    padding: 16,
+    backgroundColor: "#FFFBEB",
+    borderRadius: 22,
+    borderWidth: 1.5,
+    borderColor: "#FDE68A",
+    shadowColor: "#92400E",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  learningPackHeaderRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    marginBottom: 14,
+  },
+  learningPackIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F97316",
+    borderBottomWidth: 4,
+    borderBottomColor: "#C2410C",
+  },
+  learningPackIconText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "900",
+    letterSpacing: 0.5,
+  },
+  learningPackHeaderCopy: {
+    flex: 1,
+  },
+  learningPackTitle: {
+    color: "#78350F",
+    fontSize: 19,
+    fontWeight: "900",
+    marginBottom: 3,
+  },
+  learningPackSubtitle: {
+    color: "#92400E",
+    fontSize: 12,
+    lineHeight: 17,
+  },
+  learningPackActions: {
+    gap: 10,
+  },
+  learningPackButton: {
+    minHeight: 50,
+    borderRadius: 15,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 13,
+    borderWidth: 1.5,
+  },
+  learningPackPreviewButton: {
+    backgroundColor: "#FFFFFF",
+    borderColor: "#C4B5FD",
+    borderBottomWidth: 4,
+    borderBottomColor: "#C4B5FD",
+  },
+  learningPackShareButton: {
+    backgroundColor: "#6D28D9",
+    borderColor: "#6D28D9",
+    borderBottomWidth: 4,
+    borderBottomColor: "#4C1D95",
+  },
+  learningPackButtonDisabled: {
+    opacity: 0.55,
+  },
+  learningPackPreviewButtonText: {
+    color: "#6D28D9",
+    fontSize: 15,
+    fontWeight: "900",
+  },
+  learningPackShareButtonText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "900",
+  },
+  learningPackStatus: {
+    marginTop: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  learningPackStatusText: {
+    color: "#6D28D9",
+    fontSize: 13,
+    fontWeight: "700",
+  },
+  learningPackError: {
+    marginTop: 12,
+    padding: 11,
+    borderRadius: 12,
+    backgroundColor: "#FFF1F2",
+    borderWidth: 1,
+    borderColor: "#FECDD3",
+  },
+  learningPackErrorText: {
+    color: "#BE123C",
+    fontSize: 13,
+    fontWeight: "700",
+    lineHeight: 18,
+  },
+  learningPackRetryText: {
+    marginTop: 3,
+    color: "#9F1239",
+    fontSize: 12,
+    lineHeight: 17,
+  },
+
   feedbackSection: {
     marginHorizontal: 16,
     marginTop: 14,

@@ -58,6 +58,8 @@ function harness(initialSession = {
   let cursor = 0, session = initialSession, tree;
   let sessionListener;
   const calls = [];
+  const nativeCalls = [];
+  let sharingAvailable = true;
   const api = Object.fromEntries(
     ["simplifyText", "explainWord", "submitReadingFeedback"].map((method) => [
       method, (...args) => {
@@ -97,10 +99,35 @@ function harness(initialSession = {
   ].map((name) => [name, name]));
   native.StyleSheet = { create: (value) => value };
   native.Platform = { OS: "ios" };
+  const print = {
+    printAsync: (...args) => {
+      const pending = deferred();
+      nativeCalls.push({ method: "printAsync", args, ...pending });
+      return pending.promise;
+    },
+    printToFileAsync: (...args) => {
+      const pending = deferred();
+      nativeCalls.push({ method: "printToFileAsync", args, ...pending });
+      return pending.promise;
+    },
+  };
+  const sharing = {
+    isAvailableAsync: async () => {
+      nativeCalls.push({ method: "isAvailableAsync", args: [] });
+      return sharingAvailable;
+    },
+    shareAsync: (...args) => {
+      const pending = deferred();
+      nativeCalls.push({ method: "shareAsync", args, ...pending });
+      return pending.promise;
+    },
+  };
   const appModule = load(path.resolve(__dirname, "../App.tsx"), {
     react,
     "react-native": native,
     "expo-status-bar": { StatusBar: "StatusBar" },
+    "expo-print": print,
+    "expo-sharing": sharing,
     "./src/config/env": { API_BASE_URL: "http://localhost:8000" },
     "./src/services/api": {
       simplificationClient: api,
@@ -171,10 +198,13 @@ function harness(initialSession = {
     });
   }
   render();
-  return { calls, press, enter, render, simplify, text, textByAccessibilityLabel,
+  return { calls, nativeCalls, press, enter, render, simplify, text, textByAccessibilityLabel,
     nodeByAccessibilityLabel, backgroundColorsByAccessibilityLabel,
     calculatePassageHighlights: appModule.calculatePassageHighlights,
+    buildLearningPackHtml: appModule.buildLearningPackHtml,
+    escapeLearningPackHtml: appModule.escapeLearningPackHtml,
     maxDiffMatrixCells: appModule.MAX_DIFF_MATRIX_CELLS,
+    setSharingAvailable: (available) => { sharingAvailable = available; },
     setSession: (next) => { session = next; sessionListener?.(next); render(); },
     unmount: () => cleanups.forEach((cleanup) => cleanup?.()) };
 }
@@ -182,6 +212,77 @@ function harness(initialSession = {
 const reconstruct = (segments) => segments.map(({ text }) => text).join("");
 const highlightedText = (segments, kind) =>
   segments.filter((segment) => segment.kind === kind).map(({ text }) => text).join("|");
+const flushPromises = () => new Promise((resolve) => setImmediate(resolve));
+
+const learningPackSnapshot = (overrides = {}) => ({
+  originalText: "  Original <passage>.\n\nSecond paragraph.  ",
+  simplifiedText: "Simplified & friendly.\nNext line.",
+  readingLevel: "middle_school",
+  strategy: "concept_reduction",
+  vocabularyItems: [
+    {
+      term: "eco<script>",
+      simplifiedDefinition: 'A "safe" definition & explanation.',
+      exampleSentence: "An ecosystem supports life.",
+      synonyms: ["environment", "habitat"],
+    },
+  ],
+  ...overrides,
+});
+
+test("learning-pack HTML escapes dynamic content and preserves passage whitespace", () => {
+  const app = harness();
+  const snapshot = learningPackSnapshot();
+  const html = app.buildLearningPackHtml(snapshot);
+
+  assert.match(html, /ReadBuddy Learning Pack/);
+  assert.match(html, /Reading level: Middle School/);
+  assert.match(html, /Strategy: Concept Reduction/);
+  assert.ok(html.includes("  Original &lt;passage&gt;.\n\nSecond paragraph.  "));
+  assert.ok(html.includes("Simplified &amp; friendly.\nNext line."));
+  assert.match(html, /white-space: pre-wrap/);
+  assert.match(html, /eco&lt;script&gt;/);
+  assert.match(html, /A &quot;safe&quot; definition &amp; explanation\./);
+  assert.doesNotMatch(html, /<script>/);
+});
+
+test("learning-pack HTML includes supplied vocabulary details and omits absent fields", () => {
+  const app = harness();
+  const complete = app.buildLearningPackHtml(learningPackSnapshot());
+  assert.match(complete, /An ecosystem supports life\./);
+  assert.match(complete, /environment/);
+  assert.match(complete, /habitat/);
+
+  const minimal = app.buildLearningPackHtml(learningPackSnapshot({
+    originalText: null,
+    vocabularyItems: [{
+      term: "plain",
+      simplifiedDefinition: "Easy to understand.",
+      exampleSentence: null,
+      synonyms: [],
+    }],
+  }));
+  assert.doesNotMatch(minimal, /Original Passage/);
+  assert.doesNotMatch(minimal, /class="example"/);
+  assert.doesNotMatch(minimal, /class="synonyms"/);
+});
+
+test("learning-pack HTML excludes internal identifiers, tokens, feedback, and review state", () => {
+  const app = harness();
+  const html = app.buildLearningPackHtml({
+    ...learningPackSnapshot(),
+    learnerId: "learner-secret-value",
+    sessionId: "session-secret-value",
+    accessToken: "token-secret-value",
+    feedback: "too_hard",
+    reviewedVocabularyItems: ["eco<script>"],
+  });
+
+  for (const forbidden of [
+    "learner-secret-value", "session-secret-value", "token-secret-value",
+    "too_hard", "reviewedVocabularyItems",
+  ]) assert.ok(!html.includes(forbidden));
+});
 
 test("local diff leaves identical text unchanged", () => {
   const app = harness();
@@ -426,6 +527,118 @@ test("empty vocabulary response shows a friendly state without internal session 
   assert.match(app.text(), /No tricky words this time/);
   assert.match(app.text(), /no extra vocabulary help is needed/i);
   assert.doesNotMatch(app.text(), new RegExp(sessionId.slice(0, 8)));
+});
+
+test("learning-pack preview prints one immutable result snapshot without API calls", async () => {
+  const app = harness();
+  const original = "  Exact original.\n\nAnother paragraph.  ";
+  await app.simplify("A simpler result.", [vocab("habitat")], original);
+  const apiCallCount = app.calls.length;
+
+  const pending = app.press("Preview and print learning pack");
+  const printCall = app.nativeCalls.find(({ method }) => method === "printAsync");
+  assert.ok(printCall);
+  assert.ok(printCall.args[0].html.includes(original));
+  assert.match(printCall.args[0].html, /A simpler result\./);
+  assert.match(app.text(), /Preparing your learning pack/);
+  assert.equal(app.calls.length, apiCallCount);
+
+  printCall.resolve();
+  await pending;
+  app.render();
+  assert.doesNotMatch(app.text(), /Preparing your learning pack/);
+  assert.equal(app.calls.length, apiCallCount);
+});
+
+test("learning-pack sharing generates a PDF URI and opens the native share sheet", async () => {
+  const app = harness();
+  await app.simplify("A simpler result.");
+  const apiCallCount = app.calls.length;
+
+  const pending = app.press("Share or save PDF learning pack");
+  await flushPromises();
+  const fileCall = app.nativeCalls.find(({ method }) => method === "printToFileAsync");
+  assert.ok(fileCall);
+  fileCall.resolve({ uri: "file:///synthetic-learning-pack.pdf" });
+  await flushPromises();
+
+  const shareCall = app.nativeCalls.find(({ method }) => method === "shareAsync");
+  assert.ok(shareCall);
+  assert.equal(shareCall.args[0], "file:///synthetic-learning-pack.pdf");
+  assert.equal(shareCall.args[1].mimeType, "application/pdf");
+  assert.equal(shareCall.args[1].UTI, "com.adobe.pdf");
+  shareCall.resolve();
+  await pending;
+  assert.equal(app.calls.length, apiCallCount);
+});
+
+test("unavailable sharing shows a retryable message after generating the local PDF", async () => {
+  const app = harness();
+  await app.simplify("A simpler result.");
+  app.setSharingAvailable(false);
+
+  const pending = app.press("Share or save PDF learning pack");
+  const fileCall = app.nativeCalls.find(({ method }) => method === "printToFileAsync");
+  assert.ok(fileCall);
+  fileCall.resolve({ uri: "file:///synthetic-unshared-pack.pdf" });
+  await pending;
+  app.render();
+  assert.match(app.text(), /Sharing is not available on this device/);
+  assert.match(app.text(), /try again/i);
+  assert.ok(app.nativeCalls.some(({ method }) => method === "isAvailableAsync"));
+  assert.ok(!app.nativeCalls.some(({ method }) => method === "shareAsync"));
+});
+
+test("learning-pack failures clear loading and allow a retry", async () => {
+  const app = harness();
+  await app.simplify("A simpler result.");
+
+  const failed = app.press("Preview and print learning pack");
+  const firstPrint = app.nativeCalls.find(({ method }) => method === "printAsync");
+  firstPrint.reject(new Error("Synthetic native print failure"));
+  await failed;
+  app.render();
+  assert.match(app.text(), /could not prepare your learning pack/i);
+  assert.match(app.text(), /try again/i);
+
+  const retried = app.press("Preview and print learning pack");
+  const printCalls = app.nativeCalls.filter(({ method }) => method === "printAsync");
+  assert.equal(printCalls.length, 2);
+  printCalls[1].resolve();
+  await retried;
+  app.render();
+  assert.doesNotMatch(app.text(), /could not prepare your learning pack/i);
+});
+
+test("learning-pack actions ignore duplicate taps while export is active", async () => {
+  const app = harness();
+  await app.simplify("A simpler result.");
+  const button = app.nodeByAccessibilityLabel("Preview and print learning pack");
+
+  const first = button.props.onPress();
+  const duplicate = button.props.onPress();
+  app.render();
+  assert.equal(app.nativeCalls.filter(({ method }) => method === "printAsync").length, 1);
+  assert.equal(app.nodeByAccessibilityLabel("Preview and print learning pack").props.disabled, true);
+
+  app.nativeCalls.find(({ method }) => method === "printAsync").resolve();
+  await Promise.all([first, duplicate]);
+});
+
+test("resetting a result prevents a generated stale PDF from being shared", async () => {
+  const app = harness();
+  await app.simplify("A result that will be reset.");
+
+  const pending = app.press("Share or save PDF learning pack");
+  await flushPromises();
+  const fileCall = app.nativeCalls.find(({ method }) => method === "printToFileAsync");
+  assert.ok(fileCall);
+  app.press("Reset");
+  fileCall.resolve({ uri: "file:///stale-learning-pack.pdf" });
+  await pending;
+
+  assert.ok(!app.nativeCalls.some(({ method }) => method === "shareAsync"));
+  assert.doesNotMatch(app.text(), /PDF Learning Pack/);
 });
 
 test("vocabulary learning cards show supplied content and omit missing examples", async () => {
