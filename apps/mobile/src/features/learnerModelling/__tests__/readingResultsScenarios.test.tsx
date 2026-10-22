@@ -1,4 +1,6 @@
-import { fireEvent, render, screen } from "@testing-library/react-native";
+import { fireEvent, render, screen, within } from "@testing-library/react-native";
+import { StyleSheet } from "react-native";
+import { Pp1ConnectionContext } from "../preview/Pp1Connection";
 import App from "../../../../App";
 import { selectConnectedReplay } from "../preview/connectedSessionPreview";
 import { publishScenario } from "../preview/selectedScenario";
@@ -82,4 +84,71 @@ it("resets history, tips and the current report without replacing identity or in
   tab("Profile");
   expect(screen.getByText("Demo Learner")).toBeTruthy();
   expect(screen.getByRole("button", { name: "Edit Profile" })).toBeTruthy();
+});
+
+it("uses compact accessible chips and shows the matching supplied metrics without invented values", async () => {
+  render(<App />); await screen.findByText("Hi, Reader!"); button("Reading Results");
+  expect(screen.getAllByText("Demo Mode \u00b7 Fictional data")).toHaveLength(1);
+  expect(screen.queryByText("Sample Data")).toBeNull();
+  expect(screen.queryByRole("radio", { name: /Results source:/ })).toBeNull();
+  expect(screen.queryByText("Reading time: Unavailable.")).toBeNull();
+  for (let index = 0; index <= 6; index++) {
+    const chip = screen.getByRole("radio", { name: `Sample scenario: ${index === 0 ? "Before reading" : `Sample ${index}`}` });
+    expect(StyleSheet.flatten(chip.props.style).minHeight).toBeGreaterThanOrEqual(44);
+    fireEvent.press(chip);
+    expect(screen.getByRole("radio", { name: `Sample scenario: ${index === 0 ? "Before reading" : `Sample ${index}`}` }).props.accessibilityState.checked).toBe(true);
+    const sample = selectConnectedReplay({ index, development: true, demoMode: true, role: "learner" })!;
+    expect(screen.getByText(`${sample.includedSessionCount} completed sample sessions`)).toBeTruthy();
+    for (const [key, scale] of [["reading_accuracy", 100], ["reading_fluency_wpm", 1], ["hesitation_rate_per_word", 100]] as const) {
+      const value = sample.metrics.find(m => m.metric_name === key)?.latest_value;
+      expect(within(screen.getByTestId(`results-${key}`)).getByText(value == null ? "Unavailable" : String(Number((Number(value) * scale).toFixed(2))))).toBeTruthy();
+    }
+  }
+  const details = screen.getByRole("button", { name: "Session Details" });
+  expect(details.props.accessibilityState.expanded).toBe(false);
+  expect(StyleSheet.flatten(details.props.style).minHeight).toBeGreaterThanOrEqual(44);
+  fireEvent.press(details);
+  expect(screen.getByText("Reading time: Unavailable.")).toBeTruthy();
+  expect(screen.getByText("Pause count and duration: Unavailable.")).toBeTruthy();
+  expect(screen.getByText("Replays: Unavailable.")).toBeTruthy();
+  fireEvent.press(screen.getByRole("button", { name: "Session Details" }));
+  expect(screen.queryByText("Reading time: Unavailable.")).toBeNull();
+  expect(screen.getByRole("button", { name: "Update My Progress" })).toBeTruthy();
+});
+
+it("automatically exposes save and refresh only inside an authenticated PP1 journey", async () => {
+  render(<Pp1ConnectionContext.Provider value={{ baseUrl: "https://example.test/api/v1", session: { scopeKey: "test", getAccessToken: async () => "test" } }}><App /></Pp1ConnectionContext.Provider>); await screen.findByText("Hi, Reader!"); button("Reading Results");
+  expect(screen.getAllByText("Synthetic Sample Data \u00b7 Laptop connection")).toHaveLength(1);
+  expect(screen.queryByText("Sample Data")).toBeNull();
+  expect(screen.queryByRole("radio", { name: /Results source:/ })).toBeNull();
+  for (const name of ["Save Sample Progress", "Refresh Saved Progress"]) {
+    const action = screen.getByRole("button", { name });
+    expect(StyleSheet.flatten(action.props.style).minHeight).toBeGreaterThanOrEqual(44);
+    expect(action.props.accessibilityState.disabled).toBe(false);
+  }
+  expect(screen.getByRole("button", { name: "Session Details" }).props.accessibilityState.expanded).toBe(false);
+  expect(screen.getAllByText("Unavailable")).toHaveLength(3);
+});
+
+it("separates essential session details from optional demo explanations", async () => {
+  render(<App />); await screen.findByText("Hi, Reader!"); button("Reading Results");
+  const explanation = "Selected sample values, not new phone measurements.";
+  expect(screen.getByRole("button", { name: "Session Details" }).props.accessibilityState.expanded).toBe(false);
+  expect(screen.getByRole("button", { name: "More information" }).props.accessibilityState.expanded).toBe(false);
+  button("Session Details");
+  expect(screen.getByText("Reading time: Unavailable.")).toBeTruthy();
+  expect(screen.queryByText(explanation)).toBeNull();
+  expect(screen.queryByText("Your demo choices")).toBeNull();
+  const more = screen.getByRole("button", { name: "More information" });
+  expect(StyleSheet.flatten(more.props.style).minHeight).toBeGreaterThanOrEqual(44);
+  button("More information");
+  expect(screen.getByText(explanation)).toBeTruthy();
+  expect(screen.getByText("Your demo choices")).toBeTruthy();
+  expect(screen.getByText(/Saved AI reports and PDFs stay unchanged/)).toBeTruthy();
+  button("More information");
+  expect(screen.queryByText(explanation)).toBeNull();
+  expect(screen.getByText("Reading time: Unavailable.")).toBeTruthy();
+  expect(screen.queryByText(/A cancelled save may have finished/)).toBeNull();
+  expect(screen.getByRole("button", { name: "Update My Progress" })).toBeTruthy();
+  expect(screen.queryByRole("button", { name: "Save Sample Progress" })).toBeNull();
 });

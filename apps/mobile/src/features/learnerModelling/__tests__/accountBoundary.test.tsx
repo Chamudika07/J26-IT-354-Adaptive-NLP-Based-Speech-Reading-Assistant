@@ -69,10 +69,9 @@ it("opens the learner PP1 journey with the authenticated session without calling
   fireEvent.press(screen.getByText("Open PP1 Sample Journey"));
   await screen.findByText("Hi, Reader!");
   fireEvent.press(screen.getByRole("button", { name: "Reading Results" }));
-  fireEvent.press(screen.getByRole("radio", { name: "Results source: Connected sample (laptop)" }));
   expect(screen.queryByText("Sign in, then choose Open PP1 Sample Journey to connect.")).toBeNull();
   fireEvent.press(screen.getByRole("button", { name: "Save Sample Progress" }));
-  await screen.findByText("Save or refresh not confirmed. Retry the same sample safely, or use offline examples.");
+  await screen.findByText("Connection problem. Save or refresh not confirmed. Please retry.");
   expect(mock.mock.calls.some(c => String(c[0]).includes("/pp1-demo/saved-progress/"))).toBe(true);
   expect(mock.mock.calls.some(c => String(c[0]).includes("/progress?"))).toBe(false);
   fireEvent.press(screen.getByRole("button", { name: "Back to signed-in reports" }));

@@ -1,7 +1,7 @@
 import { ReadingResultsScenarios } from "../components/ReadingResultsScenarios";
 import { developerToolsEnabled } from "../preview/developerTools";
 import { useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { LocalPreviewLayout } from "../components/LocalPreviewLayout";
 import { reportStyles } from "../components/LearnerReportLayout";
 import { PreviewChoiceGroup } from "../components/PreviewChoiceGroup";
@@ -19,10 +19,10 @@ export function ReadingSessionTestScreen({ onNavigate }: { onNavigate?: (destina
   const [details, setDetails] = useState(false);
   const [error, setError] = useState("");
   if (!session || !__DEV__) return <Text>Developer Learner demo only.</Text>;
-  if (!developerToolsEnabled()) return <LocalPreviewLayout title="Reading Results" disclosure="Choose sample reading measurements"
-    introduction="">
+  if (!developerToolsEnabled()) return <ScrollView style={reportStyles.scroll} contentContainerStyle={{ paddingHorizontal: 16, paddingTop: 8, paddingBottom: 96, gap: 8 }} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag">
+    <Text accessibilityRole="header" style={[reportStyles.heading, { fontSize: 22 }]}>Reading Results</Text>
     <ReadingResultsScenarios onApplied={() => onNavigate?.("profile")} />
-  </LocalPreviewLayout>;
+  </ScrollView>;
   const save = async (calculate = false) => {
     try {
       const number = (value: string) => /^\d+$/.test(value) ? Number(value) : NaN;

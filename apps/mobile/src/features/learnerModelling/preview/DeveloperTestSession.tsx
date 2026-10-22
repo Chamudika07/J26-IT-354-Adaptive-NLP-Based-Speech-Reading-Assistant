@@ -9,7 +9,8 @@ import type { TestSession } from "./developerSessions";
 
 function useDeveloperState() {
   const connection = usePp1Connection();
-  const [source, setSource] = useState<"offline" | "laptop">("offline");
+  const source = connection ? "laptop" : "offline";
+  const lastSavedRequest = useRef<number | undefined>(undefined);
   const [savedMessage, setSavedMessage] = useState("");
   const [calculationError, setCalculationError] = useState("");
   const [calculating, setCalculating] = useState(false);
@@ -19,7 +20,7 @@ function useDeveloperState() {
   useEffect(() => () => { generation.current++; request.current?.abort(); }, [connection]);
 
   const [initial] = useState(() => {
-    const id = selectedScenarioId();
+    const id = connection ? null : selectedScenarioId();
     if (!id) return { index: null as number | null, attempted: false, artifact: null as ConnectedArtifact | null };
     try {
       const index: unknown = JSON.parse(id)[0];
@@ -64,7 +65,8 @@ function useDeveloperState() {
   };
   const selectConnected = () => {
     if (!alive.current || running.current || !__DEV__) return;
-    cancelCalculation(); setSource("offline"); setCalculationError("");
+    if (connection) return;
+    cancelCalculation(); setCalculationError("");
     setReplayIndex(null);
     const artifact = selectConnectedPreview({ enabled: true, development: __DEV__, demoMode: true, role: "learner" });
     publishScenario(-1, artifact); setConnected({ attempted: true, artifact }); setSelected(false);
@@ -73,10 +75,6 @@ function useDeveloperState() {
     if (!alive.current || running.current || !__DEV__) return;
     const artifact = selectConnectedReplay({ index, development: __DEV__, demoMode: true, role: "learner" });
     publishScenario(index, artifact); setReplayIndex(index); setConnected({ attempted: true, artifact }); setSelected(false);
-  };
-  const chooseSource = (next: "offline" | "laptop") => {
-    cancelCalculation(); setSavedMessage(""); setSource(next); setCalculationError("");
-    setConnected({ attempted: next === "laptop", artifact: null }); setReplayIndex(null); setSelected(false);
   };
   const applyScenario = async (index: number) => {
     if (source === "offline") { replay(index); return true; }
@@ -92,13 +90,14 @@ function useDeveloperState() {
       setConnected({ attempted: true, artifact: result.result }); setReplayIndex(index); setSelected(false);
       return true;
     } catch {
-      if (generation.current === version && alive.current) setCalculationError("We could not get your sample results. Try again or use offline examples.");
+      if (generation.current === version && alive.current) setCalculationError("We could not get your sample results. Please retry.");
       return false;
     } finally { if (generation.current === version && alive.current) { setCalculating(false); request.current = null; } }
   };
   const savedProgress = async (index?: number) => {
+    lastSavedRequest.current = index;
     cancelCalculation(); setCalculationError(""); setSavedMessage("");
-    if (!connection || source !== "laptop") { setCalculationError("Sign in and choose the laptop connection."); return false; }
+    if (!connection || source !== "laptop") { setCalculationError("Sign in and open the PP1 Sample Journey."); return false; }
     const version = generation.current;
     const controller = new AbortController(); request.current = controller;
     setCalculating(true); setConnected({ attempted: true, artifact: null });
@@ -110,7 +109,7 @@ function useDeveloperState() {
       setSavedMessage(`Synthetic Sample Data: ${result.selectedSessionCount} saved sessions loaded from PostgreSQL.`);
       return true;
     } catch {
-      if (version === generation.current && alive.current) setCalculationError("Save or refresh not confirmed. Retry the same sample safely, or use offline examples.");
+      if (version === generation.current && alive.current) setCalculationError("Connection problem. Save or refresh not confirmed. Please retry.");
       return false;
     } finally { if (version === generation.current && alive.current) { setCalculating(false); request.current = null; } }
   };
@@ -121,7 +120,7 @@ function useDeveloperState() {
     catch { if (alive.current) setMessage("Sample export unavailable. Your saved inputs are unchanged. Try exporting again."); return false; }
     finally { running.current = false; if (alive.current) setBusy(false); }
   };
-  return { savedMessage, savedProgress, source, connectedAvailable: Boolean(connection), chooseSource, applyScenario, calculationError, calculating, cancelCalculation, replayIndex, replayLength: connectedReplayLength, replay: (index: number) => { if (source === "laptop") { void savedProgress(index); } else replay(index); }, connected, selectConnected, exportSaved, records, selected, asOf, message, busy, run, returnToDemo: () => { cancelCalculation(); setSource("offline"); setCalculationError(""); publishScenario(null); setReplayIndex(null); setSelected(false); setConnected({ attempted: false, artifact: null }); } };
+  return { savedMessage, savedProgress, source, connectedAvailable: Boolean(connection), retrySavedProgress: () => savedProgress(lastSavedRequest.current), applyScenario, calculationError, calculating, cancelCalculation, replayIndex, replayLength: connectedReplayLength, replay: (index: number) => { if (source === "laptop") { void savedProgress(index); } else replay(index); }, connected, selectConnected, exportSaved, records, selected, asOf, message, busy, run, returnToDemo: () => { cancelCalculation(); setCalculationError(""); publishScenario(null); setReplayIndex(null); setSelected(false); setConnected({ attempted: Boolean(connection), artifact: null }); } };
 }
 const Context = createContext<ReturnType<typeof useDeveloperState> | null>(null);
 function Active({ children }: { children: ReactNode }) {
@@ -130,6 +129,7 @@ function Active({ children }: { children: ReactNode }) {
 }
 /** Separate from temporary settings/feedback; re-entry always requires explicit Load. */
 export function DeveloperTestBoundary({ enabled, children }: { enabled: boolean; children: ReactNode }) {
-  return enabled && __DEV__ ? <Active>{children}</Active> : <>{children}</>;
+  const connection = usePp1Connection();
+  return enabled && __DEV__ ? <Active key={connection ? `${connection.baseUrl}:${connection.session.scopeKey}` : "offline"}>{children}</Active> : <>{children}</>;
 }
 export const useDeveloperTest = () => useContext(Context);

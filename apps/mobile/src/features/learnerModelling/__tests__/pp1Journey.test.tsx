@@ -22,39 +22,44 @@ function setup() {
 beforeEach(() => { publishScenario(null); jest.clearAllMocks(); (createPp1Client as jest.Mock).mockReturnValue(Object.assign(calculate, { save: calculate, readSaved: calculate })); });
 const choose = (label: string) => fireEvent.press(screen.getByRole("radio", { name: label }));
 const update = () => fireEvent.press(screen.queryByRole("button", { name: "Save Sample Progress" }) ?? screen.getByRole("button", { name: "Update My Progress" }));
-it("selects a source explicitly and publishes only successful matching learner evidence", async () => {
+it("automatically uses the authenticated connection and publishes matching learner evidence", async () => {
   calculate.mockResolvedValue({ result: replay[3], selectedSessionCount: 3 }); setup();
-  choose("Results source: Connected sample (laptop)"); choose("Sample scenario: Sample 3"); update();
+  choose("Sample scenario: Sample 3"); update();
   await screen.findByTestId("evidence");
   await act(async () => {});
   expect(screen.getByTestId("evidence").props.children).toContain('"count":3');
   expect(screen.getByTestId("evidence").props.children).toContain('"index":3');
   expect(calculate).toHaveBeenCalledWith(3, expect.any(AbortSignal));
 });
-it("fails honestly and requires explicit offline selection", async () => {
+it("keeps the connected source on failure and retries the identical save", async () => {
   calculate.mockRejectedValue(new Error("private provider error")); setup();
-  choose("Results source: Connected sample (laptop)"); update();
-  await screen.findByText("Save or refresh not confirmed. Retry the same sample safely, or use offline examples.");
+  choose("Sample scenario: Sample 3"); update();
+  await screen.findByText("Connection problem. Save or refresh not confirmed. Please retry.");
   expect(screen.getByTestId("evidence").props.children).toContain('"source":"laptop"');
   expect(screen.getByTestId("evidence").props.children).not.toContain('"count"');
-  fireEvent.press(screen.getByRole("button", { name: "Use offline examples" }));
-  choose("Sample scenario: Sample 2"); update();
-  expect(screen.getByTestId("evidence").props.children).toContain('"count":2');
+  expect(screen.queryByText("Use offline examples")).toBeNull();
+  expect(screen.queryByRole("radio", { name: /Results source:/ })).toBeNull();
+  calculate.mockResolvedValue({ result: replay[3], selectedSessionCount: 3 });
+  fireEvent.press(screen.getByRole("button", { name: "Retry" }));
+  await act(async () => {});
+  expect(screen.getByTestId("evidence").props.children).toContain('"count":3');
+  expect(calculate).toHaveBeenCalledTimes(2);
+  for (const call of calculate.mock.calls) expect(call[0]).toBe(3);
 });
-it("cancels requests and ignores late replies after choosing offline", async () => {
+it("cancels requests and ignores late replies after changing the sample", async () => {
   let resolve!: (value: unknown) => void;
   calculate.mockImplementation(() => new Promise(r => { resolve = r; })); setup();
-  choose("Results source: Connected sample (laptop)"); update();
+  update();
   const signal = calculate.mock.calls[0][1] as AbortSignal;
-  choose("Results source: Offline examples");
+  choose("Sample scenario: Sample 2");
   expect(signal.aborted).toBe(true);
   await act(async () => { resolve({ result: replay[5] }); });
-  expect(screen.getByTestId("evidence").props.children).toContain('"source":"offline"');
+  expect(screen.getByTestId("evidence").props.children).toContain('"source":"laptop"');
   expect(screen.getByTestId("evidence").props.children).not.toContain('"count"');
 });
 it("aborts on screen unmount", () => {
   calculate.mockImplementation(() => new Promise(() => {})); const view = setup();
-  choose("Results source: Connected sample (laptop)"); update();
+  update();
   const signal = calculate.mock.calls[0][1] as AbortSignal;
   view.unmount(); expect(signal.aborted).toBe(true);
 });
@@ -64,7 +69,7 @@ it("keeps Profile, Analytics, Tips and Summary on the returned scenario", async 
   render(<Pp1ConnectionContext.Provider value={{ baseUrl: "https://example.test/api/v1", session: { scopeKey: "test", getAccessToken: async () => "test" } }}><App /></Pp1ConnectionContext.Provider>);
   await screen.findByText("Hi, Reader!");
   fireEvent.press(screen.getByRole("button", { name: "Reading Results" }));
-  choose("Results source: Connected sample (laptop)"); choose("Sample scenario: Sample 3"); update();
+  choose("Sample scenario: Sample 3"); update();
   await screen.findByRole("header", { name: "My Profile" });
   expect(screen.getByText("Synthetic Sample Data \u00b7 Calculated on laptop")).toBeTruthy();
   expect(screen.getByText("Applied scenario: Sample 3")).toBeTruthy();
@@ -84,9 +89,31 @@ it("keeps Profile, Analytics, Tips and Summary on the returned scenario", async 
 it("reloads persisted progress in a new mobile session without resaving", async () => {
   calculate.mockResolvedValue({ result: replay[2], selectedSessionCount: 2 });
   const first = setup(); first.unmount();
-  setup(); choose("Results source: Connected sample (laptop)");
+  setup();
   fireEvent.press(screen.getByRole("button", { name: "Refresh Saved Progress" }));
   await act(async () => {});
   expect(screen.getByTestId("evidence").props.children).toContain('"count":2');
   expect(calculate).toHaveBeenCalledWith(expect.any(AbortSignal));
+});
+
+it("retries a failed refresh as a read and never a save", async () => {
+  calculate.mockRejectedValueOnce(new Error("unavailable")).mockResolvedValue({ result: replay[2], selectedSessionCount: 2 });
+  setup(); fireEvent.press(screen.getByRole("button", { name: "Refresh Saved Progress" }));
+  await screen.findByText("Connection problem. Save or refresh not confirmed. Please retry.");
+  fireEvent.press(screen.getByRole("button", { name: "Retry" }));
+  await act(async () => {});
+  expect(calculate).toHaveBeenCalledTimes(2);
+  for (const call of calculate.mock.calls) expect(call[0]).toBeInstanceOf(AbortSignal);
+  expect(screen.getByTestId("evidence").props.children).toContain('"count":2');
+});
+it("clears connected evidence when leaving the authenticated journey", async () => {
+  let resolve!: (value: unknown) => void;
+  calculate.mockImplementation(() => new Promise(r => { resolve = r; }));
+  const view = setup(); update(); const signal = calculate.mock.calls[0][1] as AbortSignal;
+  view.rerender(<Pp1ConnectionContext.Provider value={undefined}><DeveloperTestBoundary enabled><ReadingResultsScenarios /><Evidence /></DeveloperTestBoundary></Pp1ConnectionContext.Provider>);
+  expect(signal.aborted).toBe(true);
+  await act(async () => { resolve({ result: replay[5], selectedSessionCount: 5 }); });
+  expect(screen.getByTestId("evidence").props.children).toContain('"source":"offline"');
+  expect(screen.getByTestId("evidence").props.children).not.toContain('"count"');
+  expect(screen.getByRole("button", { name: "Update My Progress" })).toBeTruthy();
 });
