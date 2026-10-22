@@ -1,5 +1,5 @@
 import { act, fireEvent, render, screen, within } from "@testing-library/react-native";
-import { Alert, StyleSheet } from "react-native";
+import { Alert, Dimensions, StyleSheet } from "react-native";
 import { Pp1ConnectionContext } from "../preview/Pp1Connection";
 import App from "../../../../App";
 import { selectConnectedReplay } from "../preview/connectedSessionPreview";
@@ -156,4 +156,53 @@ it("separates essential session details from optional demo explanations", async 
   expect(screen.queryByText(/A cancelled save may have finished/)).toBeNull();
   expect(screen.getByRole("button", { name: "Update My Progress" })).toBeTruthy();
   expect(screen.queryByRole("button", { name: "Save Sample Progress" })).toBeNull();
+});
+
+it("uses pastel cards, single units and a clear selected sample without changing supplied values", async () => {
+  render(<App />); await screen.findByText("Hi, Reader!"); button("Reading Results");
+  for (const index of [0, 3, 6]) {
+    const name = `Sample scenario: ${index === 0 ? "Before reading" : `Sample ${index}`}`;
+    fireEvent.press(screen.getByRole("radio", { name }));
+    const chip = screen.getByRole("radio", { name });
+    expect(StyleSheet.flatten(chip.props.style).borderColor).toBe("#3182F6");
+    expect(StyleSheet.flatten(chip.props.style).borderWidth).toBe(2);
+    const sample = selectConnectedReplay({ index, development: true, demoMode: true, role: "learner" })!;
+    for (const [key, label, unit, scale, accent, background] of [
+      ["reading_accuracy", "Accuracy", "%", 100, "#3182F6", "#EEF5FF"],
+      ["reading_fluency_wpm", "Speed", "WPM", 1, "#22C55E", "#EAFBF1"],
+      ["hesitation_rate_per_word", "Hesitations", "per 100 attempted words", 100, "#8B5CF6", "#F4EFFF"],
+    ] as const) {
+      const card = screen.getByTestId(`results-${key}`);
+      const content = within(card);
+      const raw = sample.metrics.find(m => m.metric_name === key)?.latest_value;
+      const value = raw == null ? "Unavailable" : String(Number((Number(raw) * scale).toFixed(2)));
+      expect(content.getByText(label)).toBeTruthy();
+      expect(content.getByText(value)).toBeTruthy();
+      expect(card.props.accessibilityLabel).toBe(`${label}: ${value}${raw == null ? "" : ` ${unit}`}`);
+      expect(content.queryAllByText(unit)).toHaveLength(raw == null ? 0 : 1);
+      expect(StyleSheet.flatten(card.props.style)).toMatchObject({ borderTopColor: accent, backgroundColor: background });
+    }
+  }
+  const action = screen.getByRole("button", { name: "Update My Progress" });
+  expect(StyleSheet.flatten(action.props.style).backgroundColor).toBe("#1D4ED8");
+  expect(StyleSheet.flatten(screen.getByText("Update My Progress").props.style).color).toBe("#FFFFFF");
+});
+
+it("stacks Reading Results cards for small screens and larger text without fixed heights", async () => {
+  const original = { window: Dimensions.get("window"), screen: Dimensions.get("screen") };
+  act(() => Dimensions.set({ window: { width: 320, height: 568, scale: 2, fontScale: 2 } }));
+  const view = render(<App />);
+  try {
+    await screen.findByText("Hi, Reader!"); button("Reading Results");
+    for (const key of ["reading_accuracy", "reading_fluency_wpm", "hesitation_rate_per_word"]) {
+      const style = StyleSheet.flatten(screen.getByTestId(`results-${key}`).props.style);
+      expect(style.flexBasis).toBe("100%"); expect(style.height).toBeUndefined();
+    }
+    for (const chip of screen.getAllByRole("radio", { name: /Sample scenario:/ })) {
+      expect(StyleSheet.flatten(chip.props.style).minHeight).toBeGreaterThanOrEqual(44);
+    }
+    expect(screen.getByRole("button", { name: "Session Details" }).props.accessibilityState.expanded).toBe(false);
+    expect(screen.getByRole("button", { name: "More information" }).props.accessibilityState.expanded).toBe(false);
+    expect(screen.getByRole("button", { name: "Update My Progress" })).toBeTruthy();
+  } finally { view.unmount(); act(() => Dimensions.set(original)); }
 });

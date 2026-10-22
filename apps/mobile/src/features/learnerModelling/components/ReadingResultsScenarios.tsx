@@ -1,12 +1,17 @@
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { selectConnectedReplay, connectedReplayLength } from "../preview/connectedSessionPreview";
 import { useOptionalPreviewSession } from "../preview/PreviewSession";
 import { useDeveloperTest } from "../preview/DeveloperTestSession";
-import { palette, radii } from "../theme";
+import { radii } from "../theme";
+
+// Reading Results only; keep the rest of the application theme unchanged.
+const colors = { blue: "#3182F6", green: "#22C55E", purple: "#8B5CF6", ink: "#07142B", muted: "#465B73", white: "#FFFFFF", outline: "#D7E7FF", sky: "#EEF5FF", mint: "#EAFBF1", lavender: "#F4EFFF", action: "#1D4ED8" };
 
 export function ReadingResultsScenarios({ onApplied }: { onApplied?: () => void }) {
   const session = useDeveloperTest();
+  const { width, fontScale } = useWindowDimensions();
+  const stacked = width < 360 || fontScale > 1.2;
   const choices = useOptionalPreviewSession();
   const [details, setDetails] = useState(false);
   const [more, setMore] = useState(false);
@@ -36,13 +41,14 @@ export function ReadingResultsScenarios({ onApplied }: { onApplied?: () => void 
       <Text style={styles.body}>{selected === 0 ? "Before reading" : `Sample ${selected}`} selected</Text>
       <Text style={styles.count}>{sample ? `${sample.includedSessionCount} completed sample sessions` : "Session count unavailable"}</Text>
       <View style={styles.metrics}>
-        {[{ key: "reading_accuracy", label: "Reading Accuracy (%)", unit: "%", scale: 100, color: palette.primary, background: palette.primarySoft },
-          { key: "reading_fluency_wpm", label: "Reading Speed (WPM)", unit: "WPM", scale: 1, color: palette.teal, background: palette.tealSoft },
-          { key: "hesitation_rate_per_word", label: "Hesitations per 100 attempted words", unit: "per 100 words", scale: 100, color: palette.violet, background: palette.violetSoft }].map(metric => {
+        {[{ key: "reading_accuracy", label: "Accuracy", unit: "%", icon: "\u25C6", scale: 100, accent: colors.blue, color: "#153E75", background: colors.sky },
+          { key: "reading_fluency_wpm", label: "Speed", unit: "WPM", icon: "\u2197", scale: 1, accent: colors.green, color: "#166534", background: colors.mint },
+          { key: "hesitation_rate_per_word", label: "Hesitations", unit: "per 100 attempted words", icon: "\u22EF", scale: 100, accent: colors.purple, color: "#5B21B6", background: colors.lavender }].map(metric => {
             const value = display(metric.key, metric.scale);
-            return <View testID={`results-${metric.key}`} key={metric.key} style={[styles.metric, { backgroundColor: metric.background }]}>
+            return <View testID={`results-${metric.key}`} key={metric.key} accessible accessibilityLabel={`${metric.label}: ${value}${value === "Unavailable" ? "" : ` ${metric.unit}`}`} style={[styles.metric, stacked && styles.stackedMetric, { backgroundColor: metric.background, borderTopColor: metric.accent }]}>
+              <View style={styles.metricTitle}><Text accessible={false} style={[styles.icon, { color: metric.color }]}>{metric.icon}</Text><Text style={styles.metricLabel}>{metric.label}</Text></View>
               <Text style={[styles.value, { color: metric.color }]}>{value}</Text>
-              <Text style={styles.metricLabel}>{metric.label}</Text>
+              {value !== "Unavailable" ? <Text style={styles.unit}>{metric.unit}</Text> : null}
             </View>;
           })}
       </View>
@@ -95,25 +101,29 @@ export function ReadingResultsScenarios({ onApplied }: { onApplied?: () => void 
 }
 const styles = StyleSheet.create({
   root: { gap: 12 },
-  disclosure: { fontSize: 12, lineHeight: 18, color: palette.muted },
+  disclosure: { fontSize: 12, lineHeight: 18, color: colors.muted },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
-  chip: { minHeight: 44, minWidth: 44, paddingVertical: 8, paddingHorizontal: 12, alignItems: "center", justifyContent: "center", borderRadius: radii.pill, borderWidth: 1, borderColor: palette.outline, backgroundColor: palette.surface },
-  selected: { backgroundColor: palette.primary, borderColor: palette.primary },
-  chipText: { color: palette.primaryDark, fontSize: 14, fontWeight: "700", flexShrink: 1 },
-  selectedText: { color: palette.surface },
+  chip: { minHeight: 44, minWidth: 44, paddingVertical: 8, paddingHorizontal: 12, alignItems: "center", justifyContent: "center", borderRadius: radii.pill, borderWidth: 1, borderColor: colors.outline, backgroundColor: colors.white },
+  selected: { backgroundColor: colors.sky, borderColor: colors.blue, borderWidth: 2 },
+  chipText: { color: colors.ink, fontSize: 14, fontWeight: "700", flexShrink: 1 },
+  selectedText: { color: "#153E75", fontWeight: "900" },
   pressed: { opacity: 0.8 },
-  card: { borderRadius: radii.medium, padding: 12, gap: 8, backgroundColor: palette.surface, borderWidth: 1, borderColor: palette.outline },
-  heading: { fontSize: 16, fontWeight: "800", color: palette.primaryDark },
-  body: { fontSize: 14, lineHeight: 20, color: palette.ink },
-  count: { fontSize: 14, fontWeight: "700", color: palette.primaryDark },
-  metrics: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
-  metric: { flexGrow: 1, flexBasis: 84, minWidth: 84, padding: 10, borderRadius: radii.small, gap: 6 },
+  card: { borderRadius: radii.medium, padding: 12, gap: 8, backgroundColor: colors.white, borderWidth: 1, borderColor: colors.outline },
+  heading: { fontSize: 16, fontWeight: "800", color: colors.ink },
+  body: { fontSize: 14, lineHeight: 20, color: colors.ink },
+  count: { fontSize: 14, fontWeight: "700", color: colors.ink },
+  metrics: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  metric: { flexGrow: 1, flexBasis: 84, minWidth: 84, padding: 12, borderRadius: radii.medium, borderTopWidth: 4, gap: 6 },
+  stackedMetric: { flexBasis: "100%" },
+  metricTitle: { flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 6 },
+  icon: { fontSize: 16, fontWeight: "800" },
+  unit: { fontSize: 12, lineHeight: 18, color: colors.muted },
   value: { fontSize: 23, fontWeight: "900", flexShrink: 1 },
-  metricLabel: { fontSize: 12, lineHeight: 17, color: palette.ink },
-  primary: { minHeight: 48, padding: 12, borderRadius: radii.small, backgroundColor: palette.primary, alignItems: "center", justifyContent: "center" },
-  primaryText: { fontSize: 16, fontWeight: "800", color: palette.surface, textAlign: "center" },
-  secondary: { minHeight: 44, padding: 10, borderRadius: radii.small, backgroundColor: palette.primarySoft, alignItems: "center", justifyContent: "center" },
-  secondaryText: { fontSize: 14, fontWeight: "700", color: palette.primaryDark },
+  metricLabel: { fontSize: 13, lineHeight: 19, fontWeight: "700", color: colors.ink },
+  primary: { minHeight: 48, padding: 12, borderRadius: radii.medium, backgroundColor: colors.action, alignItems: "center", justifyContent: "center" },
+  primaryText: { fontSize: 16, fontWeight: "800", color: colors.white, textAlign: "center" },
+  secondary: { minHeight: 44, padding: 10, borderRadius: radii.medium, backgroundColor: colors.sky, alignItems: "center", justifyContent: "center" },
+  secondaryText: { fontSize: 14, fontWeight: "700", color: colors.ink },
   disabled: { opacity: 0.55 },
   detailsToggle: { minHeight: 44, flexDirection: "row", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 8 },
   detailContent: { gap: 8 },
