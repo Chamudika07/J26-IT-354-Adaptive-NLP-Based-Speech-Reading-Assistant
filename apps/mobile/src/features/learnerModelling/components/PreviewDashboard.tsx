@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-n
 
 import { DemoLearnerCard } from "./DemoLearnerCard";
 import { FeatureAccent } from "./FeatureAccent";
+import { HomeDisclosure } from "./HomeHero";
 import { DemoBanner } from "./DemoBanner";
 import { DifficultyProgression } from "./DifficultyProgression";
 import { MetricChart } from "./MetricChart";
@@ -56,13 +57,13 @@ export function PreviewDashboard({ dashboard, demoMode, children, compactMetrics
   const playful = dashboard.role === "learner";
   return (
     <ScrollView
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, homeHeader ? { gap: 12 } : undefined]}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
       style={styles.scroll}
     >
       {demoMode && dashboard.role !== "learner" ? <Text style={{ fontSize: 15, lineHeight: 22, color: palette.ink }}>This view uses its own sample data. It does not follow the Learner&apos;s selected scenario.</Text> : null}
-      {demoMode ? <><DemoBanner />{!homeHeader ? <DemoLearnerCard /> : null}</> : null}
+      {demoMode ? homeHeader ? <HomeDisclosure /> : <><DemoBanner /><DemoLearnerCard /></> : null}
       {homeHeader ?? <>
       <View style={[styles.hero, (stacked || playful) && styles.stacked, playful && styles.learnerHero]}>
         <View style={styles.heroCopy}>

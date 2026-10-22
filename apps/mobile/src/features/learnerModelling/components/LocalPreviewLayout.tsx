@@ -4,6 +4,7 @@ import { ScrollView, Text, View } from "react-native";
 
 import { FeatureAccent } from "./FeatureAccent";
 import { ReferenceHero } from "./ReferenceHero";
+import { HomeDisclosure } from "./HomeHero";
 import { DemoBanner } from "./DemoBanner";
 import { reportStyles } from "./LearnerReportLayout";
 import { palette } from "../theme";
@@ -17,11 +18,11 @@ export function LocalPreviewLayout({ title, disclosure, introduction, children, 
   homeHeader?: ReactNode;
 }) {
   return (
-    <ScrollView style={reportStyles.scroll} contentContainerStyle={[reportStyles.content, { paddingBottom: 96 }]}
+    <ScrollView style={reportStyles.scroll} contentContainerStyle={[reportStyles.content, { paddingBottom: 96 }, homeHeader ? { gap: 12 } : undefined]}
       keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag"
       stickyHeaderIndices={actions ? [0] : undefined}>
       {actions ? <View testID="local-preview-actions" style={{ backgroundColor: palette.paper }}>{actions}</View> : null}
-      <DemoBanner />
+      {homeHeader ? <HomeDisclosure /> : <DemoBanner />}
       {homeHeader ?? <ReferenceHero>
         <FeatureAccent title={title} />
         <Text accessibilityRole="header" style={reportStyles.title}>{title}</Text>

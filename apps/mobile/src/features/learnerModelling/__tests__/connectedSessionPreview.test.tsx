@@ -56,7 +56,7 @@ it("selects one source, context, period and generation timestamp across all four
   for (const [tab, title] of [["Home", "Hi, Reader!"], ["Analytics", "My Analytics"], ["Suggestions", "Reading Tips"], ["Profile", "My Profile"]]) {
     fireEvent.press(screen.getByRole("tab", { name: `${tab} learner view` }));
     expect(screen.getByText(title!)).toBeTruthy();
-    expect(screen.getByText("Sample Data")).toBeTruthy();
+    expect(screen.getByText(tab === "Home" ? "Demo Mode \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
     fireEvent.press(screen.getByRole("button", { name: "Developer Details" }));
     expect(screen.getByText(`Generated: ${artifact.generatedAt}`)).toBeTruthy();
     expect(screen.getByText(`Reporting period: ${artifact.reportingStartUtc} to ${artifact.reportingEndUtc} (UTC, end exclusive).`)).toBeTruthy();
@@ -254,7 +254,7 @@ it("shows labelled sample identity and temporary preferences beside connected ob
 
 it("labels the same sample identity in role demos without carrying learner drafts", async () => {
   render(<App />); await screen.findByText("Demo Learner");
-  expect(screen.getByText("Sample Data")).toBeTruthy();
+  expect(screen.getByText("Demo Mode \u00b7 Fictional data")).toBeTruthy();
   for (const role of ["Guardian", "Educator"]) {
     fireEvent.press(screen.getByRole("tab", { name: `${role} sample preview` }));
     if (role === "Educator") fireEvent.press(await screen.findByRole("button", { name: "View separate example" }));
@@ -292,7 +292,7 @@ it("presents exact connected latest measurements across Home, Progress and Profi
   fireEvent.press(screen.getByRole("button", { name: "Select connected backend preview" }));
   for (const tab of ["Home", "Analytics", "Profile"]) {
     fireEvent.press(screen.getByRole("tab", { name: `${tab} learner view` }));
-    expect(screen.getByText("Sample Data")).toBeTruthy();
+    expect(screen.getByText(tab === "Home" ? "Demo Mode \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
     if (tab === "Analytics") {
       for (const metric of artifact.metrics) {
         const scale = metric.unit === "words_per_minute" ? 1 : 100;

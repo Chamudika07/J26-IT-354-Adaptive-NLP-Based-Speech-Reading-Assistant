@@ -1,7 +1,8 @@
 import { developerToolsEnabled } from "../preview/developerTools";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { BackHandler, Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 
+import { HomePresentationContext } from "./HomePresentation";
 import { LEARNER_DESTINATIONS, type LearnerDestination } from "./learnerDestinations";
 import { useDeveloperTest, DeveloperTestBoundary } from "../preview/DeveloperTestSession";
 import { DeveloperReadingGate, DeveloperTestControls } from "../components/DeveloperReadingPreview";
@@ -20,7 +21,7 @@ import type { DashboardPresentationState, LearnerDashboardPreview, ReportingPeri
 
 function SampleSourceLabel({ destination }: { destination: string }) {
   const session = useDeveloperTest();
-  if (session?.source !== "laptop" || destination === "report") return null;
+  if (session?.source !== "laptop" || ["report", "home"].includes(destination)) return null;
   return <Text accessibilityLiveRegion="polite" style={{ paddingHorizontal: 16 }}>{session.connected.artifact ? "Synthetic Sample Data \u00b7 Calculated on laptop" : "Synthetic Sample Data \u00b7 Choose Reading Results to update"}</Text>;
 }
 
@@ -29,6 +30,11 @@ export function LearnerNavigation({ state, periodDays }: {
   periodDays: ReportingPeriodDays;
 }) {
   const [destination, setDestination] = useState<LearnerDestination>("home");
+  const reportHome = useContext(HomePresentationContext);
+  useEffect(() => {
+    reportHome?.(destination === "home");
+    return () => reportHome?.(false);
+  }, [destination, reportHome]);
   const { width, fontScale } = useWindowDimensions();
   const wrapTabs = width < 390 || fontScale > 1.15;
 

@@ -4,6 +4,7 @@ import { palette, radii, softShadow, spacing } from "../theme";
 import type { PreviewRole } from "../types";
 
 interface RoleSwitcherProps {
+  compact?: boolean;
   selectedRole: PreviewRole;
   onSelectRole: (role: PreviewRole) => void;
 }
@@ -14,10 +15,10 @@ const ROLES: readonly { value: PreviewRole; label: string; icon: string }[] = [
   { value: "educator", label: "Educator", icon: "✓" },
 ];
 
-export function RoleSwitcher({ selectedRole, onSelectRole }: RoleSwitcherProps) {
+export function RoleSwitcher({ selectedRole, onSelectRole, compact = false }: RoleSwitcherProps) {
   return (
     <View style={[styles.container, selectedRole === "educator" && __DEV__ && { paddingRight: 40 }]}>
-      {selectedRole !== "educator" ? <Text style={styles.demoLabel}>Demo views only: choose your view</Text> : null}
+      {!compact && selectedRole !== "educator" ? <Text style={styles.demoLabel}>Demo views only: choose your view</Text> : null}
       <View accessibilityRole="tablist" style={styles.group}>
         {ROLES.map(({ value, label, icon }) => {
           const selected = value === selectedRole;
@@ -30,12 +31,13 @@ export function RoleSwitcher({ selectedRole, onSelectRole }: RoleSwitcherProps) 
               onPress={() => onSelectRole(value)}
               style={({ pressed }) => [
                 styles.button,
+                compact && styles.homeButton,
                 selectedRole === "educator" && styles.compactButton,
                 selected && styles.selectedButton,
                 pressed && styles.pressedButton,
               ]}
             >
-              <Text style={[styles.icon, selected && styles.selectedLabel]}>{icon}</Text>
+              {!compact ? <Text style={[styles.icon, selected && styles.selectedLabel]}>{icon}</Text> : null}
               <Text style={[styles.label, selected && styles.selectedLabel]}>{label}</Text>
             </Pressable>
           );
@@ -72,6 +74,7 @@ const styles = StyleSheet.create({
     backgroundColor: palette.surface,
     ...softShadow,
   },
+  homeButton: { minHeight: 44, paddingVertical: 6, borderRadius: radii.small, shadowOpacity: 0, elevation: 0 },
   compactButton: { minHeight: 48, flexDirection: "row", flexWrap: "wrap", gap: 6 },
   selectedButton: {
     borderColor: palette.primary,

@@ -4,16 +4,17 @@ import { palette, radii, spacing } from "../theme";
 import type { ReportingPeriodDays } from "../types";
 
 interface PeriodSelectorProps {
+  compact?: boolean;
   selectedDays: ReportingPeriodDays;
   onSelectDays: (days: ReportingPeriodDays) => void;
 }
 
 const PERIODS: readonly ReportingPeriodDays[] = [7, 30, 90];
 
-export function PeriodSelector({ selectedDays, onSelectDays }: PeriodSelectorProps) {
+export function PeriodSelector({ selectedDays, onSelectDays, compact = false }: PeriodSelectorProps) {
   return (
     <View accessibilityLabel="Choose a reporting period" style={styles.row}>
-      <Text style={styles.prompt}>Show progress from</Text>
+      <Text style={styles.prompt}>{compact ? "Period" : "Show progress from"}</Text>
       <View accessibilityRole="radiogroup" style={styles.group}>
         {PERIODS.map((days) => {
           const selected = days === selectedDays;
@@ -26,6 +27,7 @@ export function PeriodSelector({ selectedDays, onSelectDays }: PeriodSelectorPro
               onPress={() => onSelectDays(days)}
               style={({ pressed }) => [
                 styles.button,
+                compact && styles.homeButton,
                 selected && styles.selectedButton,
                 pressed && styles.pressedButton,
               ]}
@@ -68,6 +70,7 @@ const styles = StyleSheet.create({
     borderColor: palette.outline,
     backgroundColor: palette.surface,
   },
+  homeButton: { minWidth: 44, minHeight: 44, paddingHorizontal: 8, borderRadius: radii.small },
   selectedButton: {
     borderColor: palette.teal,
     backgroundColor: palette.tealSoft,

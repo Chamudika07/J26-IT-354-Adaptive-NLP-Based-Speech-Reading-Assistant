@@ -23,7 +23,7 @@ function Button({ text, onPress }: { text: string; onPress(): void }) {
   return <Pressable accessibilityRole="button" onPress={onPress} style={styles.button}><Text style={styles.buttonText}>{text}</Text></Pressable>;
 }
 /** Minimal host for existing live screens. Auth credentials remain in memory only. */
-export function Component4AccountBoundary({ children, periodDays, onSelectDays, rememberStore }: { children: ReactNode; periodDays: ReportingPeriodDays; onSelectDays?: (days: ReportingPeriodDays) => void; rememberStore?: RememberStore }) {
+export function Component4AccountBoundary({ children, periodDays, onSelectDays, rememberStore, compactHome = false }: { compactHome?: boolean; children: ReactNode; periodDays: ReportingPeriodDays; onSelectDays?: (days: ReportingPeriodDays) => void; rememberStore?: RememberStore }) {
   const [savedLogin] = useState(() => rememberStore ?? nativeRememberStore());
   const [remember, setRemember] = useState(true);
   const remembered = useRef<LoginSettings | undefined>(undefined);
@@ -137,7 +137,7 @@ export function Component4AccountBoundary({ children, periodDays, onSelectDays, 
       if (!revoked && attempt === operation.current) setMessage("Signed out on this device. Server sign-out could not be confirmed.");
     }
   }
-  if (phase === "demo") return <View style={styles.root}><View style={styles.controls}><Button text="Sign In for Live Mode" onPress={() => { operation.current++; setPhase("login"); setMessage(""); }} />{message ? <Text accessibilityRole="alert">{message}</Text> : null}</View>{children}</View>;
+  if (phase === "demo") return <View style={styles.root}><View style={[styles.controls, compactHome && { paddingVertical: 2, paddingHorizontal: 16 }]}><Pressable accessibilityRole="button" onPress={() => { operation.current++; setPhase("login"); setMessage(""); }} style={[styles.button, compactHome && { alignSelf: "flex-end", backgroundColor: palette.primarySoft, paddingHorizontal: 12 }]}><Text style={[styles.buttonText, compactHome && { color: palette.primaryDark }]}>Sign In for Live Mode</Text></Pressable>{message ? <Text accessibilityRole="alert">{message}</Text> : null}</View>{children}</View>;
   if (phase === "login" || phase === "busy") return <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.form}>
     <Text accessibilityRole="header" style={styles.title}>Sign in to ReadBuddy</Text>
     <Text>Your password is never saved. Remember Me keeps a secure sign-in on this device.</Text>

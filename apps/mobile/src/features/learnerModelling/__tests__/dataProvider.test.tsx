@@ -85,7 +85,7 @@ describe("Component 4 dashboard providers", () => {
     const view = render(<LearnerProgressScreen periodDays={30} />);
 
     expect(await screen.findByText("Hi, Reader!")).toBeTruthy();
-    expect(screen.getByText("Sample Data")).toBeTruthy();
+    expect(screen.getByText("Demo Mode \u00b7 Fictional data")).toBeTruthy();
 
     view.rerender(<LearnerProgressScreen periodDays={30} provider={liveProvider} />);
 
