@@ -16,7 +16,11 @@ def payload():
 
 
 def test_prepared_corpus(payload):
-    assert validate()["heldout_executions"] == 0
+    if (ROOT / "manifests/heldout-execution.v1.json").exists():
+        with pytest.raises(ValueError, match="held-out result exists"):
+            validate()
+    else:
+        assert validate()["heldout_executions"] == 0
 
 
 @pytest.mark.parametrize(

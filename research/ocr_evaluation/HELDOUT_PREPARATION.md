@@ -1,5 +1,11 @@
 # Held-out corpus preparation v1
 
+**Historical preparation record:** the one-time evaluation is now complete: 48 cases
+per engine, 96 total evaluations. See [final results](HELDOUT_RESULTS.md) and
+`manifests/heldout-execution.v1.json`. Zero-execution statements below describe the
+preparation checkpoint. The pre-run validator now intentionally rejects the saved
+held-out results; use `uv run python verify_heldout_results.py` for post-run validation.
+
 Prepared on 2026-10-22 from the development freeze at `60a330c`.
 No OCR was executed, no engine was selected for production, and no development
 source, metric, configuration, or frozen file was changed.
