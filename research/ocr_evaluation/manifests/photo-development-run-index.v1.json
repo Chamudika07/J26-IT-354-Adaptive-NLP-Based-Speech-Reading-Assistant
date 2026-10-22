@@ -1,0 +1,86 @@
+{
+  "version": "ocr-photo-development-runs-v1",
+  "photo_registry_sha256": "958da7fa1e8dfe9c5a2ab71c65702e4cf1d01734b9bb5b45cbdcba471d0b0ccb",
+  "development_validation_sha256": "c6bcf02c94e406cea285ce7871bb81d8573385769c679b19a3713cc3d92e1b90",
+  "heldout_executions": 0,
+  "runs": [
+    {
+      "engine_configuration": "tesseract",
+      "recipe": "baseline",
+      "directory": "artifacts/photo-development-v1-tesseract-baseline",
+      "cases": 2,
+      "failures": 0,
+      "configuration_fingerprint": "481486ba1c840c27d5f781ffb034c0dbf01ee6a4a85f3cdcefc95cc8bed70ad6",
+      "file_sha256": {
+        "config.json": "481486ba1c840c27d5f781ffb034c0dbf01ee6a4a85f3cdcefc95cc8bed70ad6",
+        "pages.jsonl": "cc7112f884aae11184c5857da04637777aaa6d5d4db41b6ea57a919d3e83e209",
+        "summary.json": "3f8717b5514e3ef28f33a532bb46268eb9da5bfa3eaa21571aa0ff21faafaf69"
+      }
+    },
+    {
+      "engine_configuration": "tesseract",
+      "recipe": "contrast",
+      "directory": "artifacts/photo-development-v1-tesseract-contrast",
+      "cases": 2,
+      "failures": 0,
+      "configuration_fingerprint": "2fcc5f04e57bb5607592df8cdaa8dc5fa5230eec23c1882fe1cbe6184459d458",
+      "file_sha256": {
+        "config.json": "2fcc5f04e57bb5607592df8cdaa8dc5fa5230eec23c1882fe1cbe6184459d458",
+        "pages.jsonl": "8078f5dd30cfa3c441b58d3f138d26478378e0f0769963e9ad41986cbbbbdb26",
+        "summary.json": "3f8717b5514e3ef28f33a532bb46268eb9da5bfa3eaa21571aa0ff21faafaf69"
+      }
+    },
+    {
+      "engine_configuration": "paddle-v4rec",
+      "recipe": "baseline",
+      "directory": "artifacts/photo-development-v1-paddle-v4rec-baseline",
+      "cases": 2,
+      "failures": 0,
+      "configuration_fingerprint": "c9c34a2f2202ccdb8cf0d579b4273ecf28ddeb7a6d1126ead3b2a67fcc580dcd",
+      "file_sha256": {
+        "config.json": "c9c34a2f2202ccdb8cf0d579b4273ecf28ddeb7a6d1126ead3b2a67fcc580dcd",
+        "pages.jsonl": "b400f8fca949e9b69670bb46445470c89ed2d1bf75682831d27dd02aca78b42d",
+        "summary.json": "3c4db353a549bcc55936e9ff42c9172b0d497e62fbc51929c01711dec3676974"
+      }
+    },
+    {
+      "engine_configuration": "paddle-v4rec",
+      "recipe": "grayscale",
+      "directory": "artifacts/photo-development-v1-paddle-v4rec-grayscale",
+      "cases": 2,
+      "failures": 0,
+      "configuration_fingerprint": "8271f9e2f19f31fcf796f25cc2ad8d9ac50d7019fca26240cf1dc65b63801598",
+      "file_sha256": {
+        "config.json": "8271f9e2f19f31fcf796f25cc2ad8d9ac50d7019fca26240cf1dc65b63801598",
+        "pages.jsonl": "4d9b709195af7e4024c2138142eb990f6fe27a47276c65e4d6b1b7caa96eda2f",
+        "summary.json": "b8d3995b9759a25f4eafcbac641627a49ae11a0090bd26d7065550122e59e66d"
+      }
+    },
+    {
+      "engine_configuration": "paddle-v5rec",
+      "recipe": "baseline",
+      "directory": "artifacts/photo-development-v1-paddle-v5rec-baseline",
+      "cases": 2,
+      "failures": 0,
+      "configuration_fingerprint": "39c4a01487dc8b732dec9f4594beff898667b2c13c7f4969545163b3d44003de",
+      "file_sha256": {
+        "config.json": "39c4a01487dc8b732dec9f4594beff898667b2c13c7f4969545163b3d44003de",
+        "pages.jsonl": "83ee6abcaba6f3d8123a35546ace78b9cef5376cfaaff012d07276567c1e8fa5",
+        "summary.json": "2df02f3822161c2247366202c6f647fa0fdae25c712ed47f01f4c58231d8d867"
+      }
+    },
+    {
+      "engine_configuration": "paddle-v5rec",
+      "recipe": "grayscale",
+      "directory": "artifacts/photo-development-v1-paddle-v5rec-grayscale",
+      "cases": 2,
+      "failures": 0,
+      "configuration_fingerprint": "1303d4ff005dc5b50798c4669d060152b77a711b584ca75009a110253408cd82",
+      "file_sha256": {
+        "config.json": "1303d4ff005dc5b50798c4669d060152b77a711b584ca75009a110253408cd82",
+        "pages.jsonl": "398c5a9b92caa0871784b7211a3539f8a3b980f116bddbbfbcb895a45a4d082d",
+        "summary.json": "fb79da1b30ecfdcff0e187b3ec70bf2e290fea05f37e77ba2a27f3ed3449fb97"
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+/artifacts/
+/models/
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.jsonl
+*.traineddata
+*.pdiparams
+*.pdmodel
+/results/*
+!/results/README.md
+/ground_truth/*
+!/ground_truth/README.md

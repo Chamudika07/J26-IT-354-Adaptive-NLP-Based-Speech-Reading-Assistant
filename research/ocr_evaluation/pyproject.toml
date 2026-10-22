@@ -1,0 +1,29 @@
+[project]
+name = "ocr-evaluation"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "pydantic==2.14.1",
+    "pillow==13.0.0",
+    "numpy==2.2.6",
+    "pypdfium2==4.30.0",
+    "reportlab==4.5.1",
+]
+[project.optional-dependencies]
+paddle = ["paddleocr==3.2.0", "paddlepaddle==3.2.0"]
+[dependency-groups]
+dev = ["pytest==9.1.1", "ruff==0.17.1", "mypy==1.20.2"]
+[tool.uv]
+package = false
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+[tool.mypy]
+python_version = "3.12"
+files = ["metrics.py", "schemas"]
+strict = true

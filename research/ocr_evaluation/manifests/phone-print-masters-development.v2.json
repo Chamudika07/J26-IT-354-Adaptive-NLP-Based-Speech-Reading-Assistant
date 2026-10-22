@@ -1,0 +1,30 @@
+{
+  "version": "ocr-phone-print-masters-development-v2",
+  "description": "Preserved longer authored print-sheet alternatives, not used for the supplied development photographs. Those photos depict the archived two-line v1 masters and use v1 ground truth.",
+  "records": [
+    {
+      "fixture_id": "phone_camera_photo-development-01",
+      "ground_truth_digest": "2cdf471657e6d80ece9d863b3294f9e6a6a23a1a99fcb87d6b12dcaa27f2368a",
+      "image": "phone_camera_photo-development-01.png",
+      "provenance": "Original project-authored educational text created for this research fixture; Bitstream Vera; no external document or photograph",
+      "source_digest": "1187431c0e6379bd4a805702eef04c86bf9992244f526b0d12a711f85d78d5ea",
+      "source_family_id": "phone_camera_photo-development-01",
+      "split": "development",
+      "status": "print_master_authored_photo_pending",
+      "truth": "phone_camera_photo-development-01.truth.json",
+      "word_count": 112
+    },
+    {
+      "fixture_id": "phone_camera_photo-development-02",
+      "ground_truth_digest": "17c77b4b6d7e3dd015c967e9c7794cf0b44ca3f647c71196282b5f8afb24e02e",
+      "image": "phone_camera_photo-development-02.png",
+      "provenance": "Original project-authored educational text created for this research fixture; Bitstream Vera; no external document or photograph",
+      "source_digest": "377e36fdd97de5eac732f6a734afc1624059cee93ebc83c5ae737e183935f8c5",
+      "source_family_id": "phone_camera_photo-development-02",
+      "split": "development",
+      "status": "print_master_authored_photo_pending",
+      "truth": "phone_camera_photo-development-02.truth.json",
+      "word_count": 113
+    }
+  ]
+}

@@ -1,0 +1,891 @@
+{
+  "version": "ocr-corpus-v1",
+  "cases": [
+    {
+      "fixture_id": "clean_digital_scan-development-01",
+      "source_family_id": "clean_digital_scan-development-01",
+      "category": "clean_digital_scan",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "13ea61e4482572708d0873cb5c7830686f6ed3ce47a036beeb7a2f780c25c20e",
+      "ground_truth_digest": "607039a4deefb31531c14d6c4971a7bceb1634ac44dbf55e5bc45c9ae0aec5b3"
+    },
+    {
+      "fixture_id": "clean_digital_scan-development-02",
+      "source_family_id": "clean_digital_scan-development-02",
+      "category": "clean_digital_scan",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "f185b6e9d50bd23b2e22e830fe76de6510fa1ae518c4d1063953553bc397e179",
+      "ground_truth_digest": "097c615e20ccf3fbece8e9bda013d82dbf3f6b9a6d2352f35e90350101c27de9"
+    },
+    {
+      "fixture_id": "clean_digital_scan-heldout-01",
+      "source_family_id": "clean_digital_scan-heldout-01",
+      "category": "clean_digital_scan",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "clean_digital_scan-heldout-02",
+      "source_family_id": "clean_digital_scan-heldout-02",
+      "category": "clean_digital_scan",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "clean_digital_scan-heldout-03",
+      "source_family_id": "clean_digital_scan-heldout-03",
+      "category": "clean_digital_scan",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "grayscale_scan-development-01",
+      "source_family_id": "grayscale_scan-development-01",
+      "category": "grayscale_scan",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "8877651e603565752837aca9796da614a2a1237f0602139bfd2ad7d57dc10e00",
+      "ground_truth_digest": "15a92074a4c77e0b6dbc484708988903e057ec7a0120111e8d70fa76cd36010c"
+    },
+    {
+      "fixture_id": "grayscale_scan-development-02",
+      "source_family_id": "grayscale_scan-development-02",
+      "category": "grayscale_scan",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "c8c6c62d981f5e253cac047ec9e5dfaece6c8561d89977495c19829dcfdee610",
+      "ground_truth_digest": "72b051aeb7f16dabbb488cdb4994a9e37baecd135a395f95732d17ead3790b59"
+    },
+    {
+      "fixture_id": "grayscale_scan-heldout-01",
+      "source_family_id": "grayscale_scan-heldout-01",
+      "category": "grayscale_scan",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "grayscale_scan-heldout-02",
+      "source_family_id": "grayscale_scan-heldout-02",
+      "category": "grayscale_scan",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "grayscale_scan-heldout-03",
+      "source_family_id": "grayscale_scan-heldout-03",
+      "category": "grayscale_scan",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "low_resolution-development-01",
+      "source_family_id": "low_resolution-development-01",
+      "category": "low_resolution",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "afa0d301e667972896a0541c5921b6dc9e75d9a522efa74134916679da0c017a",
+      "ground_truth_digest": "d0e3401129a5089c39103884be2392b0a3e2524b479ac30abc5b13ab34947b49"
+    },
+    {
+      "fixture_id": "low_resolution-development-02",
+      "source_family_id": "low_resolution-development-02",
+      "category": "low_resolution",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "2c6ca892ea178d65ae513ed5a477415163cb73d071f25804d0e0b10a839024dd",
+      "ground_truth_digest": "58bd464d1dce7d4b85737569775d20af0566587638fc12768ea8d824f86cedf6"
+    },
+    {
+      "fixture_id": "low_resolution-heldout-01",
+      "source_family_id": "low_resolution-heldout-01",
+      "category": "low_resolution",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "low_resolution-heldout-02",
+      "source_family_id": "low_resolution-heldout-02",
+      "category": "low_resolution",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "low_resolution-heldout-03",
+      "source_family_id": "low_resolution-heldout-03",
+      "category": "low_resolution",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "mild_blur-development-01",
+      "source_family_id": "mild_blur-development-01",
+      "category": "mild_blur",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "0f0a3ea3ea52591f09b4279f292d5fe5c07004d6d4bb4af1a5a2dd0ad2c59026",
+      "ground_truth_digest": "890fda048598174795b43ca25507b2548ed5d186cb8381b68d643026546ac983"
+    },
+    {
+      "fixture_id": "mild_blur-development-02",
+      "source_family_id": "mild_blur-development-02",
+      "category": "mild_blur",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "1422dad7b77cc25bb84b834c7e3c4f4dd34ba20a0059af7cffe7e6bf26c0393a",
+      "ground_truth_digest": "7759c262151ea51a67a66fc7d34c56f67b59e7882d6a5ebb2d684bb8cdff5617"
+    },
+    {
+      "fixture_id": "mild_blur-heldout-01",
+      "source_family_id": "mild_blur-heldout-01",
+      "category": "mild_blur",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "mild_blur-heldout-02",
+      "source_family_id": "mild_blur-heldout-02",
+      "category": "mild_blur",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "mild_blur-heldout-03",
+      "source_family_id": "mild_blur-heldout-03",
+      "category": "mild_blur",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "skew_rotation-development-01",
+      "source_family_id": "skew_rotation-development-01",
+      "category": "skew_rotation",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "4b6aaf6c79300425e85c73950fd0582f3d464ae08071ab05198475ef96dd643a",
+      "ground_truth_digest": "add12c00025c6fac2b95d5e0af289bbe260ffc958f9bd8662527be356a30c476"
+    },
+    {
+      "fixture_id": "skew_rotation-development-02",
+      "source_family_id": "skew_rotation-development-02",
+      "category": "skew_rotation",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "d89969f8382c70b0169572de1905b478c3d5ae1f6e8b3149a3f47c8d3234ee57",
+      "ground_truth_digest": "c4adc4a3f60b65c924c1ba87dc2db3e66f73efc233625231487dd6ca1062d790"
+    },
+    {
+      "fixture_id": "skew_rotation-heldout-01",
+      "source_family_id": "skew_rotation-heldout-01",
+      "category": "skew_rotation",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "skew_rotation-heldout-02",
+      "source_family_id": "skew_rotation-heldout-02",
+      "category": "skew_rotation",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "skew_rotation-heldout-03",
+      "source_family_id": "skew_rotation-heldout-03",
+      "category": "skew_rotation",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "uneven_lighting-development-01",
+      "source_family_id": "uneven_lighting-development-01",
+      "category": "uneven_lighting",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "04bee318fc3accd7279f2a20ac1f9229fc163e5cba844c0e98cafc466fb3cce3",
+      "ground_truth_digest": "ea304d28b6ca06e92a71a417dfe765c88aac3edce4de1841eeb2889b16e89157"
+    },
+    {
+      "fixture_id": "uneven_lighting-development-02",
+      "source_family_id": "uneven_lighting-development-02",
+      "category": "uneven_lighting",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "018c04179631941e78b2758aabddd59e329b7575e47b2e12da6300d4eef30205",
+      "ground_truth_digest": "48895aa2df8372c858bb02661bbb2db9862149ac69b9951df57610af7b7c0e2a"
+    },
+    {
+      "fixture_id": "uneven_lighting-heldout-01",
+      "source_family_id": "uneven_lighting-heldout-01",
+      "category": "uneven_lighting",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "uneven_lighting-heldout-02",
+      "source_family_id": "uneven_lighting-heldout-02",
+      "category": "uneven_lighting",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "uneven_lighting-heldout-03",
+      "source_family_id": "uneven_lighting-heldout-03",
+      "category": "uneven_lighting",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "perspective_distortion-development-01",
+      "source_family_id": "perspective_distortion-development-01",
+      "category": "perspective_distortion",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "4aa1742c3bb72e0fc02e7b4046ba5449e78cc51f3fa5b83c0b71cf2f8207410f",
+      "ground_truth_digest": "055d3e5534422d05b4d8035a70b1f05c935149cf004182fbadd71689a0bd21fa"
+    },
+    {
+      "fixture_id": "perspective_distortion-development-02",
+      "source_family_id": "perspective_distortion-development-02",
+      "category": "perspective_distortion",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "13d39a0bb39fa980b6c2c873af0f3d6e87dea8b7234c8a3e9101481e32281e04",
+      "ground_truth_digest": "b6be2af8db009252e0df8c82050b2275ae624e9beb7b32b76946ca79a9d98a06"
+    },
+    {
+      "fixture_id": "perspective_distortion-heldout-01",
+      "source_family_id": "perspective_distortion-heldout-01",
+      "category": "perspective_distortion",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "perspective_distortion-heldout-02",
+      "source_family_id": "perspective_distortion-heldout-02",
+      "category": "perspective_distortion",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "perspective_distortion-heldout-03",
+      "source_family_id": "perspective_distortion-heldout-03",
+      "category": "perspective_distortion",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "low_contrast-development-01",
+      "source_family_id": "low_contrast-development-01",
+      "category": "low_contrast",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "cebb66b00ef766bd903d5d224ebe304bd5846bef3c635672fef6abc7d039f401",
+      "ground_truth_digest": "599bfc73be1b9346bb49dc290b6ff938383570a346125eea10a3dc2341cdbac3"
+    },
+    {
+      "fixture_id": "low_contrast-development-02",
+      "source_family_id": "low_contrast-development-02",
+      "category": "low_contrast",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "9669c009202ae55c54dfe6cd4b76faa646ceaebaf9bac4e7c3376b96ee5d3a53",
+      "ground_truth_digest": "b8784f0a87cb8258ce6d389c9bb69bc596d5889a82e4dbfefbd8b218ed0316cc"
+    },
+    {
+      "fixture_id": "low_contrast-heldout-01",
+      "source_family_id": "low_contrast-heldout-01",
+      "category": "low_contrast",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "low_contrast-heldout-02",
+      "source_family_id": "low_contrast-heldout-02",
+      "category": "low_contrast",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "low_contrast-heldout-03",
+      "source_family_id": "low_contrast-heldout-03",
+      "category": "low_contrast",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "noise_compression-development-01",
+      "source_family_id": "noise_compression-development-01",
+      "category": "noise_compression",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "ac21bf31eb5ce8040050a37f0a41db7bbf94659f01db5f5ead364125f37e0dad",
+      "ground_truth_digest": "70404bbb3242d3982de4a3507738ceb3e30a3600104f6ac49c26e4817cbf4d83"
+    },
+    {
+      "fixture_id": "noise_compression-development-02",
+      "source_family_id": "noise_compression-development-02",
+      "category": "noise_compression",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "d5772cd964479031d9a71cd786f72fa2f22d47019ecd79a2a202d6ea20926b55",
+      "ground_truth_digest": "a040b7aa37608a044ad30dcd31c7c358bb66eb8c2254233ddeafaa3a006ed897"
+    },
+    {
+      "fixture_id": "noise_compression-heldout-01",
+      "source_family_id": "noise_compression-heldout-01",
+      "category": "noise_compression",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "noise_compression-heldout-02",
+      "source_family_id": "noise_compression-heldout-02",
+      "category": "noise_compression",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "noise_compression-heldout-03",
+      "source_family_id": "noise_compression-heldout-03",
+      "category": "noise_compression",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "mixed_fonts_sizes-development-01",
+      "source_family_id": "mixed_fonts_sizes-development-01",
+      "category": "mixed_fonts_sizes",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "19e254344933029bc96987adfd638a6467d6b1ca1304b02366fe62ea1ae8536d",
+      "ground_truth_digest": "1796cb611cd77f4fbb8631f7bbb4725119c60dbcf993e4261f16295d987215a5"
+    },
+    {
+      "fixture_id": "mixed_fonts_sizes-development-02",
+      "source_family_id": "mixed_fonts_sizes-development-02",
+      "category": "mixed_fonts_sizes",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "d5f946a8cfbca28d46862cd5fb28d6e317052d1187b108c5e5d492c65ab4b62c",
+      "ground_truth_digest": "b3bb7cae2f30e6fb16126870bf1251aaa8005f4e25d8a16460f73f5de6e73eee"
+    },
+    {
+      "fixture_id": "mixed_fonts_sizes-heldout-01",
+      "source_family_id": "mixed_fonts_sizes-heldout-01",
+      "category": "mixed_fonts_sizes",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "mixed_fonts_sizes-heldout-02",
+      "source_family_id": "mixed_fonts_sizes-heldout-02",
+      "category": "mixed_fonts_sizes",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "mixed_fonts_sizes-heldout-03",
+      "source_family_id": "mixed_fonts_sizes-heldout-03",
+      "category": "mixed_fonts_sizes",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "punctuation_numbers_symbols-development-01",
+      "source_family_id": "punctuation_numbers_symbols-development-01",
+      "category": "punctuation_numbers_symbols",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "58e3c6cea2d1533bce1ed8f5d0b52f0d7fc02c34b9cae1ebe1c7787c0bb54a4b",
+      "ground_truth_digest": "7b69d99edb695fdc7cbd67c0fa54c75cfecc2ca7f72ada223a93c7b555050c66"
+    },
+    {
+      "fixture_id": "punctuation_numbers_symbols-development-02",
+      "source_family_id": "punctuation_numbers_symbols-development-02",
+      "category": "punctuation_numbers_symbols",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "d261155c41b61c06bd674853d4a0877fb262bc0d76c90b58351b63baf821f906",
+      "ground_truth_digest": "2a4de46c9c8870a22a63501bd4799b77289ed3085a834cfe1acf6ecf68c23521"
+    },
+    {
+      "fixture_id": "punctuation_numbers_symbols-heldout-01",
+      "source_family_id": "punctuation_numbers_symbols-heldout-01",
+      "category": "punctuation_numbers_symbols",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "punctuation_numbers_symbols-heldout-02",
+      "source_family_id": "punctuation_numbers_symbols-heldout-02",
+      "category": "punctuation_numbers_symbols",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "punctuation_numbers_symbols-heldout-03",
+      "source_family_id": "punctuation_numbers_symbols-heldout-03",
+      "category": "punctuation_numbers_symbols",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "accented_english_unicode-development-01",
+      "source_family_id": "accented_english_unicode-development-01",
+      "category": "accented_english_unicode",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "b43367ba22f1ce7af0050264471d3c63ecae7c969804a6ce2c465329baaeaa6b",
+      "ground_truth_digest": "aedbbd23f92d6396a9239fd0d1ab6df1c978151313cdbfccab49eebe107fadbb"
+    },
+    {
+      "fixture_id": "accented_english_unicode-development-02",
+      "source_family_id": "accented_english_unicode-development-02",
+      "category": "accented_english_unicode",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "7542442e1e51c97b6b8abd6971fb6fd0eadb547d591dd31244ddcb437392c919",
+      "ground_truth_digest": "a7572ec3271e8e69b5913b4b428898046a32791cae8461d6d449e4bc4578f9b5"
+    },
+    {
+      "fixture_id": "accented_english_unicode-heldout-01",
+      "source_family_id": "accented_english_unicode-heldout-01",
+      "category": "accented_english_unicode",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "accented_english_unicode-heldout-02",
+      "source_family_id": "accented_english_unicode-heldout-02",
+      "category": "accented_english_unicode",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "accented_english_unicode-heldout-03",
+      "source_family_id": "accented_english_unicode-heldout-03",
+      "category": "accented_english_unicode",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "tables-development-01",
+      "source_family_id": "tables-development-01",
+      "category": "tables",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "a4f4fabc75b87a679eb4233d9af2a22e29ba7460c00a58a763a73883860bb461",
+      "ground_truth_digest": "41fedb9b6f689a3ce50bd81971b01f82e7c40c4fc8a66498dd0d65e63edc52ad"
+    },
+    {
+      "fixture_id": "tables-development-02",
+      "source_family_id": "tables-development-02",
+      "category": "tables",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "93085462d856125b03c77350cef144846d40265049d65ef0dfb954885b5915cd",
+      "ground_truth_digest": "834a8673a0494a2e3bf6ed9eab699b954170dd8029445ba84ed03f25f810cef8"
+    },
+    {
+      "fixture_id": "tables-heldout-01",
+      "source_family_id": "tables-heldout-01",
+      "category": "tables",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "tables-heldout-02",
+      "source_family_id": "tables-heldout-02",
+      "category": "tables",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "tables-heldout-03",
+      "source_family_id": "tables-heldout-03",
+      "category": "tables",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "two_column-development-01",
+      "source_family_id": "two_column-development-01",
+      "category": "two_column",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "bdec9c9159334f462271a6743cd2d037b8fafd589ea22d7c5c60e4129006aaee",
+      "ground_truth_digest": "762b985047af29510be3b24c70f8d0a6e99d6eacb031dbe7f87e9c86b8174c7d"
+    },
+    {
+      "fixture_id": "two_column-development-02",
+      "source_family_id": "two_column-development-02",
+      "category": "two_column",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "0f98266baed2e14f528b3bc8e9c96a25adc9f1050341cfe2023979ab88a56753",
+      "ground_truth_digest": "71d0afb8e1b3116cc0e21b49770dcdf3db598c3915aa9b61c8b1f304ff95f8c5"
+    },
+    {
+      "fixture_id": "two_column-heldout-01",
+      "source_family_id": "two_column-heldout-01",
+      "category": "two_column",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "two_column-heldout-02",
+      "source_family_id": "two_column-heldout-02",
+      "category": "two_column",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "two_column-heldout-03",
+      "source_family_id": "two_column-heldout-03",
+      "category": "two_column",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "illustration_text-development-01",
+      "source_family_id": "illustration_text-development-01",
+      "category": "illustration_text",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "ade6a19907bf568fd4a52d90d24d12a3b8df53e26ad7f7d83ebc697684f3f934",
+      "ground_truth_digest": "d5900d852f346bde9180c9edaa12bde87e85c18aea665c31b01acd24642db5d3"
+    },
+    {
+      "fixture_id": "illustration_text-development-02",
+      "source_family_id": "illustration_text-development-02",
+      "category": "illustration_text",
+      "feature_tags": [
+        "synthetic",
+        "development-v3"
+      ],
+      "split": "development",
+      "provenance": "Original synthetic development-v3 source; CC0-1.0 authored text; pixel/hash and font-coverage audit passed; shared renderer. See fonts.v1.json.",
+      "status": "authored",
+      "source_digest": "ff52e2e10672ae1035b0247106cdf5a242a171989a903303a8a366adaff9baa2",
+      "ground_truth_digest": "5012d98583d8caff105995dbb43e6aed19c53bde219af31b1d94ad6cb91c372a"
+    },
+    {
+      "fixture_id": "illustration_text-heldout-01",
+      "source_family_id": "illustration_text-heldout-01",
+      "category": "illustration_text",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "illustration_text-heldout-02",
+      "source_family_id": "illustration_text-heldout-02",
+      "category": "illustration_text",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "illustration_text-heldout-03",
+      "source_family_id": "illustration_text-heldout-03",
+      "category": "illustration_text",
+      "feature_tags": [],
+      "split": "heldout",
+      "provenance": "Reserved for original researcher-authored material; no source acquired yet.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "phone_camera_photo-development-01",
+      "source_family_id": "phone_camera_photo-development-01",
+      "category": "phone_camera_photo",
+      "feature_tags": [
+        "genuine_phone_camera_user_attested",
+        "short_two_line_master"
+      ],
+      "split": "development",
+      "provenance": "User-attested genuine phone photograph of archived development-drafts-v1 two-line print master; visual title/body match; see phone-development.v1.json. Longer development-v2 print master is unused for this fixture.",
+      "status": "authored",
+      "source_digest": "75d5bec373b3a15e8ca6bf33e747e347fcac2bfafc24443bc0727a46fd2b2743",
+      "ground_truth_digest": "afe8210e1c638e4cb0bfc618eca95bbcc1d4970b237db87847b75c770db5828e"
+    },
+    {
+      "fixture_id": "phone_camera_photo-development-02",
+      "source_family_id": "phone_camera_photo-development-02",
+      "category": "phone_camera_photo",
+      "feature_tags": [
+        "genuine_phone_camera_user_attested",
+        "short_two_line_master"
+      ],
+      "split": "development",
+      "provenance": "User-attested genuine phone photograph of archived development-drafts-v1 two-line print master; visual title/body match; see phone-development.v1.json. Longer development-v2 print master is unused for this fixture.",
+      "status": "authored",
+      "source_digest": "e70ea27c0e97c91969263d4c7d9ddf4e16306c2317586a14b3cb98594d4700bb",
+      "ground_truth_digest": "c94c7dd7c390864a7a5e3884217cbebd1804e82fad67ec452207ed74291aab8e"
+    },
+    {
+      "fixture_id": "phone_camera_photo-heldout-01",
+      "source_family_id": "phone_camera_photo-heldout-01",
+      "category": "phone_camera_photo",
+      "feature_tags": [
+        "awaiting_researcher_photograph"
+      ],
+      "split": "heldout",
+      "provenance": "Reserved for researcher photographs of original printed sources; user confirmed not yet captured. No synthetic or external substitutes.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "phone_camera_photo-heldout-02",
+      "source_family_id": "phone_camera_photo-heldout-02",
+      "category": "phone_camera_photo",
+      "feature_tags": [
+        "awaiting_researcher_photograph"
+      ],
+      "split": "heldout",
+      "provenance": "Reserved for researcher photographs of original printed sources; user confirmed not yet captured. No synthetic or external substitutes.",
+      "status": "planned"
+    },
+    {
+      "fixture_id": "phone_camera_photo-heldout-03",
+      "source_family_id": "phone_camera_photo-heldout-03",
+      "category": "phone_camera_photo",
+      "feature_tags": [
+        "awaiting_researcher_photograph"
+      ],
+      "split": "heldout",
+      "provenance": "Reserved for researcher photographs of original printed sources; user confirmed not yet captured. No synthetic or external substitutes.",
+      "status": "planned"
+    }
+  ]
+}
