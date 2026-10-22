@@ -53,10 +53,10 @@ it("selects one source, context, period and generation timestamp across all four
   expect(screen.queryByText("Your Reading Journey")).toBeNull();
   if (screen.queryByRole("button", { name: "Developer Details" })) fireEvent.press(screen.getByRole("button", { name: "Developer Details" }));
   fireEvent.press(screen.getByRole("button", { name: "Select connected backend preview" }));
-  for (const [tab, title] of [["Home", "Hi, Reader!"], ["Analytics", "My Analytics"], ["Suggestions", "Reading Tips"], ["Profile", "My Profile"]]) {
+  for (const [tab, title] of [["Home", "Hi, Reader!"], ["Analytics", "My Reading Analytics"], ["Suggestions", "Reading Tips"], ["Profile", "My Profile"]]) {
     fireEvent.press(screen.getByRole("tab", { name: `${tab} learner view` }));
     expect(screen.getByText(title!)).toBeTruthy();
-    expect(screen.getByText(tab === "Home" ? "Demo Mode \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
+    expect(screen.getByText(tab === "Home" ? "Demo Mode \u00b7 Fictional data" : tab === "Analytics" ? "Demo \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
     fireEvent.press(screen.getByRole("button", { name: "Developer Details" }));
     expect(screen.getByText(`Generated: ${artifact.generatedAt}`)).toBeTruthy();
     expect(screen.getByText(`Reporting period: ${artifact.reportingStartUtc} to ${artifact.reportingEndUtc} (UTC, end exclusive).`)).toBeTruthy();
@@ -149,7 +149,8 @@ it("replays actual backend prefixes through analytics, history, suggestions and 
     fireEvent.press(screen.getByRole("button", { name: "Add Next Sample" }));
     expect(screen.getByText(/1 eligible completed sessions/)).toBeTruthy();
     fireEvent.press(screen.getByRole("button", { name: "Next: Analytics" }));
-    expect(screen.getByText(/S1.*Completed/)).toBeTruthy();
+  fireEvent.press(screen.getByRole("button", { name: "View Reading History" }));
+  expect(screen.getByText(/S1.*Completed/)).toBeTruthy();
     expect(screen.getByRole("button", { name: "View Reading Tips" })).toBeTruthy();
   }
   for (let index = 2; index < replay.length; index++) fireEvent.press(screen.getByRole("button", { name: "Add Next Sample" }));
@@ -220,7 +221,7 @@ it("guides the child through one next step while keeping developer controls coll
   expect(screen.queryByText(/^Source digest:/)).toBeNull();
   expect(screen.getByRole("button", { name: "Next: Analytics" })).toBeTruthy();
   fireEvent.press(screen.getByRole("button", { name: "Next: Analytics" }));
-  expect(screen.getByText("My Analytics")).toBeTruthy();
+  expect(screen.getByText("My Reading Analytics")).toBeTruthy();
   fireEvent.press(screen.getByRole("button", { name: "View Reading Tips" }));
   expect(screen.getByRole("button", { name: "Next: Report" })).toBeTruthy();
   fireEvent.press(screen.getByRole("button", { name: "Next: Report" }));
@@ -292,14 +293,14 @@ it("presents exact connected latest measurements across Home, Progress and Profi
   fireEvent.press(screen.getByRole("button", { name: "Select connected backend preview" }));
   for (const tab of ["Home", "Analytics", "Profile"]) {
     fireEvent.press(screen.getByRole("tab", { name: `${tab} learner view` }));
-    expect(screen.getByText(tab === "Home" ? "Demo Mode \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
+    expect(screen.getByText(tab === "Home" ? "Demo Mode \u00b7 Fictional data" : tab === "Analytics" ? "Demo \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
     if (tab === "Analytics") {
       for (const metric of artifact.metrics) {
         const scale = metric.unit === "words_per_minute" ? 1 : 100;
-        const expected = metric.latest_value === null ? "Not measured" : String(Number((Number(metric.latest_value) * scale).toFixed(2)));
+        const expected = metric.latest_value === null ? "Unavailable" : String(Number((Number(metric.latest_value) * scale).toFixed(2)));
         expect(screen.getAllByText(expected).length).toBeGreaterThan(0);
       }
-      expect(screen.getByText("Cards show the latest available results. Hesitations show a frequency, not a total count.")).toBeTruthy();
+      expect(screen.getByText("per 100 attempted words")).toBeTruthy();
       continue;
     }
     for (const metric of artifact.metrics) {

@@ -37,13 +37,13 @@ it("keeps Home evidence accessible without initially overwhelming the overview",
 it("discovers all original areas without adding secondary bottom tabs", async () => {
   render(<App />);
   await screen.findByText("Hi, Reader!");
-  for (const title of ["My Profile", "Support Settings", "Session Feedback", "My Analytics", "My Reading Tips", "My Reading Report"]) {
-    const tab = ({ "My Profile": "Profile", "My Analytics": "Analytics", "My Reading Tips": "Suggestions" } as Record<string, string>)[title];
+  for (const title of ["My Profile", "Support Settings", "Session Feedback", "My Reading Analytics", "My Reading Tips", "My Reading Report"]) {
+    const tab = ({ "My Profile": "Profile", "My Reading Analytics": "Analytics", "My Reading Tips": "Suggestions" } as Record<string, string>)[title];
     const link = tab ? screen.getByRole("tab", { name: `${tab} learner view` }) : screen.getByRole("button", { name: `Open ${title}` });
     expect(StyleSheet.flatten(link.props.style).minHeight).toBeGreaterThanOrEqual(48);
     fireEvent.press(link);
-    expect(screen.getByRole("header", { name: title === "My Analytics" ? "My Analytics" : title === "My Reading Report" ? "My Reading Report" : title })).toBeTruthy();
-    expect(screen.getByText("Sample Data")).toBeTruthy();
+    expect(screen.getByRole("header", { name: title === "My Reading Analytics" ? "My Reading Analytics" : title === "My Reading Report" ? "My Reading Report" : title })).toBeTruthy();
+    expect(screen.getByText(title === "My Reading Analytics" ? "Demo \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
     fireEvent.press(screen.getByRole("button", { name: "Back to reading Home" }));
   }
   const navigation = within(screen.getByLabelText("Learner feature navigation"));

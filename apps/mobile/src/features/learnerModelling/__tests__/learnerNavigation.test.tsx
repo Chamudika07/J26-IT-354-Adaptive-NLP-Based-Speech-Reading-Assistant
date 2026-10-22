@@ -19,14 +19,14 @@ it("opens four destinations with selected tabs, discovery links and a consistent
   )).toBeTruthy();
   expect(screen.getByRole("tab", { name: "Home learner view" }).props.accessibilityState.selected).toBe(true);
   for (const [tab, title] of [
-    ["Analytics", "My Analytics"],
+    ["Analytics", "My Reading Analytics"],
     ["Suggestions", "My Reading Tips"],
     ["Profile", "My Profile"],
   ]) {
     fireEvent.press(screen.getByRole("tab", { name: `${tab} learner view` }));
     expect(screen.getByRole("header", { name: title })).toBeTruthy();
     expect(screen.getByRole("tab", { name: `${tab} learner view` }).props.accessibilityState.selected).toBe(true);
-    expect(screen.getByText("Sample Data")).toBeTruthy();
+    expect(screen.getByText(tab === "Analytics" ? "Demo \u00b7 Fictional data" : "Sample Data")).toBeTruthy();
     const home = screen.getByRole("tab", { name: "Home learner view" });
     expect(home.props.accessibilityState.selected).toBe(false);
     expect(StyleSheet.flatten(home.props.style).minHeight).toBeGreaterThanOrEqual(48);
@@ -42,8 +42,11 @@ it("uses the shared reporting controls on Progress and retains the period across
   fireEvent.press(screen.getByRole("tab", { name: "Analytics learner view" }));
   for (const days of [7, 30, 90] as const) {
     fireEvent.press(screen.getByRole("radio", { name: `${days} day reporting period` }));
+    const hide = screen.queryByRole("button", { name: "Hide result details" });
+    if (!hide) fireEvent.press(await screen.findByRole("button", { name: "About these results" }));
     await screen.findByText(new RegExp(`${days}-day reporting period`));
-    fireEvent.press(screen.getByRole("button", { name: "About these results" }));
+    const history = screen.queryByRole("button", { name: "View Reading History" });
+    if (history) fireEvent.press(history);
     const dashboard = buildSyntheticDashboard("learner", days);
     for (const metric of dashboard.metrics) {
       expect(screen.getByText(metric.explanation)).toBeTruthy();

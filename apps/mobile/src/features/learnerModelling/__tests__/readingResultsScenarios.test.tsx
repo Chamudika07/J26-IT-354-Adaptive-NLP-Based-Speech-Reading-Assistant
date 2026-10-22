@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, within } from "@testing-library/react-native";
-import { StyleSheet } from "react-native";
+import { act, fireEvent, render, screen, within } from "@testing-library/react-native";
+import { Alert, StyleSheet } from "react-native";
 import { Pp1ConnectionContext } from "../preview/Pp1Connection";
 import App from "../../../../App";
 import { selectConnectedReplay } from "../preview/connectedSessionPreview";
@@ -30,8 +30,9 @@ it("guides one scenario from editable profile through analytics, evidence-based 
     expect(screen.getAllByRole("button", { name: "Reading Settings" })).toHaveLength(1);
     expect(screen.queryByRole("button", { name: "View Learner Profile" })).toBeNull();
     button("Next: My Analytics");
-    expect(screen.getByRole("header", { name: "My Analytics" })).toBeTruthy();
+    expect(screen.getByRole("header", { name: "My Reading Analytics" })).toBeTruthy();
     for (const title of ["Reading Performance", "Reading Behaviour", "Reading Progress"]) expect(screen.getByRole("header", { name: title })).toBeTruthy();
+    fireEvent.press(screen.getByRole("button", { name: "View Reading History" }));
     expect(screen.getByText(/S2.*Completed/)).toBeTruthy();
     button("View Reading Tips");
     expect(screen.getByRole("header", { name: "My Reading Tips" })).toBeTruthy();
@@ -71,10 +72,13 @@ it("applies another matching backend decision and keeps other-role data separate
 });
 
 it("resets history, tips and the current report without replacing identity or inventing measurements", async () => {
-  await start(3); button("Next: My Analytics"); button("Reset Journey");
+  await start(3); button("Next: My Analytics"); const confirm = jest.spyOn(Alert, "alert"); button("Reset Journey");
+  act(() => confirm.mock.calls.at(-1)![2]!.find(b => b.text === "Reset Journey")!.onPress!());
+  confirm.mockRestore();
+  button("View Behaviour Details"); button("About these results");
   expect(screen.getByText(/Applied scenario: Sample 0 - 0 completed/)).toBeTruthy();
-  expect(screen.getAllByText("Not measured")).toHaveLength(3);
-  expect(screen.getByText("Reading time: Not supplied.")).toBeTruthy();
+  expect(screen.getAllByText("Unavailable")).toHaveLength(3);
+  expect(screen.getByText("Reading time: Unavailable.")).toBeTruthy();
   expect(screen.queryByText(/S3.*Completed/)).toBeNull();
   button("View Reading Tips");
   expect(screen.getByText("Keep reading to find a helpful tip.")).toBeTruthy();

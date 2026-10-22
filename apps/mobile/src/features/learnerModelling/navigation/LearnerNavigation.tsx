@@ -21,7 +21,7 @@ import type { DashboardPresentationState, LearnerDashboardPreview, ReportingPeri
 
 function SampleSourceLabel({ destination }: { destination: string }) {
   const session = useDeveloperTest();
-  if (session?.source !== "laptop" || ["report", "home", "test"].includes(destination)) return null;
+  if (session?.source !== "laptop" || ["report", "home", "test", "progress"].includes(destination)) return null;
   return <Text accessibilityLiveRegion="polite" style={{ paddingHorizontal: 16 }}>{session.connected.artifact ? "Synthetic Sample Data \u00b7 Calculated on laptop" : "Synthetic Sample Data \u00b7 Choose Reading Results to update"}</Text>;
 }
 

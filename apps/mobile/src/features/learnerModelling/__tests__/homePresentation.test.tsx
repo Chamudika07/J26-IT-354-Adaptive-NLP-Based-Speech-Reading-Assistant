@@ -19,7 +19,7 @@ it("keeps Home controls compact and restores other learner screens", async () =>
   await screen.findByText("4");
   expect(screen.getByRole("radio", { name: "7 day reporting period" }).props.accessibilityState.checked).toBe(true);
   fireEvent.press(screen.getByRole("tab", { name: "Analytics learner view" }));
-  await screen.findByRole("header", { name: "My Analytics" });
+  await screen.findByRole("header", { name: "My Reading Analytics" });
   expect(screen.queryByText("Demo Mode \u00b7 Fictional data")).toBeNull();
   expect(StyleSheet.flatten(screen.getByRole("radio", { name: "7 day reporting period" }).props.style).minHeight).toBe(48);
   expect(StyleSheet.flatten(screen.getByRole("tab", { name: "Learner sample preview" }).props.style).minHeight).toBe(56);

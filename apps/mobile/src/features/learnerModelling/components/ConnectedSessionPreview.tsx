@@ -3,7 +3,7 @@ import type { LearnerReportProps } from "./LearnerReportLayout";
 import { developerToolsEnabled } from "../preview/developerTools";
 import { useState, type ReactNode } from "react";
 import { Pressable, Text, View } from "react-native";
-import { ReadingProgress } from "./ReadingProgress";
+import { ConfirmJourneyReset, ReadingProgress } from "./ReadingProgress";
 import { HomeHero } from "./HomeHero";
 import { MetricChart } from "./MetricChart";
 import { LocalPreviewLayout } from "./LocalPreviewLayout";
@@ -40,7 +40,7 @@ export function ConnectedSessionGate({ destination, children, onNavigate, report
         {session.replayIndex !== null ? <View style={reportStyles.card}>
           <Text style={reportStyles.body}>{artifact.includedSessionCount} completed sample sessions</Text>
           <Pressable accessibilityRole="button" disabled={session.replayIndex + 1 >= session.replayLength} accessibilityState={{ disabled: session.replayIndex + 1 >= session.replayLength }} onPress={() => session.replay(session.replayIndex! + 1)} style={[reportStyles.primaryAction, session.replayIndex + 1 >= session.replayLength && { opacity: 0.5 }]}><Text style={reportStyles.primaryLabel}>Add Next Sample</Text></Pressable>
-          <Pressable accessibilityRole="button" onPress={() => session.replay(0)} style={reportStyles.previewLink}><Text style={reportStyles.body}>Reset Journey</Text></Pressable>
+          <ConfirmJourneyReset onReset={() => session.replay(0)} />
         </View> : null}
         {onNavigate ? <Pressable accessibilityRole="button" onPress={() => onNavigate("report")} style={reportStyles.previewLink}><Text style={reportStyles.body}>Go to: Report</Text></Pressable> : null}
         <Pressable accessibilityRole="button" onPress={session.returnToDemo} style={reportStyles.previewLink}><Text style={reportStyles.body}>Back to Reading Home</Text></Pressable>

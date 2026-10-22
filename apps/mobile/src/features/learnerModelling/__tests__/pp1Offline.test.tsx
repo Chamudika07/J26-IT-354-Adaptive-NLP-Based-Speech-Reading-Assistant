@@ -24,7 +24,9 @@ it("rehearses PP1 with changing backend evidence, all roles and saved reports wi
     expect(screen.getByRole("header", { name: "My Profile" })).toBeTruthy();
     button("Next: My Analytics");
     for (const title of ["Reading Performance", "Reading Behaviour", "Reading Progress"]) expect(screen.getByRole("header", { name: title })).toBeTruthy();
+    fireEvent.press(screen.getByRole("button", { name: "View Reading History" }));
     expect(screen.getByText(/S6.*Completed/)).toBeTruthy();
+    fireEvent.press(screen.getByRole("button", { name: "View Behaviour Details" }));
     expect(screen.getByText("This research estimate is not scientifically validated. It does not measure attention or ability.")).toBeTruthy();
     button("View Reading Tips");
     expect(screen.getByText(artifact.recommendation!.action)).toBeTruthy();

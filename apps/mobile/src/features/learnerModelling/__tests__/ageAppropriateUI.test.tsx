@@ -50,8 +50,8 @@ it("uses one-column feature cards and wrapped navigation on narrow screens with 
     expect(Native.StyleSheet.flatten(tab.props.style).flexBasis).toBe("45%");
   }
   fireEvent.press(screen.getByRole("tab", { name: "Analytics learner view" }));
-  expect(screen.getByRole("header", { name: "My Analytics" })).toBeTruthy();
-  expect(screen.getByText("Sample Data")).toBeTruthy();
+  expect(screen.getByRole("header", { name: "My Reading Analytics" })).toBeTruthy();
+  expect(screen.getByText("Demo \u00b7 Fictional data")).toBeTruthy();
 });
 
 it("adds a reading illustration to Feedback without replacing labeled response controls", () => {

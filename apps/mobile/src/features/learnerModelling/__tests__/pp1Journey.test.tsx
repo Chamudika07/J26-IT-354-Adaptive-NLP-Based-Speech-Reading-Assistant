@@ -74,7 +74,8 @@ it("keeps Profile, Analytics, Tips and Summary on the returned scenario", async 
   expect(screen.getByText("Synthetic Sample Data \u00b7 Calculated on laptop")).toBeTruthy();
   expect(screen.getByText("Applied scenario: Sample 3")).toBeTruthy();
   fireEvent.press(screen.getByRole("button", { name: "Next: My Analytics" }));
-  expect(screen.getByRole("header", { name: "My Analytics" })).toBeTruthy();
+  expect(screen.getByRole("header", { name: "My Reading Analytics" })).toBeTruthy();
+  fireEvent.press(screen.getByRole("button", { name: "View Reading History" }));
   expect(screen.getByText(/S3.*Completed/)).toBeTruthy();
   fireEvent.press(screen.getByRole("button", { name: "View Reading Tips" }));
   expect(screen.getByText(replay[3]!.recommendation!.action)).toBeTruthy();

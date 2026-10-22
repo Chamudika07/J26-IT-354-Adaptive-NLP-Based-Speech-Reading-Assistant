@@ -7,7 +7,7 @@ import { AIProgressReportScreen } from "../screens/AIProgressReportScreen";
 import { DemoLearnerCard, DemoPreferencesCard } from "./DemoLearnerCard";
 import { HomeHero } from "./HomeHero";
 import { LocalPreviewLayout } from "./LocalPreviewLayout";
-import { ReadingProgress } from "./ReadingProgress";
+import { ConfirmJourneyReset, ReadingProgress } from "./ReadingProgress";
 import { reportStyles as s, type LearnerReportProps } from "./LearnerReportLayout";
 
 /** Normal presentation of the existing validated artifact; no calculations or rules. */
@@ -36,7 +36,7 @@ export function ConnectedLearnerJourney({ artifact: a, destination, onNavigate, 
     actions={<View style={{ gap: 8 }}>
       {session.replayIndex !== null ? <>
         <Pressable accessibilityRole="button" disabled={session.replayIndex + 1 >= session.replayLength} accessibilityState={{ disabled: session.replayIndex + 1 >= session.replayLength }} onPress={() => session.replay(session.replayIndex! + 1)} style={s.previewLink}><Text style={s.body}>Add Next Sample</Text></Pressable>
-        <Pressable accessibilityRole="button" onPress={() => session.replay(0)} style={s.previewLink}><Text style={s.body}>Reset Journey</Text></Pressable>
+        <ConfirmJourneyReset onReset={() => session.replay(0)} />
       </> : null}
     </View>} />;
   return <LocalPreviewLayout title={destination === "profile" ? "My Profile" : destination === "suggestions" ? "My Reading Tips" : destination === "report" ? "My Reading Report" : "Reading Home"}

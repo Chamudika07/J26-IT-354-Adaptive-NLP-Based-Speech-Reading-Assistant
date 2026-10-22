@@ -69,6 +69,8 @@ it("shares only selection through role switching, preserving learner history and
   fireEvent.press(screen.getByRole("tab", { name: "Learner sample preview" }));
   await screen.findByText("Hi, Reader!");
   fireEvent.press(screen.getByRole("tab", { name: "Analytics learner view" }));
+  fireEvent.press(screen.getByRole("button", { name: "View Reading History" }));
+  fireEvent.press(screen.getByRole("button", { name: "About these results" }));
   expect(screen.getByText(/Applied scenario: Sample 3 - 3 completed/)).toBeTruthy();
   expect(screen.getByText(/S3.*Completed/)).toBeTruthy();
 });
