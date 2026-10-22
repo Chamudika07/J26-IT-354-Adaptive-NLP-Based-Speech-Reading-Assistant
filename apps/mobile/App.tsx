@@ -76,6 +76,97 @@ interface FeedbackOption {
   borderColor: string;
 }
 
+export type ReadingLevelSuggestionKind = "adjust" | "keep" | "boundary" | "none";
+
+export interface ReadingLevelSuggestion {
+  kind: ReadingLevelSuggestionKind;
+  actualLevel: ReadingLevel;
+  suggestedLevel: ReadingLevel | null;
+  title: string;
+  message: string;
+}
+
+const READING_LEVEL_ORDER: readonly ReadingLevel[] = [
+  "beginner",
+  "elementary",
+  "intermediate",
+  "advanced",
+];
+
+const READING_LEVEL_LABELS: Record<ReadingLevel, string> = {
+  beginner: "Beginner",
+  elementary: "Elementary",
+  intermediate: "Intermediate",
+  advanced: "Advanced",
+};
+
+export const getReadingLevelSuggestion = (
+  feedback: FeedbackSignal,
+  actualLevel: ReadingLevel
+): ReadingLevelSuggestion => {
+  const levelIndex = READING_LEVEL_ORDER.indexOf(actualLevel);
+
+  if (feedback === "too_hard") {
+    if (levelIndex <= 0) {
+      return {
+        kind: "boundary",
+        actualLevel,
+        suggestedLevel: null,
+        title: "You already have the most reading support",
+        message:
+          "Beginner is the most supported level. You can keep it and ask a trusted adult for help if the passage still feels tricky.",
+      };
+    }
+    const suggestedLevel = READING_LEVEL_ORDER[levelIndex - 1];
+    return {
+      kind: "adjust",
+      actualLevel,
+      suggestedLevel,
+      title: "Would a little more support help?",
+      message: `${READING_LEVEL_LABELS[suggestedLevel]} uses shorter sentences and more familiar words. You can choose it for your next passage.`,
+    };
+  }
+
+  if (feedback === "too_easy") {
+    if (levelIndex >= READING_LEVEL_ORDER.length - 1) {
+      return {
+        kind: "boundary",
+        actualLevel,
+        suggestedLevel: null,
+        title: "You are already using the lightest support",
+        message:
+          "Advanced keeps the most original wording. You can keep it or choose any level that feels useful next time.",
+      };
+    }
+    const suggestedLevel = READING_LEVEL_ORDER[levelIndex + 1];
+    return {
+      kind: "adjust",
+      actualLevel,
+      suggestedLevel,
+      title: "Ready for a little less support?",
+      message: `${READING_LEVEL_LABELS[suggestedLevel]} keeps a little more sentence and word challenge. You can choose it for your next passage.`,
+    };
+  }
+
+  if (feedback === "just_right") {
+    return {
+      kind: "keep",
+      actualLevel,
+      suggestedLevel: null,
+      title: "This level can stay",
+      message: `${READING_LEVEL_LABELS[actualLevel]} felt right for this passage. You can keep it next time or choose a different amount of support whenever you want.`,
+    };
+  }
+
+  return {
+    kind: "none",
+    actualLevel,
+    suggestedLevel: null,
+    title: "No level suggestion this time",
+    message: "You skipped this question, so ReadBuddy will not guess. Choose any level that feels useful for your next passage.",
+  };
+};
+
 interface SampleStory {
   id: string;
   title: string;
@@ -577,8 +668,8 @@ const READING_LEVELS: ReadingLevelOption[] = [
   {
     value: "beginner",
     label: "Beginner",
-    badge: "Level 1",
-    description: "Shortest sentences and simplest everyday words",
+    badge: "Most Support",
+    description: "Very short sentences and familiar everyday words",
     accentColor: "#059669",
     backgroundColor: "#ECFDF5",
     borderColor: "#A7F3D0",
@@ -587,8 +678,8 @@ const READING_LEVELS: ReadingLevelOption[] = [
   {
     value: "elementary",
     label: "Elementary",
-    badge: "Level 2",
-    description: "Gentle reading pace with clear, familiar language",
+    badge: "Extra Support",
+    description: "Clear sentences with familiar words and gentle explanations",
     accentColor: "#D97706",
     backgroundColor: "#FFFBEB",
     borderColor: "#FDE68A",
@@ -597,8 +688,8 @@ const READING_LEVELS: ReadingLevelOption[] = [
   {
     value: "intermediate",
     label: "Intermediate",
-    badge: "Level 3",
-    description: "Standard school-age reading with balanced phrasing",
+    badge: "Some Support",
+    description: "Varied sentences with a few more challenging words",
     accentColor: "#2563EB",
     backgroundColor: "#EFF6FF",
     borderColor: "#BFDBFE",
@@ -607,8 +698,8 @@ const READING_LEVELS: ReadingLevelOption[] = [
   {
     value: "advanced",
     label: "Advanced",
-    badge: "Level 4",
-    description: "Closer to original passage with light adjustments",
+    badge: "Light Support",
+    description: "Keeps more of the original wording, detail, and sentence style",
     accentColor: "#7C3AED",
     backgroundColor: "#F5F3FF",
     borderColor: "#DDD6FE",
@@ -721,6 +812,8 @@ export default function App() {
     useState<ReadingFeedbackResponse | null>(null);
   const [feedbackError, setFeedbackError] =
     useState<ApiErrorMessage | null>(null);
+  const [acceptedSuggestedLevel, setAcceptedSuggestedLevel] =
+    useState<ReadingLevel | null>(null);
 
   const [authSession, setLocalAuthSession] = useState<AuthSession>(() =>
     getAuthSession()
@@ -750,6 +843,13 @@ export default function App() {
         simplifiedResult?.vocabulary_items.map((item) => item.term) ?? []
       ),
     [submittedSourceText, simplifiedResult]
+  );
+  const feedbackLevelSuggestion = useMemo(
+    () =>
+      feedbackResult && selectedFeedback && simplifiedResult
+        ? getReadingLevelSuggestion(selectedFeedback, simplifiedResult.target_reading_level)
+        : null,
+    [feedbackResult, selectedFeedback, simplifiedResult]
   );
 
   const renderHighlightedPassage = (
@@ -827,6 +927,7 @@ export default function App() {
     setFeedbackResult(null);
     setFeedbackError(null);
     setIsFeedbackLoading(false);
+    setAcceptedSuggestedLevel(null);
     setCurrentScreen("guided");
     setGuidedStep(1);
   };
@@ -1029,6 +1130,7 @@ export default function App() {
     }
 
     setSelectedFeedback(signal);
+    setAcceptedSuggestedLevel(null);
     setFeedbackError(null);
     setIsFeedbackLoading(true);
     const controller = new AbortController();
@@ -1098,9 +1200,15 @@ export default function App() {
     }
   };
 
+  const handleAcceptSuggestedLevel = (level: ReadingLevel) => {
+    setSelectedLevel(level);
+    setAcceptedSuggestedLevel(level);
+  };
+
   const handleSaveSession = async () => {
     resetReadingState();
     setPassage("");
+    setSelectedLevel("elementary");
     const trimmedId = tempLearnerId.trim() || null;
     const trimmedToken = tempToken.trim() || null;
     const trimmedRefreshToken = tempRefreshToken.trim() || null;
@@ -1120,6 +1228,7 @@ export default function App() {
   const handleClearSessionState = async () => {
     resetReadingState();
     setPassage("");
+    setSelectedLevel("elementary");
     await clearAuthSession();
     setTempLearnerId("");
     setTempToken("");
@@ -1168,6 +1277,7 @@ export default function App() {
     setSelectedFeedback(null);
     setFeedbackResult(null);
     setFeedbackError(null);
+    setAcceptedSuggestedLevel(null);
 
     if (
       !authSession.learnerId ||
@@ -1985,10 +2095,11 @@ export default function App() {
               ]}
             >
               <View style={styles.stepCard}>
-                <Text style={styles.stepEyebrow}>STEP 1 OF 3 • READING SPEED</Text>
-                <Text style={styles.stepTitle}>Choose Your Reading Level</Text>
+                <Text style={styles.stepEyebrow}>STEP 1 OF 3 • READING SUPPORT</Text>
+                <Text style={styles.stepTitle}>Choose Your Reading Support</Text>
                 <Text style={styles.stepDesc}>
-                  Pick the speed that feels best for you today — you can always change it!
+                  Pick the amount of help that feels useful today. These choices change the text,
+                  not what you are capable of — and you can change them anytime.
                 </Text>
 
                 {/* 2×2 illustrated level icon grid */}
@@ -2757,16 +2868,69 @@ export default function App() {
                 <View style={styles.feedbackHeader}>
                   <Text style={styles.feedbackTitle}>How did this reading feel?</Text>
                   <Text style={styles.feedbackSub}>
-                    Let Buddy know so he can get even better at helping you!
+                    Share how it felt, then choose the support you want for your next passage.
                   </Text>
                 </View>
 
                 {feedbackResult ? (
-                  <View style={styles.feedbackThanksBanner}>
-                    <Text style={styles.feedbackThanksIcon}>🎉</Text>
-                    <Text style={styles.feedbackThanksText}>
-                      Thanks for your feedback! Buddy is learning to help you even better.
-                    </Text>
+                  <View>
+                    <View style={styles.feedbackThanksBanner}>
+                      <Text style={styles.feedbackThanksIcon}>🎉</Text>
+                      <Text style={styles.feedbackThanksText}>
+                        Thanks! Your answer was saved for this reading.
+                      </Text>
+                    </View>
+
+                    {feedbackLevelSuggestion && (
+                      <View
+                        style={styles.levelSuggestionCard}
+                        accessibilityLabel="Reading support suggestion"
+                      >
+                        <Text style={styles.levelSuggestionEyebrow}>FOR YOUR NEXT PASSAGE</Text>
+                        <Text style={styles.levelSuggestionTitle}>
+                          {feedbackLevelSuggestion.title}
+                        </Text>
+                        <Text style={styles.levelSuggestionMessage}>
+                          {feedbackLevelSuggestion.message}
+                        </Text>
+
+                        {feedbackLevelSuggestion.kind === "adjust" &&
+                          feedbackLevelSuggestion.suggestedLevel &&
+                          (acceptedSuggestedLevel === feedbackLevelSuggestion.suggestedLevel ? (
+                            <View
+                              style={styles.levelSuggestionAccepted}
+                              accessible
+                              accessibilityLabel={`${READING_LEVEL_LABELS[feedbackLevelSuggestion.suggestedLevel]} is ready for your next passage`}
+                            >
+                              <Text style={styles.levelSuggestionAcceptedText}>
+                                ✓ {READING_LEVEL_LABELS[feedbackLevelSuggestion.suggestedLevel]} is
+                                ready for your next passage
+                              </Text>
+                            </View>
+                          ) : (
+                            <TouchableOpacity
+                              style={styles.levelSuggestionButton}
+                              onPress={() =>
+                                handleAcceptSuggestedLevel(
+                                  feedbackLevelSuggestion.suggestedLevel as ReadingLevel
+                                )
+                              }
+                              accessibilityRole="button"
+                              accessibilityLabel={`Use ${READING_LEVEL_LABELS[feedbackLevelSuggestion.suggestedLevel]} next time`}
+                            >
+                              <Text style={styles.levelSuggestionButtonText}>
+                                Use {READING_LEVEL_LABELS[feedbackLevelSuggestion.suggestedLevel]} Next
+                                Time
+                              </Text>
+                            </TouchableOpacity>
+                          ))}
+
+                        <Text style={styles.levelSuggestionNote}>
+                          This is a choice for next time. It does not change this result or measure
+                          your reading ability.
+                        </Text>
+                      </View>
+                    )}
                   </View>
                 ) : (
                   <View style={styles.feedbackGrid}>
@@ -2823,7 +2987,12 @@ export default function App() {
               </View>
 
               {/* New reading button */}
-              <TouchableOpacity style={styles.newReadingBtn} onPress={resetReadingState}>
+              <TouchableOpacity
+                style={styles.newReadingBtn}
+                onPress={resetReadingState}
+                accessibilityRole="button"
+                accessibilityLabel="Read another story"
+              >
                 <Text style={styles.newReadingBtnText}>📚 Read Another Story</Text>
               </TouchableOpacity>
             </View>
@@ -5418,6 +5587,72 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#065F46",
     lineHeight: 20,
+  },
+  levelSuggestionCard: {
+    marginTop: 12,
+    padding: 15,
+    backgroundColor: "#F5F3FF",
+    borderRadius: 17,
+    borderWidth: 1.5,
+    borderColor: "#DDD6FE",
+  },
+  levelSuggestionEyebrow: {
+    color: "#7C3AED",
+    fontSize: 10,
+    fontWeight: "900",
+    letterSpacing: 0.8,
+    marginBottom: 5,
+  },
+  levelSuggestionTitle: {
+    color: "#1E1B4B",
+    fontSize: 16,
+    fontWeight: "900",
+    lineHeight: 21,
+    marginBottom: 5,
+  },
+  levelSuggestionMessage: {
+    color: "#475569",
+    fontSize: 13,
+    lineHeight: 19,
+  },
+  levelSuggestionButton: {
+    minHeight: 48,
+    marginTop: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#7C3AED",
+    borderRadius: 14,
+    borderBottomWidth: 4,
+    borderBottomColor: "#5B21B6",
+  },
+  levelSuggestionButtonText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "900",
+  },
+  levelSuggestionAccepted: {
+    marginTop: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: "#ECFDF5",
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#A7F3D0",
+  },
+  levelSuggestionAcceptedText: {
+    color: "#047857",
+    fontSize: 13,
+    fontWeight: "800",
+    lineHeight: 18,
+    textAlign: "center",
+  },
+  levelSuggestionNote: {
+    marginTop: 10,
+    color: "#64748B",
+    fontSize: 11,
+    lineHeight: 16,
   },
   feedbackErrorBox: {
     marginTop: 10,

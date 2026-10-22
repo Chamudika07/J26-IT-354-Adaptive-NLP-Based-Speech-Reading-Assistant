@@ -38,9 +38,10 @@ const vocab = (term) => ({
 const result = (
   text = "Synthetic simplified passage.",
   vocabularyItems = [vocab("habitat"), vocab("forest")],
+  targetReadingLevel = "elementary",
 ) => ({
   learner_id: learnerId, session_id: sessionId, simplified_text: text,
-  target_reading_level: "elementary", strategy_applied: "combined",
+  target_reading_level: targetReadingLevel, strategy_applied: "combined",
   estimated_output_difficulty: "0.25", adaptation_attempt: 1,
   vocabulary_items: vocabularyItems, warnings: [],
   created_at: "2026-01-01T00:00:00Z",
@@ -171,10 +172,15 @@ function harness(initialSession = {
       .props.onChangeText(passage);
     render();
   }
-  async function simplify(textValue, vocabularyItems, sourceText = "Synthetic passage.") {
+  async function simplify(
+    textValue,
+    vocabularyItems,
+    sourceText = "Synthetic passage.",
+    targetReadingLevel = "elementary",
+  ) {
     enter(sourceText);
     const pending = press("Simplify my text");
-    calls.at(-1).resolve(result(textValue, vocabularyItems));
+    calls.at(-1).resolve(result(textValue, vocabularyItems, targetReadingLevel));
     await pending;
     render();
   }
@@ -201,6 +207,7 @@ function harness(initialSession = {
   return { calls, nativeCalls, press, enter, render, simplify, text, textByAccessibilityLabel,
     nodeByAccessibilityLabel, backgroundColorsByAccessibilityLabel,
     calculatePassageHighlights: appModule.calculatePassageHighlights,
+    getReadingLevelSuggestion: appModule.getReadingLevelSuggestion,
     buildLearningPackHtml: appModule.buildLearningPackHtml,
     escapeLearningPackHtml: appModule.escapeLearningPackHtml,
     maxDiffMatrixCells: appModule.MAX_DIFF_MATRIX_CELLS,
@@ -282,6 +289,43 @@ test("learning-pack HTML excludes internal identifiers, tokens, feedback, and re
     "learner-secret-value", "session-secret-value", "token-secret-value",
     "too_hard", "reviewedVocabularyItems",
   ]) assert.ok(!html.includes(forbidden));
+});
+
+test("reading-level suggestions map every feedback signal across all four levels", () => {
+  const app = harness();
+  const levels = ["beginner", "elementary", "intermediate", "advanced"];
+  const easier = [null, "beginner", "elementary", "intermediate"];
+  const harder = ["elementary", "intermediate", "advanced", null];
+
+  for (const [index, level] of levels.entries()) {
+    const tooHard = app.getReadingLevelSuggestion("too_hard", level);
+    assert.equal(tooHard.suggestedLevel, easier[index]);
+    assert.equal(tooHard.kind, index === 0 ? "boundary" : "adjust");
+
+    const tooEasy = app.getReadingLevelSuggestion("too_easy", level);
+    assert.equal(tooEasy.suggestedLevel, harder[index]);
+    assert.equal(tooEasy.kind, index === levels.length - 1 ? "boundary" : "adjust");
+
+    const justRight = app.getReadingLevelSuggestion("just_right", level);
+    assert.equal(justRight.kind, "keep");
+    assert.equal(justRight.suggestedLevel, null);
+
+    const skipped = app.getReadingLevelSuggestion("skipped", level);
+    assert.equal(skipped.kind, "none");
+    assert.equal(skipped.suggestedLevel, null);
+  }
+});
+
+test("reading-level copy describes support without measuring ability", () => {
+  const app = harness();
+  app.press("Start My Reading Adventure");
+  const screen = app.text();
+  assert.match(screen, /Most Support/);
+  assert.match(screen, /Extra Support/);
+  assert.match(screen, /Some Support/);
+  assert.match(screen, /Light Support/);
+  assert.match(screen, /not what you are capable of/);
+  assert.doesNotMatch(screen, /READING SPEED|intelligence|diagnos/i);
 });
 
 test("local diff leaves identical text unchanged", () => {
@@ -377,7 +421,7 @@ test("large rewrites use the bounded conservative fallback", () => {
 test("simplification uses selected values and renders vocabulary", async () => {
   const app = harness();
   app.enter();
-  app.press("Beginner level: Shortest sentences and simplest everyday words");
+  app.press("Beginner level: Very short sentences and familiar everyday words");
   app.press("Sentence Split strategy: Breaks long, winding sentences into bite-sized pieces");
   const pending = app.press("Simplify my text");
   const call = app.calls[0];
@@ -848,9 +892,11 @@ test("explanation switch and close ignore late successes and failures", async ()
   assert.doesNotMatch(app.text(), /Late failure|Explanation Failed/);
 });
 
-for (const [signal, label] of [
-  ["too_hard", "Too Hard"], ["just_right", "Just Right"],
-  ["too_easy", "Too Easy"], ["skipped", "Skipped"],
+for (const [signal, label, expectedSuggestion] of [
+  ["too_hard", "Too Hard", "Use Beginner Next Time"],
+  ["just_right", "Just Right", "This level can stay"],
+  ["too_easy", "Too Easy", "Use Intermediate Next Time"],
+  ["skipped", "Skipped", "No level suggestion this time"],
 ]) {
   test(`feedback ${signal} sends consistent identifiers and completion`, async () => {
     const app = harness();
@@ -866,9 +912,122 @@ for (const [signal, label] of [
       session_id: sessionId, feedback_recorded: true, created_at: "2026-01-01T00:00:00Z",
     });
     await pending; app.render();
-    assert.match(app.text(), /Thanks for your feedback/);
+    assert.match(app.text(), /Thanks! Your answer was saved for this reading/);
+    assert.match(app.text(), new RegExp(expectedSuggestion));
   });
 }
+
+test("difficulty suggestion appears only after successful feedback acknowledgement", async () => {
+  const app = harness();
+  await app.simplify("A simpler result.", [], "Synthetic source.", "advanced");
+
+  const pending = app.press("Feedback: Too Hard");
+  assert.doesNotMatch(app.text(), /FOR YOUR NEXT PASSAGE|Use Intermediate Next Time/);
+  app.calls.at(-1).resolve({
+    feedback_id: "33333333-3333-4333-8333-333333333333",
+    session_id: sessionId,
+    feedback_recorded: true,
+    created_at: "2026-01-01T00:00:00Z",
+  });
+  await pending;
+  app.render();
+  assert.match(app.text(), /FOR YOUR NEXT PASSAGE/);
+  assert.match(app.text(), /Use Intermediate Next Time/);
+});
+
+test("failed feedback does not produce a level suggestion", async () => {
+  const app = harness();
+  await app.simplify("A simpler result.", [], "Synthetic source.", "advanced");
+
+  const pending = app.press("Feedback: Too Hard");
+  app.calls.at(-1).reject(
+    new client.SimplificationApiError(503, "service_unavailable", "Synthetic failure"),
+  );
+  await pending;
+  app.render();
+
+  assert.match(app.text(), /Feedback Failed|Synthetic failure/);
+  assert.doesNotMatch(app.text(), /FOR YOUR NEXT PASSAGE|Use Intermediate Next Time/);
+});
+
+test("accepting an actual-result suggestion changes only the next local selection", async () => {
+  const app = harness();
+  await app.simplify("Current advanced result.", [], "Synthetic source.", "advanced");
+  const feedback = app.press("Feedback: Too Hard");
+  app.calls.at(-1).resolve({ feedback_recorded: true });
+  await feedback;
+  app.render();
+  const callCount = app.calls.length;
+
+  app.press("Use Intermediate next time");
+  assert.equal(app.calls.length, callCount);
+  assert.match(app.text(), /Intermediate is ready for your next passage/);
+  assert.match(app.text(), /Current advanced result/);
+
+  const preview = app.press("Preview and print learning pack");
+  const printCall = app.nativeCalls.find(({ method }) => method === "printAsync");
+  assert.match(printCall.args[0].html, /Reading level: Advanced/);
+  assert.match(printCall.args[0].html, /Current advanced result/);
+  printCall.resolve();
+  await preview;
+
+  app.press("Read another story");
+  const intermediate = app.nodeByAccessibilityLabel(
+    "Intermediate level: Varied sentences with a few more challenging words",
+  );
+  assert.equal(intermediate.props.accessibilityState.selected, true);
+  assert.doesNotMatch(app.text(), /FOR YOUR NEXT PASSAGE/);
+});
+
+test("ignoring a suggestion keeps the existing next-passage selection", async () => {
+  const app = harness();
+  await app.simplify("Current result.", [], "Synthetic source.", "elementary");
+  const feedback = app.press("Feedback: Too Easy");
+  app.calls.at(-1).resolve({ feedback_recorded: true });
+  await feedback;
+  app.render();
+  assert.match(app.text(), /Use Intermediate Next Time/);
+
+  app.press("Read another story");
+  const elementary = app.nodeByAccessibilityLabel(
+    "Elementary level: Clear sentences with familiar words and gentle explanations",
+  );
+  assert.equal(elementary.props.accessibilityState.selected, true);
+});
+
+for (const [actualLevel, feedbackLabel, expectedMessage, forbiddenAction] of [
+  ["beginner", "Too Hard", "already have the most reading support", "Use Beginner Next Time"],
+  ["advanced", "Too Easy", "already using the lightest support", "Use Advanced Next Time"],
+]) {
+  test(`${actualLevel} boundary feedback does not propose a nonexistent level`, async () => {
+    const app = harness();
+    await app.simplify("Boundary result.", [], "Synthetic source.", actualLevel);
+    const pending = app.press(`Feedback: ${feedbackLabel}`);
+    app.calls.at(-1).resolve({ feedback_recorded: true });
+    await pending;
+    app.render();
+
+    assert.match(app.text(), new RegExp(expectedMessage, "i"));
+    assert.doesNotMatch(app.text(), new RegExp(forbiddenAction));
+  });
+}
+
+test("applying session configuration clears suggestions and restores neutral elementary", async () => {
+  const app = harness();
+  await app.simplify("Current advanced result.", [], "Synthetic source.", "advanced");
+  const feedback = app.press("Feedback: Too Hard");
+  app.calls.at(-1).resolve({ feedback_recorded: true });
+  await feedback;
+  app.press("Use Intermediate next time");
+
+  app.press("Toggle test session settings");
+  await app.press("Apply Session");
+  const elementary = app.nodeByAccessibilityLabel(
+    "Elementary level: Clear sentences with familiar words and gentle explanations",
+  );
+  assert.equal(elementary.props.accessibilityState.selected, true);
+  assert.doesNotMatch(app.text(), /FOR YOUR NEXT PASSAGE|ready for your next passage/);
+});
 
 for (const reject of [false, true]) {
   test(`reset/new simplification ignores pending feedback ${reject ? "failure" : "success"}`, async () => {
