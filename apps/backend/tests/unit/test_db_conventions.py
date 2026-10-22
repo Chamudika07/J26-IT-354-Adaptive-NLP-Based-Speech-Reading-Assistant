@@ -33,6 +33,8 @@ def test_registered_foundation_tables_only() -> None:
         "reading_material_sources",
         "reading_material_extraction_runs",
         "reading_material_extraction_pages",
+        "reading_material_extraction_reviews",
+        "reading_material_extraction_review_pages",
         "reading_assessment_sessions",
         "reading_assessment_results",
         "users",

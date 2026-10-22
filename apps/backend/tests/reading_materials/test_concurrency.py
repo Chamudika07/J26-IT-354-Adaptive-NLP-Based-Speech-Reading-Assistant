@@ -81,6 +81,8 @@ def context(postgres_engine, password_hash, settings, request):
             db.execute(
                 text(
                     "TRUNCATE reading_material_sources, reading_material_extraction_runs, "
+                    "reading_material_extraction_reviews, "
+                    "reading_material_extraction_review_pages, "
                     "reading_material_extraction_pages, reading_material_sentence_features, "
                     "reading_material_processing_runs, "
                     "reading_material_revisions, reading_materials"

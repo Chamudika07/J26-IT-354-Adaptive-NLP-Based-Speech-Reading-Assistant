@@ -46,7 +46,7 @@ class RevisionSummary(BaseModel):
     revision_number: int
     title: str
     language_tag: Literal["en"]
-    source_kind: Literal["plain_text", "pdf_text"]
+    source_kind: Literal["plain_text", "pdf_text", "ocr_reviewed"]
     created_at: datetime
 
 

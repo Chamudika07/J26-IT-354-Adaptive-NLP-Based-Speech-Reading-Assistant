@@ -51,6 +51,8 @@ def test_pdf_upgrade_downgrade_preserves_plain_text(postgres_engine):
             "reading_material_sources",
             "reading_material_extraction_runs",
             "reading_material_extraction_pages",
+            "reading_material_extraction_reviews",
+            "reading_material_extraction_review_pages",
         }
         assert (
             connection.scalar(
@@ -61,7 +63,7 @@ def test_pdf_upgrade_downgrade_preserves_plain_text(postgres_engine):
         )
         assert (
             connection.scalar(text("SELECT version_num FROM alembic_version"))
-            == "0008_pdf_text_extraction"
+            == "0009_ocr_review_workflow"
         )
         command.check(config)
         command.downgrade(config, "0007_reading_material_processing")

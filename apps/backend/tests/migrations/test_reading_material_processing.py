@@ -36,6 +36,8 @@ def test_reading_material_upgrade_downgrade_and_preservation(postgres_engine):
             "reading_material_sources",
             "reading_material_extraction_runs",
             "reading_material_extraction_pages",
+            "reading_material_extraction_reviews",
+            "reading_material_extraction_review_pages",
         }
         assert set(inspect(connection).get_table_names()) - before == added
         assert (
@@ -47,7 +49,7 @@ def test_reading_material_upgrade_downgrade_and_preservation(postgres_engine):
         )
         assert (
             connection.scalar(text("SELECT version_num FROM alembic_version"))
-            == "0008_pdf_text_extraction"
+            == "0009_ocr_review_workflow"
         )
         command.check(config)
         command.downgrade(config, "0006_reading_assessments")

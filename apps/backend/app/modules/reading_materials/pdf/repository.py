@@ -35,6 +35,7 @@ def attempts(db: Session, identity: UUID, fingerprint: str) -> list[ExtractionRu
             select(ExtractionRun)
             .where(
                 ExtractionRun.source_id == identity,
+                ExtractionRun.extraction_method == "embedded_pdf",
                 ExtractionRun.extraction_fingerprint == fingerprint,
             )
             .order_by(ExtractionRun.attempt_number.desc())
@@ -48,7 +49,11 @@ def run(
 ) -> ExtractionRun | None:
     q = (
         select(ExtractionRun)
-        .where(ExtractionRun.id == identity, ExtractionRun.source_id == source_id)
+        .where(
+            ExtractionRun.id == identity,
+            ExtractionRun.source_id == source_id,
+            ExtractionRun.extraction_method == "embedded_pdf",
+        )
         .execution_options(populate_existing=True)
     )
     return db.scalar(q.with_for_update() if lock else q)
@@ -67,7 +72,9 @@ def pages(db: Session, identity: UUID) -> list[ExtractionPage]:
 def latest(db: Session, identity: UUID) -> ExtractionRun | None:
     return db.scalar(
         select(ExtractionRun)
-        .where(ExtractionRun.source_id == identity)
+        .where(
+            ExtractionRun.source_id == identity, ExtractionRun.extraction_method == "embedded_pdf"
+        )
         .order_by(ExtractionRun.started_at.desc(), ExtractionRun.id.desc())
         .limit(1)
     )
@@ -93,7 +100,9 @@ def sources(
 def history(
     db: Session, identity: UUID, cursor: tuple[datetime, UUID] | None, limit: int
 ) -> list[ExtractionRun]:
-    q = select(ExtractionRun).where(ExtractionRun.source_id == identity)
+    q = select(ExtractionRun).where(
+        ExtractionRun.source_id == identity, ExtractionRun.extraction_method == "embedded_pdf"
+    )
     if cursor:
         q = q.where(tuple_(ExtractionRun.started_at, ExtractionRun.id) < cursor)
     return list(

@@ -43,7 +43,7 @@ class ReadingMaterialRevision(UUIDPrimaryKeyMixin, Base):
         CheckConstraint("language_tag = 'en'", name="language_english"),
         CheckConstraint(
             "(source_kind = 'plain_text' AND extraction_run_id IS NULL) OR "
-            "(source_kind = 'pdf_text' AND extraction_run_id IS NOT NULL)",
+            "(source_kind IN ('pdf_text','ocr_reviewed') AND extraction_run_id IS NOT NULL)",
             name="source_provenance",
         ),
         UniqueConstraint("extraction_run_id", name="uq_revision_extraction"),

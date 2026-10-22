@@ -8,6 +8,7 @@ from app.modules.learner_modelling import models as learner_modelling_models  # 
 from app.modules.learners import models as learner_models  # noqa: F401
 from app.modules.numeracy import models as numeracy_models  # noqa: F401
 from app.modules.reading_materials import models as reading_material_models  # noqa: F401
+from app.modules.reading_materials.ocr import models as ocr_models  # noqa: F401
 from app.modules.reading_materials.pdf import models as pdf_models  # noqa: F401
 from app.modules.simplification import models as simplification_models  # noqa: F401
 from app.modules.speech import models as speech_models  # noqa: F401
