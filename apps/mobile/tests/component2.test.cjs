@@ -74,7 +74,9 @@ function harness(initialSession = {
     useState(initial) {
       const i = cursor++;
       if (!(i in slots)) slots[i] = typeof initial === "function" ? initial() : initial;
-      return [slots[i], (value) => { slots[i] = value; }];
+      return [slots[i], (value) => {
+        slots[i] = typeof value === "function" ? value(slots[i]) : value;
+      }];
     },
     useRef(initial) {
       const i = cursor++;
@@ -85,6 +87,9 @@ function harness(initialSession = {
       const i = cursor++;
       if (!(i in slots)) { slots[i] = true; cleanups.push(effect()); }
     },
+    useMemo(factory) {
+      return factory();
+    },
   };
   const native = Object.fromEntries([
     "Text", "View", "SafeAreaView", "ScrollView", "TextInput", "TouchableOpacity",
@@ -92,7 +97,7 @@ function harness(initialSession = {
   ].map((name) => [name, name]));
   native.StyleSheet = { create: (value) => value };
   native.Platform = { OS: "ios" };
-  const { default: App } = load(path.resolve(__dirname, "../App.tsx"), {
+  const appModule = load(path.resolve(__dirname, "../App.tsx"), {
     react,
     "react-native": native,
     "expo-status-bar": { StatusBar: "StatusBar" },
@@ -111,6 +116,7 @@ function harness(initialSession = {
       getEffectiveApiBaseUrl: () => "http://localhost:8000",
     },
   });
+  const { default: App } = appModule;
   function render() { cursor = 0; tree = App(); return tree; }
   function nodes(node = tree) {
     return node && typeof node === "object"
@@ -151,11 +157,121 @@ function harness(initialSession = {
     assert.ok(node, `Node not found: ${label}`);
     return text(node);
   }
+  function nodeByAccessibilityLabel(label) {
+    render();
+    const node = nodes().find((candidate) => candidate.props.accessibilityLabel === label);
+    assert.ok(node, `Node not found: ${label}`);
+    return node;
+  }
+  function backgroundColorsByAccessibilityLabel(label) {
+    const root = nodeByAccessibilityLabel(label);
+    return nodes(root).flatMap((node) => {
+      const styles = Array.isArray(node.props.style) ? node.props.style : [node.props.style];
+      return styles.filter(Boolean).map((style) => style.backgroundColor).filter(Boolean);
+    });
+  }
   render();
   return { calls, press, enter, render, simplify, text, textByAccessibilityLabel,
+    nodeByAccessibilityLabel, backgroundColorsByAccessibilityLabel,
+    calculatePassageHighlights: appModule.calculatePassageHighlights,
+    maxDiffMatrixCells: appModule.MAX_DIFF_MATRIX_CELLS,
     setSession: (next) => { session = next; sessionListener?.(next); render(); },
     unmount: () => cleanups.forEach((cleanup) => cleanup?.()) };
 }
+
+const reconstruct = (segments) => segments.map(({ text }) => text).join("");
+const highlightedText = (segments, kind) =>
+  segments.filter((segment) => segment.kind === kind).map(({ text }) => text).join("|");
+
+test("local diff leaves identical text unchanged", () => {
+  const app = harness();
+  const text = "  Café, 猫!\n\nSame words.  ";
+  const highlights = app.calculatePassageHighlights(text, text, []);
+
+  assert.equal(reconstruct(highlights.original), text);
+  assert.equal(reconstruct(highlights.simplified), text);
+  assert.equal(highlightedText(highlights.original, "changed"), "");
+  assert.equal(highlightedText(highlights.simplified, "changed"), "");
+  assert.equal(highlights.usedFallback, false);
+});
+
+test("local diff marks insertions, deletions, substitutions, and changed phrases", () => {
+  const app = harness();
+  const original = "A very, difficult task ended yesterday.";
+  const simplified = "A simple task ended quickly today.";
+  const highlights = app.calculatePassageHighlights(original, simplified, []);
+
+  assert.equal(reconstruct(highlights.original), original);
+  assert.equal(reconstruct(highlights.simplified), simplified);
+  assert.match(highlightedText(highlights.original, "changed"), /very, difficult/);
+  assert.match(highlightedText(highlights.original, "changed"), /yesterday/);
+  assert.match(highlightedText(highlights.simplified, "changed"), /simple/);
+  assert.match(highlightedText(highlights.simplified, "changed"), /quickly today/);
+});
+
+test("local diff preserves Unicode, punctuation, whitespace, and line breaks exactly", () => {
+  const app = harness();
+  const original = "  Café—猫.\n\n“Hello!”  \n";
+  const simplified = "  Cafe—猫.\n\n“Hi!”  \n";
+  const highlights = app.calculatePassageHighlights(original, simplified, []);
+
+  assert.equal(reconstruct(highlights.original), original);
+  assert.equal(reconstruct(highlights.simplified), simplified);
+  assert.match(highlightedText(highlights.original, "changed"), /Café.*Hello/s);
+  assert.match(highlightedText(highlights.simplified, "changed"), /Cafe.*Hi/s);
+});
+
+test("repeated-word alignment is deterministic", () => {
+  const app = harness();
+  const args = ["one two one three", "one one two three", []];
+  const first = app.calculatePassageHighlights(...args);
+  const second = app.calculatePassageHighlights(...args);
+
+  assert.deepEqual(first, second);
+  assert.equal(reconstruct(first.original), args[0]);
+  assert.equal(reconstruct(first.simplified), args[1]);
+  assert.notEqual(highlightedText(first.original, "changed"), "");
+  assert.notEqual(highlightedText(first.simplified, "changed"), "");
+});
+
+test("vocabulary matches whole words and multiword phrases case-insensitively", () => {
+  const app = harness();
+  const text = "Cat category NEW YORK and new yorker; New York.";
+  const highlights = app.calculatePassageHighlights(text, text, ["cat", "new york"]);
+  const blue = highlights.simplified.filter(({ kind }) => kind === "vocabulary");
+
+  assert.equal(reconstruct(highlights.simplified), text);
+  assert.deepEqual([...blue.map(({ text: value }) => value)], ["Cat", "NEW YORK", "New York"]);
+  assert.ok(!blue.some(({ text: value }) => value.includes("category") || value.includes("yorker")));
+});
+
+test("blue vocabulary has priority over overlapping yellow changes", () => {
+  const app = harness();
+  const highlights = app.calculatePassageHighlights(
+    "A difficult habitat.",
+    "A simple ecosystem.",
+    ["simple ecosystem"],
+  );
+
+  assert.equal(highlightedText(highlights.simplified, "vocabulary"), "simple ecosystem");
+  assert.equal(highlightedText(highlights.simplified, "changed"), "");
+  assert.match(highlightedText(highlights.original, "changed"), /difficult habitat/);
+});
+
+test("large rewrites use the bounded conservative fallback", () => {
+  const app = harness();
+  const original = Array.from({ length: 600 }, (_, index) => `old${index}`).join(" ");
+  const simplified = Array.from({ length: 600 }, (_, index) => `new${index}`).join(" ");
+  assert.ok(600 * 600 > app.maxDiffMatrixCells);
+
+  const highlights = app.calculatePassageHighlights(original, simplified, []);
+
+  assert.equal(highlights.usedFallback, true);
+  assert.equal(reconstruct(highlights.original), original);
+  assert.equal(reconstruct(highlights.simplified), simplified);
+  assert.equal(highlightedText(highlights.original, "changed"), original);
+  assert.equal(highlightedText(highlights.simplified, "changed"), simplified);
+});
 
 test("simplification uses selected values and renders vocabulary", async () => {
   const app = harness();
@@ -202,6 +318,38 @@ test("switching result views does not make another API request", async () => {
   assert.equal(app.calls.length, requestCount);
   assert.doesNotMatch(app.text(), /ORIGINAL TEXT/);
   assert.match(app.text(), /A simpler version/);
+});
+
+test("show highlights switch changes styling without requests or changing the view", async () => {
+  const app = harness();
+  await app.simplify(
+    "A simple habitat.",
+    [vocab("habitat")],
+    "A difficult habitat.",
+  );
+  const requestCount = app.calls.length;
+  const switchNode = app.nodeByAccessibilityLabel("Show highlights");
+  assert.equal(switchNode.props.accessibilityRole, "switch");
+  assert.equal(switchNode.props.accessibilityState.checked, true);
+  assert.ok(app.backgroundColorsByAccessibilityLabel("Simplified passage").includes("#FDE68A"));
+  assert.ok(app.backgroundColorsByAccessibilityLabel("Simplified passage").includes("#BFDBFE"));
+
+  await app.press("Show highlights");
+  assert.equal(app.nodeByAccessibilityLabel("Show highlights").props.accessibilityState.checked, false);
+  assert.deepEqual(app.backgroundColorsByAccessibilityLabel("Simplified passage"), []);
+  assert.equal(app.textByAccessibilityLabel("Simplified passage"), "A simple habitat.");
+
+  await app.press("Compare");
+  assert.equal(app.nodeByAccessibilityLabel("Compare").props.accessibilityState.selected, true);
+  assert.deepEqual(app.backgroundColorsByAccessibilityLabel("Original passage"), []);
+  assert.deepEqual(app.backgroundColorsByAccessibilityLabel("Simplified passage"), []);
+  assert.equal(app.calls.length, requestCount);
+
+  await app.press("Show highlights");
+  assert.ok(app.backgroundColorsByAccessibilityLabel("Original passage").includes("#FDE68A"));
+  assert.ok(app.backgroundColorsByAccessibilityLabel("Original passage").includes("#BFDBFE"));
+  assert.equal(app.nodeByAccessibilityLabel("Compare").props.accessibilityState.selected, true);
+  assert.equal(app.calls.length, requestCount);
 });
 
 test("a later successful simplification replaces the matching original passage", async () => {

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   StyleSheet,
   Text,
@@ -86,6 +86,291 @@ interface SampleStory {
 }
 
 type ResultTextView = "simplified" | "compare";
+
+export type TextHighlightKind = "changed" | "vocabulary";
+
+export interface TextHighlightSegment {
+  text: string;
+  kind: TextHighlightKind | null;
+}
+
+export interface PassageHighlights {
+  original: TextHighlightSegment[];
+  simplified: TextHighlightSegment[];
+  usedFallback: boolean;
+}
+
+interface WordToken {
+  value: string;
+  comparisonValue: string;
+  vocabularyValue: string;
+  start: number;
+  end: number;
+}
+
+interface TextRange {
+  start: number;
+  end: number;
+}
+
+// The exact LCS matrix is intentionally bounded. Above this limit, the
+// unmatched middle is highlighted conservatively so a long rewrite cannot
+// block the mobile JavaScript thread with quadratic work.
+export const MAX_DIFF_MATRIX_CELLS = 250_000;
+
+const tokenizeWords = (text: string): WordToken[] => {
+  const tokens: WordToken[] = [];
+  const expression = /[\p{L}\p{M}\p{N}]+/gu;
+  let match: RegExpExecArray | null;
+  while ((match = expression.exec(text)) !== null) {
+    tokens.push({
+      value: match[0],
+      comparisonValue: match[0],
+      vocabularyValue: match[0].toLowerCase(),
+      start: match.index,
+      end: match.index + match[0].length,
+    });
+  }
+  return tokens;
+};
+
+const rangesFromWordIndexes = (
+  tokens: WordToken[],
+  indexes: Set<number>
+): TextRange[] => {
+  const sortedIndexes = [...indexes].sort((left, right) => left - right);
+  const ranges: TextRange[] = [];
+  let firstIndex: number | null = null;
+  let previousIndex: number | null = null;
+
+  const finishRange = () => {
+    if (firstIndex !== null && previousIndex !== null) {
+      ranges.push({
+        start: tokens[firstIndex].start,
+        end: tokens[previousIndex].end,
+      });
+    }
+  };
+
+  for (const index of sortedIndexes) {
+    if (firstIndex === null || previousIndex === null) {
+      firstIndex = index;
+    } else if (index !== previousIndex + 1) {
+      finishRange();
+      firstIndex = index;
+    }
+    previousIndex = index;
+  }
+  finishRange();
+  return ranges;
+};
+
+const findVocabularyRanges = (
+  tokens: WordToken[],
+  vocabularyTerms: string[]
+): TextRange[] => {
+  const termSequences = vocabularyTerms
+    .map((term) => tokenizeWords(term).map((token) => token.vocabularyValue))
+    .filter((sequence) => sequence.length > 0)
+    .sort((left, right) => {
+      if (left.length !== right.length) return right.length - left.length;
+      return left.join("\u0000").localeCompare(right.join("\u0000"));
+    });
+  const uniqueSequences = termSequences.filter(
+    (sequence, index) =>
+      index === 0 ||
+      sequence.join("\u0000") !== termSequences[index - 1].join("\u0000")
+  );
+  const occupiedIndexes = new Set<number>();
+  const ranges: TextRange[] = [];
+
+  for (const sequence of uniqueSequences) {
+    for (let start = 0; start <= tokens.length - sequence.length; start += 1) {
+      let matches = true;
+      for (let offset = 0; offset < sequence.length; offset += 1) {
+        if (
+          occupiedIndexes.has(start + offset) ||
+          tokens[start + offset].vocabularyValue !== sequence[offset]
+        ) {
+          matches = false;
+          break;
+        }
+      }
+      if (!matches) continue;
+      for (let offset = 0; offset < sequence.length; offset += 1) {
+        occupiedIndexes.add(start + offset);
+      }
+      ranges.push({
+        start: tokens[start].start,
+        end: tokens[start + sequence.length - 1].end,
+      });
+    }
+  }
+  return ranges;
+};
+
+const sliceTextByRanges = (
+  text: string,
+  changedRanges: TextRange[],
+  vocabularyRanges: TextRange[]
+): TextHighlightSegment[] => {
+  const boundaries = new Set<number>([0, text.length]);
+  for (const range of [...changedRanges, ...vocabularyRanges]) {
+    boundaries.add(range.start);
+    boundaries.add(range.end);
+  }
+  const orderedBoundaries = [...boundaries].sort((left, right) => left - right);
+  const segments: TextHighlightSegment[] = [];
+
+  for (let index = 0; index < orderedBoundaries.length - 1; index += 1) {
+    const start = orderedBoundaries[index];
+    const end = orderedBoundaries[index + 1];
+    if (end <= start) continue;
+    const inRange = (range: TextRange) => range.start <= start && range.end >= end;
+    const kind = vocabularyRanges.some(inRange)
+      ? "vocabulary"
+      : changedRanges.some(inRange)
+        ? "changed"
+        : null;
+    segments.push({ text: text.slice(start, end), kind });
+  }
+
+  return segments.length > 0 ? segments : [{ text, kind: null }];
+};
+
+export const calculatePassageHighlights = (
+  originalText: string,
+  simplifiedText: string,
+  vocabularyTerms: string[]
+): PassageHighlights => {
+  const originalTokens = tokenizeWords(originalText);
+  const simplifiedTokens = tokenizeWords(simplifiedText);
+  const changedOriginalIndexes = new Set<number>();
+  const changedSimplifiedIndexes = new Set<number>();
+
+  let prefixLength = 0;
+  while (
+    prefixLength < originalTokens.length &&
+    prefixLength < simplifiedTokens.length &&
+    originalTokens[prefixLength].comparisonValue ===
+      simplifiedTokens[prefixLength].comparisonValue
+  ) {
+    prefixLength += 1;
+  }
+
+  let suffixLength = 0;
+  while (
+    suffixLength < originalTokens.length - prefixLength &&
+    suffixLength < simplifiedTokens.length - prefixLength &&
+    originalTokens[originalTokens.length - 1 - suffixLength].comparisonValue ===
+      simplifiedTokens[simplifiedTokens.length - 1 - suffixLength].comparisonValue
+  ) {
+    suffixLength += 1;
+  }
+
+  const originalMiddleLength =
+    originalTokens.length - prefixLength - suffixLength;
+  const simplifiedMiddleLength =
+    simplifiedTokens.length - prefixLength - suffixLength;
+  const usedFallback =
+    originalMiddleLength * simplifiedMiddleLength > MAX_DIFF_MATRIX_CELLS;
+
+  if (usedFallback) {
+    for (let index = 0; index < originalMiddleLength; index += 1) {
+      changedOriginalIndexes.add(prefixLength + index);
+    }
+    for (let index = 0; index < simplifiedMiddleLength; index += 1) {
+      changedSimplifiedIndexes.add(prefixLength + index);
+    }
+  } else {
+    const columns = simplifiedMiddleLength + 1;
+    const matrix = new Uint32Array((originalMiddleLength + 1) * columns);
+    for (let originalIndex = originalMiddleLength - 1; originalIndex >= 0; originalIndex -= 1) {
+      for (
+        let simplifiedIndex = simplifiedMiddleLength - 1;
+        simplifiedIndex >= 0;
+        simplifiedIndex -= 1
+      ) {
+        const matrixIndex = originalIndex * columns + simplifiedIndex;
+        if (
+          originalTokens[prefixLength + originalIndex].comparisonValue ===
+          simplifiedTokens[prefixLength + simplifiedIndex].comparisonValue
+        ) {
+          matrix[matrixIndex] =
+            matrix[(originalIndex + 1) * columns + simplifiedIndex + 1] + 1;
+        } else {
+          matrix[matrixIndex] = Math.max(
+            matrix[(originalIndex + 1) * columns + simplifiedIndex],
+            matrix[originalIndex * columns + simplifiedIndex + 1]
+          );
+        }
+      }
+    }
+
+    let originalIndex = 0;
+    let simplifiedIndex = 0;
+    while (
+      originalIndex < originalMiddleLength &&
+      simplifiedIndex < simplifiedMiddleLength
+    ) {
+      if (
+        originalTokens[prefixLength + originalIndex].comparisonValue ===
+        simplifiedTokens[prefixLength + simplifiedIndex].comparisonValue
+      ) {
+        originalIndex += 1;
+        simplifiedIndex += 1;
+      } else if (
+        matrix[(originalIndex + 1) * columns + simplifiedIndex] >=
+        matrix[originalIndex * columns + simplifiedIndex + 1]
+      ) {
+        changedOriginalIndexes.add(prefixLength + originalIndex);
+        originalIndex += 1;
+      } else {
+        changedSimplifiedIndexes.add(prefixLength + simplifiedIndex);
+        simplifiedIndex += 1;
+      }
+    }
+    while (originalIndex < originalMiddleLength) {
+      changedOriginalIndexes.add(prefixLength + originalIndex);
+      originalIndex += 1;
+    }
+    while (simplifiedIndex < simplifiedMiddleLength) {
+      changedSimplifiedIndexes.add(prefixLength + simplifiedIndex);
+      simplifiedIndex += 1;
+    }
+  }
+
+  const originalChangedRanges = rangesFromWordIndexes(
+    originalTokens,
+    changedOriginalIndexes
+  );
+  const simplifiedChangedRanges = rangesFromWordIndexes(
+    simplifiedTokens,
+    changedSimplifiedIndexes
+  );
+  const originalVocabularyRanges = findVocabularyRanges(
+    originalTokens,
+    vocabularyTerms
+  );
+  const simplifiedVocabularyRanges = findVocabularyRanges(
+    simplifiedTokens,
+    vocabularyTerms
+  );
+
+  return {
+    original: sliceTextByRanges(
+      originalText,
+      originalChangedRanges,
+      originalVocabularyRanges
+    ),
+    simplified: sliceTextByRanges(
+      simplifiedText,
+      simplifiedChangedRanges,
+      simplifiedVocabularyRanges
+    ),
+    usedFallback,
+  };
+};
 
 const SAMPLE_STORIES: SampleStory[] = [
   {
@@ -281,6 +566,7 @@ export default function App() {
   );
   const [resultTextView, setResultTextView] =
     useState<ResultTextView>("simplified");
+  const [showHighlights, setShowHighlights] = useState(true);
   const activeSimplifyAbortRef = useRef<AbortController | null>(null);
   const activeFeedbackAbortRef = useRef<AbortController | null>(null);
 
@@ -319,6 +605,45 @@ export default function App() {
 
   const effectiveEndpoint =
     authSession.apiBaseUrl?.trim() || getEffectiveApiBaseUrl();
+  const passageHighlights = useMemo(
+    () =>
+      calculatePassageHighlights(
+        submittedSourceText ?? "",
+        simplifiedResult?.simplified_text ?? "",
+        simplifiedResult?.vocabulary_items.map((item) => item.term) ?? []
+      ),
+    [submittedSourceText, simplifiedResult]
+  );
+
+  const renderHighlightedPassage = (
+    text: string,
+    segments: TextHighlightSegment[],
+    variant: "comparison" | "simplified",
+    accessibilityLabel: string
+  ) => (
+    <Text
+      style={variant === "comparison" ? styles.comparisonText : styles.simplifiedText}
+      selectable
+      accessibilityLabel={accessibilityLabel}
+    >
+      {showHighlights
+        ? segments.map((segment, index) => (
+            <Text
+              key={`${index}-${segment.kind ?? "plain"}`}
+              style={
+                segment.kind === "vocabulary"
+                  ? styles.vocabularyHighlight
+                  : segment.kind === "changed"
+                    ? styles.changedHighlight
+                    : undefined
+              }
+            >
+              {segment.text}
+            </Text>
+          ))
+        : text}
+    </Text>
+  );
 
   useEffect(() => {
     let mounted = true;
@@ -346,6 +671,7 @@ export default function App() {
     setSimplifiedResult(null);
     setSubmittedSourceText(null);
     setResultTextView("simplified");
+    setShowHighlights(true);
     setApiError(null);
     setValidationError(null);
     setExplainTerm(null);
@@ -364,6 +690,7 @@ export default function App() {
     setPassage(text);
     setSubmittedSourceText(null);
     setResultTextView("simplified");
+    setShowHighlights(true);
     if (validationError) {
       setValidationError(null);
     }
@@ -664,6 +991,7 @@ export default function App() {
     setSimplifiedResult(null);
     setSubmittedSourceText(null);
     setResultTextView("simplified");
+    setShowHighlights(true);
     setExplainTerm(null);
     setExplainResult(null);
     setExplainError(null);
@@ -705,6 +1033,7 @@ export default function App() {
         setSimplifiedResult(result);
         setSubmittedSourceText(sourceTextForDisplay);
         setResultTextView("simplified");
+        setShowHighlights(true);
         setApiError(null);
       }
     } catch (err: unknown) {
@@ -1746,50 +2075,94 @@ export default function App() {
               </View>
 
               {submittedSourceText !== null && (
-                <View
-                  style={styles.resultViewSelector}
-                  accessibilityRole="tablist"
-                  accessibilityLabel="Choose how to view your reading"
-                >
-                  <TouchableOpacity
-                    style={[
-                      styles.resultViewOption,
-                      resultTextView === "simplified" && styles.resultViewOptionSelected,
-                    ]}
-                    onPress={() => setResultTextView("simplified")}
-                    accessibilityRole="tab"
-                    accessibilityLabel="Simplified Only"
-                    accessibilityState={{ selected: resultTextView === "simplified" }}
+                <View>
+                  <View
+                    style={styles.resultViewSelector}
+                    accessibilityRole="tablist"
+                    accessibilityLabel="Choose how to view your reading"
                   >
-                    <Text
+                    <TouchableOpacity
                       style={[
-                        styles.resultViewOptionText,
-                        resultTextView === "simplified" &&
-                          styles.resultViewOptionTextSelected,
+                        styles.resultViewOption,
+                        resultTextView === "simplified" && styles.resultViewOptionSelected,
                       ]}
+                      onPress={() => setResultTextView("simplified")}
+                      accessibilityRole="tab"
+                      accessibilityLabel="Simplified Only"
+                      accessibilityState={{ selected: resultTextView === "simplified" }}
                     >
-                      📖 Simplified Only
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[
-                      styles.resultViewOption,
-                      resultTextView === "compare" && styles.resultViewOptionSelected,
-                    ]}
-                    onPress={() => setResultTextView("compare")}
-                    accessibilityRole="tab"
-                    accessibilityLabel="Compare"
-                    accessibilityState={{ selected: resultTextView === "compare" }}
-                  >
-                    <Text
+                      <Text
+                        style={[
+                          styles.resultViewOptionText,
+                          resultTextView === "simplified" &&
+                            styles.resultViewOptionTextSelected,
+                        ]}
+                      >
+                        📖 Simplified Only
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
                       style={[
-                        styles.resultViewOptionText,
-                        resultTextView === "compare" && styles.resultViewOptionTextSelected,
+                        styles.resultViewOption,
+                        resultTextView === "compare" && styles.resultViewOptionSelected,
                       ]}
+                      onPress={() => setResultTextView("compare")}
+                      accessibilityRole="tab"
+                      accessibilityLabel="Compare"
+                      accessibilityState={{ selected: resultTextView === "compare" }}
                     >
-                      🔎 Compare
-                    </Text>
-                  </TouchableOpacity>
+                      <Text
+                        style={[
+                          styles.resultViewOptionText,
+                          resultTextView === "compare" && styles.resultViewOptionTextSelected,
+                        ]}
+                      >
+                        🔎 Compare
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  <View style={styles.highlightControls}>
+                    <View style={styles.highlightSwitchRow}>
+                      <View style={styles.highlightSwitchCopy}>
+                        <Text style={styles.highlightSwitchTitle}>✨ Show highlights</Text>
+                        <Text style={styles.highlightSwitchHint}>
+                          See what changed and find helpful words
+                        </Text>
+                      </View>
+                      <TouchableOpacity
+                        style={[
+                          styles.highlightSwitch,
+                          showHighlights && styles.highlightSwitchEnabled,
+                        ]}
+                        onPress={() => setShowHighlights((current) => !current)}
+                        accessibilityRole="switch"
+                        accessibilityLabel="Show highlights"
+                        accessibilityState={{ checked: showHighlights }}
+                      >
+                        <View
+                          style={[
+                            styles.highlightSwitchThumb,
+                            showHighlights && styles.highlightSwitchThumbEnabled,
+                          ]}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    {showHighlights && (
+                      <View style={styles.highlightLegend}>
+                        <View style={styles.highlightLegendItem}>
+                          <View style={[styles.highlightLegendSwatch, styles.changedLegendSwatch]} />
+                          <Text style={styles.highlightLegendText}>Changed text</Text>
+                        </View>
+                        <View style={styles.highlightLegendItem}>
+                          <View
+                            style={[styles.highlightLegendSwatch, styles.vocabularyLegendSwatch]}
+                          />
+                          <Text style={styles.highlightLegendText}>Helpful vocabulary</Text>
+                        </View>
+                      </View>
+                    )}
+                  </View>
                 </View>
               )}
 
@@ -1801,13 +2174,12 @@ export default function App() {
                       <View style={styles.comparisonCardHeader}>
                         <Text style={styles.originalTextCardTitle}>📝 ORIGINAL TEXT</Text>
                       </View>
-                      <Text
-                        style={styles.comparisonText}
-                        selectable
-                        accessibilityLabel="Original passage"
-                      >
-                        {submittedSourceText}
-                      </Text>
+                      {renderHighlightedPassage(
+                        submittedSourceText,
+                        passageHighlights.original,
+                        "comparison",
+                        "Original passage"
+                      )}
                     </View>
                     <View style={[styles.comparisonCard, styles.simplifiedTextCard]}>
                       <View style={styles.comparisonCardHeader}>
@@ -1815,13 +2187,12 @@ export default function App() {
                           📖 SIMPLIFIED TEXT
                         </Text>
                       </View>
-                      <Text
-                        style={styles.comparisonText}
-                        selectable
-                        accessibilityLabel="Simplified passage"
-                      >
-                        {simplifiedResult.simplified_text}
-                      </Text>
+                      {renderHighlightedPassage(
+                        simplifiedResult.simplified_text,
+                        passageHighlights.simplified,
+                        "comparison",
+                        "Simplified passage"
+                      )}
                     </View>
                   </View>
                 ) : (
@@ -1830,13 +2201,12 @@ export default function App() {
                       <Text style={styles.textResultHeaderTitle}>📖 YOUR ADAPTED STORY</Text>
                       <Text style={styles.textResultHeaderHint}>Comfortable Reading Font</Text>
                     </View>
-                    <Text
-                      style={styles.simplifiedText}
-                      selectable
-                      accessibilityLabel="Simplified passage"
-                    >
-                      {simplifiedResult.simplified_text}
-                    </Text>
+                    {renderHighlightedPassage(
+                      simplifiedResult.simplified_text,
+                      passageHighlights.simplified,
+                      "simplified",
+                      "Simplified passage"
+                    )}
                   </View>
                 )}
 
@@ -3955,6 +4325,91 @@ const styles = StyleSheet.create({
   resultViewOptionTextSelected: {
     color: "#6D28D9",
   },
+  highlightControls: {
+    marginHorizontal: 16,
+    marginTop: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: "#E2E8F0",
+  },
+  highlightSwitchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+  highlightSwitchCopy: {
+    flex: 1,
+  },
+  highlightSwitchTitle: {
+    fontSize: 14,
+    fontWeight: "900",
+    color: "#1E293B",
+  },
+  highlightSwitchHint: {
+    marginTop: 2,
+    fontSize: 11,
+    lineHeight: 16,
+    color: "#64748B",
+  },
+  highlightSwitch: {
+    width: 52,
+    height: 30,
+    padding: 3,
+    borderRadius: 16,
+    backgroundColor: "#CBD5E1",
+    justifyContent: "center",
+  },
+  highlightSwitchEnabled: {
+    backgroundColor: "#14B8A6",
+  },
+  highlightSwitchThumb: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: "#FFFFFF",
+    shadowColor: "#0F172A",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.18,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  highlightSwitchThumbEnabled: {
+    alignSelf: "flex-end",
+  },
+  highlightLegend: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
+    marginTop: 10,
+    paddingTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#F1F5F9",
+  },
+  highlightLegendItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  highlightLegendSwatch: {
+    width: 18,
+    height: 12,
+    borderRadius: 4,
+  },
+  changedLegendSwatch: {
+    backgroundColor: "#FDE68A",
+  },
+  vocabularyLegendSwatch: {
+    backgroundColor: "#BFDBFE",
+  },
+  highlightLegendText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#475569",
+  },
   textResultCard: {
     marginHorizontal: 16,
     marginTop: 12,
@@ -4035,6 +4490,15 @@ const styles = StyleSheet.create({
     color: "#1E293B",
     lineHeight: 26,
     fontWeight: "500",
+  },
+  changedHighlight: {
+    backgroundColor: "#FDE68A",
+    color: "#78350F",
+  },
+  vocabularyHighlight: {
+    backgroundColor: "#BFDBFE",
+    color: "#1E40AF",
+    fontWeight: "700",
   },
 
   // vocabulary section
