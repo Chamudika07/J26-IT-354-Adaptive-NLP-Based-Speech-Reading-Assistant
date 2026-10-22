@@ -217,6 +217,7 @@ function harness(initialSession = {
   return { calls, nativeCalls, press, enter, render, simplify, text, visibleText, textByAccessibilityLabel,
     nodeByAccessibilityLabel, backgroundColorsByAccessibilityLabel,
     calculatePassageHighlights: appModule.calculatePassageHighlights,
+    buildVocabularyGameQuestions: appModule.buildVocabularyGameQuestions,
     getReadingLevelSuggestion: appModule.getReadingLevelSuggestion,
     buildLearningPackHtml: appModule.buildLearningPackHtml,
     escapeLearningPackHtml: appModule.escapeLearningPackHtml,
@@ -794,6 +795,196 @@ test("vocabulary learning cards show supplied content and omit missing examples"
   const habitatCard = app.textByAccessibilityLabel("Word: habitat. Tap to explain.");
   assert.match(habitatCard, /A home for a plant or animal/);
   assert.doesNotMatch(habitatCard, /TRY IT IN A SENTENCE/);
+});
+
+test("vocabulary challenge builds deterministic grounded questions", () => {
+  const app = harness();
+  const items = [
+    { ...vocab("habitat"), simplified_definition: "A natural home." },
+    { ...vocab("forest"), simplified_definition: "Land filled with trees." },
+    { ...vocab("canopy"), simplified_definition: "The leafy roof of a forest." },
+  ];
+
+  const first = app.buildVocabularyGameQuestions(items);
+  const second = app.buildVocabularyGameQuestions(items);
+  assert.equal(JSON.stringify(first), JSON.stringify(second));
+  assert.equal(first.length, 5);
+  assert.ok(first.some(({ kind }) => kind === "term_to_meaning"));
+  assert.ok(first.some(({ kind }) => kind === "meaning_to_term"));
+
+  const groundedAnswers = new Set(items.flatMap((item) => [
+    item.term,
+    item.simplified_definition,
+  ]));
+  for (const question of first) {
+    assert.ok(question.options.length >= 2 && question.options.length <= 3);
+    assert.ok(question.options.some(({ id }) => id === question.correctOptionId));
+    for (const option of question.options) assert.ok(groundedAnswers.has(option.label));
+  }
+});
+
+test("vocabulary challenge removes ambiguous duplicates and requires two distinct items", () => {
+  const app = harness();
+  assert.equal(app.buildVocabularyGameQuestions([vocab("habitat")]).length, 0);
+  assert.equal(
+    app.buildVocabularyGameQuestions([vocab("habitat"), vocab(" Habitat ")]).length,
+    0,
+  );
+  assert.equal(
+    app.buildVocabularyGameQuestions([
+      vocab("habitat"),
+      { ...vocab("forest"), simplified_definition: "Simple habitat" },
+    ]).length,
+    0,
+  );
+
+  const questions = app.buildVocabularyGameQuestions([
+    vocab("habitat"),
+    vocab("forest"),
+    vocab("HABITAT"),
+  ]);
+  assert.equal(questions.length, 4);
+});
+
+test("vocabulary challenge scores answers, completes, and replays without API calls", async () => {
+  const app = harness();
+  const items = [vocab("habitat"), vocab("forest"), vocab("canopy")];
+  await app.simplify("Simple result.", items);
+  const questions = app.buildVocabularyGameQuestions(items);
+  const requestCount = app.calls.length;
+
+  await app.press("Open vocabulary adventure");
+  assert.match(app.visibleText(), /Vocabulary Adventure!/);
+  assert.match(app.visibleText(), /5\s*quick questions/);
+  assert.doesNotMatch(app.visibleText(), /YOUR ADAPTED STORY/);
+  assert.equal(app.calls.length, requestCount);
+
+  await app.press("Start vocabulary adventure");
+  assert.match(app.text(), /Question 1 of 5/);
+
+  await app.press(`Vocabulary answer: ${questions[0].options.find(
+    ({ id }) => id !== questions[0].correctOptionId,
+  ).label}`);
+  assert.match(app.text(), /Good try! The answer is/);
+  assert.match(app.text(), /Score 0/);
+
+  for (let index = 1; index < questions.length; index += 1) {
+    await app.press("Next vocabulary question");
+    const correct = questions[index].options.find(
+      ({ id }) => id === questions[index].correctOptionId,
+    );
+    await app.press(`Vocabulary answer: ${correct.label}`);
+    assert.match(app.text(), /Great choice!/);
+  }
+  await app.press("See vocabulary adventure score");
+
+  assert.match(app.text(), /Adventure Complete!/);
+  assert.match(app.text(), /You got 4 out of 5/);
+  assert.equal(app.calls.length, requestCount);
+  await app.press("Play vocabulary adventure again");
+  assert.match(app.text(), /Vocabulary Adventure!/);
+  assert.match(app.text(), /5\s*quick questions/);
+  assert.equal(app.calls.length, requestCount);
+  await app.press("Start vocabulary adventure");
+  assert.match(app.text(), /Question 1 of 5/);
+  assert.match(app.text(), /Score 0/);
+  await app.press("Back to reading");
+  assert.match(app.text(), /YOUR ADAPTED STORY/);
+  assert.match(app.text(), /Word Detective Helpers/);
+});
+
+test("vocabulary adventure locks a question after the first answer", async () => {
+  const app = harness();
+  await app.simplify();
+  await app.press("Open vocabulary adventure");
+  await app.press("Start vocabulary adventure");
+
+  const answer = app.nodeByAccessibilityLabel("Vocabulary answer: Simple habitat");
+  answer.props.onPress();
+  answer.props.onPress();
+  app.render();
+
+  assert.match(app.text(), /Score 1/);
+  assert.match(app.text(), /Great choice!/);
+  assert.equal(
+    app.nodeByAccessibilityLabel("Vocabulary answer: Simple habitat")
+      .props.accessibilityState.disabled,
+    true,
+  );
+});
+
+test("vocabulary challenge shows examples and leaves existing result controls unchanged", async () => {
+  const app = harness();
+  const items = [
+    { ...vocab("habitat"), example_sentence: "A pond is a frog's habitat." },
+    vocab("forest"),
+  ];
+  await app.simplify("Simple result.", items);
+  await app.press("Compare");
+  await app.press("Show highlights");
+  const requestCount = app.calls.length;
+
+  await app.press("Open vocabulary adventure");
+  await app.press("Start vocabulary adventure");
+  await app.press("Vocabulary answer: Simple habitat");
+
+  assert.match(app.text(), /Example: A pond is a frog's habitat/);
+  assert.equal(app.calls.length, requestCount);
+
+  await app.press("Back to reading");
+  assert.equal(app.nodeByAccessibilityLabel("Compare").props.accessibilityState.selected, true);
+  assert.equal(
+    app.nodeByAccessibilityLabel("Show highlights").props.accessibilityState.checked,
+    false,
+  );
+  await app.press("Got it: habitat, card 1");
+  assert.match(app.text(), /1 of 2 reviewed this time/);
+  assert.equal(app.calls.length, requestCount);
+});
+
+test("vocabulary challenge reports insufficient grounded vocabulary honestly", async () => {
+  const app = harness();
+  await app.simplify("Simple result.", [vocab("habitat")]);
+  await app.press("Open vocabulary adventure");
+
+  assert.match(app.text(), /Vocabulary Adventure!/);
+  assert.match(app.text(), /More word helpers needed/);
+  assert.match(app.text(), /will not make up extra answers/);
+  assert.doesNotMatch(app.text(), /Start Adventure/);
+  await app.press("Back to reading from vocabulary adventure");
+  assert.match(app.text(), /Word Detective Helpers/);
+});
+
+test("vocabulary challenge resets with passage, result, failure, and session lifecycle", async () => {
+  const app = harness();
+  await app.simplify();
+  await app.press("Open vocabulary adventure");
+  await app.press("Start vocabulary adventure");
+  await app.press("Vocabulary answer: Simple habitat");
+  assert.match(app.text(), /Great choice!/);
+
+  await app.press("Back to reading");
+  app.enter("Changed synthetic passage.");
+  await app.press("Open vocabulary adventure");
+  assert.match(app.text(), /4\s*quick questions/);
+  await app.press("Back to reading from vocabulary adventure");
+
+  const failed = app.press("Simplify my text");
+  app.calls.at(-1).reject(
+    new client.SimplificationApiError(503, "service_unavailable", "Unavailable"),
+  );
+  await failed;
+  app.render();
+  assert.doesNotMatch(app.text(), /Open vocabulary adventure/);
+
+  await app.simplify("Replacement result.");
+  await app.press("Open vocabulary adventure");
+  await app.press("Start vocabulary adventure");
+  assert.match(app.text(), /Question 1 of 4/);
+  await app.press("Back to reading");
+  await app.press("Toggle test session settings");
+  await app.press("Apply Session");
+  assert.doesNotMatch(app.text(), /Open vocabulary adventure/);
 });
 
 test("Got it acknowledges one card locally and updates the reviewed count", async () => {

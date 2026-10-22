@@ -208,6 +208,108 @@ interface TextRange {
   end: number;
 }
 
+export type VocabularyGameQuestionKind = "term_to_meaning" | "meaning_to_term";
+
+export interface VocabularyGameOption {
+  id: string;
+  label: string;
+}
+
+export interface VocabularyGameQuestion {
+  id: string;
+  kind: VocabularyGameQuestionKind;
+  prompt: string;
+  options: VocabularyGameOption[];
+  correctOptionId: string;
+  term: string;
+  simplifiedDefinition: string;
+  exampleSentence: string | null;
+}
+
+const normalizeVocabularyGameValue = (value: string): string =>
+  value.trim().normalize("NFKC").toLocaleLowerCase("en-US");
+
+export const buildVocabularyGameQuestions = (
+  vocabularyItems: readonly VocabularyItemResponse[]
+): VocabularyGameQuestion[] => {
+  const usedTerms = new Set<string>();
+  const usedDefinitions = new Set<string>();
+  const eligibleItems = vocabularyItems.flatMap((item) => {
+    const term = item.term.trim();
+    const simplifiedDefinition = item.simplified_definition.trim();
+    const termKey = normalizeVocabularyGameValue(term);
+    const definitionKey = normalizeVocabularyGameValue(simplifiedDefinition);
+    if (
+      !termKey ||
+      !definitionKey ||
+      usedTerms.has(termKey) ||
+      usedDefinitions.has(definitionKey)
+    ) {
+      return [];
+    }
+    usedTerms.add(termKey);
+    usedDefinitions.add(definitionKey);
+    return [{
+      term,
+      simplifiedDefinition,
+      exampleSentence: item.example_sentence?.trim() || null,
+    }];
+  });
+
+  if (eligibleItems.length < 2) return [];
+
+  const optionCount = Math.min(3, eligibleItems.length);
+  const questions: VocabularyGameQuestion[] = [];
+
+  eligibleItems.forEach((item, itemIndex) => {
+    const selectedIndexes = Array.from(
+      { length: optionCount },
+      (_, offset) => (itemIndex + offset) % eligibleItems.length
+    );
+
+    const makeOptions = (
+      questionIndex: number,
+      kind: VocabularyGameQuestionKind
+    ): VocabularyGameOption[] => {
+      const rawOptions = selectedIndexes.map((optionIndex) => ({
+        id: `${kind}:${optionIndex}`,
+        label:
+          kind === "term_to_meaning"
+            ? eligibleItems[optionIndex].simplifiedDefinition
+            : eligibleItems[optionIndex].term,
+      }));
+      const rotation = questionIndex % rawOptions.length;
+      return [...rawOptions.slice(rotation), ...rawOptions.slice(0, rotation)];
+    };
+
+    const termQuestionIndex = questions.length;
+    questions.push({
+      id: `term-to-meaning:${itemIndex}`,
+      kind: "term_to_meaning",
+      prompt: `What does “${item.term}” mean?`,
+      options: makeOptions(termQuestionIndex, "term_to_meaning"),
+      correctOptionId: `term_to_meaning:${itemIndex}`,
+      term: item.term,
+      simplifiedDefinition: item.simplifiedDefinition,
+      exampleSentence: item.exampleSentence,
+    });
+
+    const meaningQuestionIndex = questions.length;
+    questions.push({
+      id: `meaning-to-term:${itemIndex}`,
+      kind: "meaning_to_term",
+      prompt: `Which word means “${item.simplifiedDefinition}”?`,
+      options: makeOptions(meaningQuestionIndex, "meaning_to_term"),
+      correctOptionId: `meaning_to_term:${itemIndex}`,
+      term: item.term,
+      simplifiedDefinition: item.simplifiedDefinition,
+      exampleSentence: item.exampleSentence,
+    });
+  });
+
+  return questions.slice(0, 5);
+};
+
 export interface LearningPackSnapshot {
   originalText: string | null;
   simplifiedText: string;
@@ -795,6 +897,13 @@ export default function App() {
   const [reviewedVocabularyItems, setReviewedVocabularyItems] = useState<Set<string>>(
     () => new Set()
   );
+  const [vocabularyGameStatus, setVocabularyGameStatus] =
+    useState<"idle" | "playing" | "complete">("idle");
+  const [vocabularyGameQuestionIndex, setVocabularyGameQuestionIndex] = useState(0);
+  const [vocabularyGameSelectedOption, setVocabularyGameSelectedOption] =
+    useState<string | null>(null);
+  const [vocabularyGameScore, setVocabularyGameScore] = useState(0);
+  const vocabularyGameAnswerLockedRef = useRef(false);
   const [isLearningPackBusy, setIsLearningPackBusy] = useState(false);
   const [learningPackError, setLearningPackError] = useState<string | null>(null);
   const activeLearningPackRef = useRef(false);
@@ -835,7 +944,8 @@ export default function App() {
     authSession.apiBaseUrl ?? getEffectiveApiBaseUrl()
   );
 
-  const [currentScreen, setCurrentScreen] = useState<"home" | "guided">("home");
+  const [currentScreen, setCurrentScreen] =
+    useState<"home" | "guided" | "vocabularyGame">("home");
   const [guidedStep, setGuidedStep] = useState<1 | 2 | 3>(1);
 
   const effectiveEndpoint =
@@ -849,6 +959,12 @@ export default function App() {
       ),
     [submittedSourceText, simplifiedResult]
   );
+  const vocabularyGameQuestions = useMemo(
+    () => buildVocabularyGameQuestions(simplifiedResult?.vocabulary_items ?? []),
+    [simplifiedResult]
+  );
+  const activeVocabularyGameQuestion =
+    vocabularyGameQuestions[vocabularyGameQuestionIndex] ?? null;
   const feedbackLevelSuggestion = useMemo(
     () =>
       feedbackResult && selectedFeedback && simplifiedResult
@@ -904,6 +1020,14 @@ export default function App() {
     };
   }, []);
 
+  const resetVocabularyGame = () => {
+    vocabularyGameAnswerLockedRef.current = false;
+    setVocabularyGameStatus("idle");
+    setVocabularyGameQuestionIndex(0);
+    setVocabularyGameSelectedOption(null);
+    setVocabularyGameScore(0);
+  };
+
   const resetReadingState = () => {
     learningPackGenerationRef.current += 1;
     activeLearningPackRef.current = false;
@@ -919,6 +1043,7 @@ export default function App() {
     setResultTextView("simplified");
     setShowHighlights(true);
     setReviewedVocabularyItems(new Set());
+    resetVocabularyGame();
     setIsLearningPackBusy(false);
     setLearningPackError(null);
     setApiError(null);
@@ -945,6 +1070,7 @@ export default function App() {
     setResultTextView("simplified");
     setShowHighlights(true);
     setReviewedVocabularyItems(new Set());
+    resetVocabularyGame();
     setIsLearningPackBusy(false);
     setLearningPackError(null);
     if (validationError) {
@@ -958,6 +1084,7 @@ export default function App() {
   const handleClearPassage = () => {
     setPassage("");
     setReviewedVocabularyItems(new Set());
+    resetVocabularyGame();
     setValidationError(null);
     setApiError(null);
   };
@@ -1107,6 +1234,55 @@ export default function App() {
       next.add(itemKey);
       return next;
     });
+  };
+
+  const handleStartVocabularyGame = () => {
+    if (vocabularyGameQuestions.length < 3) return;
+    vocabularyGameAnswerLockedRef.current = false;
+    setVocabularyGameStatus("playing");
+    setVocabularyGameQuestionIndex(0);
+    setVocabularyGameSelectedOption(null);
+    setVocabularyGameScore(0);
+  };
+
+  const handleVocabularyGameAnswer = (optionId: string) => {
+    if (
+      vocabularyGameStatus !== "playing" ||
+      vocabularyGameSelectedOption ||
+      vocabularyGameAnswerLockedRef.current
+    ) return;
+    const question = vocabularyGameQuestions[vocabularyGameQuestionIndex];
+    if (!question) return;
+    vocabularyGameAnswerLockedRef.current = true;
+    setVocabularyGameSelectedOption(optionId);
+    if (optionId === question.correctOptionId) {
+      setVocabularyGameScore((score) => score + 1);
+    }
+  };
+
+  const handleNextVocabularyGameQuestion = () => {
+    if (!vocabularyGameSelectedOption) return;
+    if (vocabularyGameQuestionIndex >= vocabularyGameQuestions.length - 1) {
+      setVocabularyGameStatus("complete");
+      return;
+    }
+    setVocabularyGameQuestionIndex((index) => index + 1);
+    setVocabularyGameSelectedOption(null);
+    vocabularyGameAnswerLockedRef.current = false;
+  };
+
+  const handleOpenVocabularyGame = () => {
+    resetVocabularyGame();
+    setCurrentScreen("vocabularyGame");
+  };
+
+  const handleBackToReading = () => {
+    resetVocabularyGame();
+    setCurrentScreen("guided");
+  };
+
+  const handleReplayVocabularyGame = () => {
+    resetVocabularyGame();
   };
 
   const handleSubmitFeedback = async (signal: FeedbackSignal) => {
@@ -1271,6 +1447,7 @@ export default function App() {
     setResultTextView("simplified");
     setShowHighlights(true);
     setReviewedVocabularyItems(new Set());
+    resetVocabularyGame();
     learningPackGenerationRef.current += 1;
     activeLearningPackRef.current = false;
     setIsLearningPackBusy(false);
@@ -1320,6 +1497,7 @@ export default function App() {
         setResultTextView("simplified");
         setShowHighlights(true);
         setReviewedVocabularyItems(new Set());
+        resetVocabularyGame();
         setApiError(null);
       }
     } catch (err: unknown) {
@@ -1804,6 +1982,345 @@ export default function App() {
       <View style={styles.startBookSpine} />
     </View>
   );
+
+  if (currentScreen === "vocabularyGame") {
+    const hasEnoughVocabulary = vocabularyGameQuestions.length >= 3;
+    const questionProgress = `${Math.round(
+      ((vocabularyGameQuestionIndex + 1) / Math.max(1, vocabularyGameQuestions.length)) * 100
+    )}%` as `${number}%`;
+
+    return (
+      <SafeAreaView style={styles.vocabularyAdventureSafeArea}>
+        <StatusBar style="dark" />
+        <ScrollView
+          contentContainerStyle={styles.vocabularyAdventureScroll}
+          showsVerticalScrollIndicator={false}
+        >
+          <View
+            style={styles.vocabularyAdventureDecorations}
+            accessible={false}
+            importantForAccessibility="no-hide-descendants"
+          >
+            <View style={styles.vocabularyAdventureSun} />
+            <View style={styles.vocabularyAdventureCloudLeft}>
+              <View style={styles.vocabularyAdventureCloudPuffLarge} />
+              <View style={styles.vocabularyAdventureCloudPuffSmall} />
+            </View>
+            <View style={styles.vocabularyAdventureCloudRight}>
+              <View style={styles.vocabularyAdventureCloudPuffLarge} />
+              <View style={styles.vocabularyAdventureCloudPuffSmall} />
+            </View>
+            <View style={styles.vocabularyAdventureSparkOne} />
+            <View style={styles.vocabularyAdventureSparkTwo} />
+            <View style={styles.vocabularyAdventureHillBack} />
+            <View style={styles.vocabularyAdventureHillFront} />
+          </View>
+
+          <View style={styles.vocabularyAdventureTopBar}>
+            <TouchableOpacity
+              style={styles.vocabularyAdventureBack}
+              onPress={handleBackToReading}
+              accessibilityRole="button"
+              accessibilityLabel="Back to reading"
+            >
+              <Text style={styles.vocabularyAdventureBackArrow}>←</Text>
+              <Text style={styles.vocabularyAdventureBackText}>Back to Reading</Text>
+            </TouchableOpacity>
+            <View style={styles.vocabularyAdventureBrandPill}>
+              <View style={styles.vocabularyAdventureBrandBook}>
+                <View style={styles.vocabularyAdventureBrandBookPageLeft} />
+                <View style={styles.vocabularyAdventureBrandBookPageRight} />
+              </View>
+              <Text style={styles.vocabularyAdventureBrandText}>ReadBuddy</Text>
+            </View>
+          </View>
+
+          {vocabularyGameStatus === "idle" ? (
+            <View
+              style={styles.vocabularyAdventureIntro}
+              accessibilityLabel="Vocabulary Adventure introduction"
+            >
+              <View style={styles.vocabularyAdventureIntroArt} accessible={false}>
+                <View style={styles.vocabularyAdventureIntroSunburst} />
+                <View style={styles.vocabularyAdventureIntroHillBack} />
+                <View style={styles.vocabularyAdventureIntroHillFront} />
+                <View style={styles.vocabularyAdventureIntroSparkLeft} />
+                <View style={styles.vocabularyAdventureIntroSparkRight} />
+                <Image
+                  source={require("./assets/home/reading-child.png")}
+                  style={styles.vocabularyAdventureReadingChild}
+                  resizeMode="contain"
+                />
+                <View style={styles.vocabularyAdventureWordBadge}>
+                  <Text style={styles.vocabularyAdventureWordBadgeText}>WORD QUEST</Text>
+                </View>
+              </View>
+              <Text style={styles.vocabularyAdventureTitle}>Vocabulary Adventure!</Text>
+              <Text style={styles.vocabularyAdventureSubtitle}>
+                Let&apos;s explore some new words from your reading!
+              </Text>
+
+              {hasEnoughVocabulary ? (
+                <>
+                  <View style={styles.vocabularyAdventureCountPill}>
+                    <Text style={styles.vocabularyAdventureCountNumber}>
+                      {vocabularyGameQuestions.length}
+                    </Text>
+                    <Text style={styles.vocabularyAdventureCountLabel}>quick questions</Text>
+                  </View>
+                  <Text style={styles.vocabularyAdventureIntroCopy}>
+                    Choose the meaning or word that fits. You can take your time and learn after
+                    every answer.
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.vocabularyAdventurePrimaryButton}
+                    onPress={handleStartVocabularyGame}
+                    accessibilityRole="button"
+                    accessibilityLabel="Start vocabulary adventure"
+                  >
+                    <Text style={styles.vocabularyAdventurePrimaryButtonText}>
+                      Start Adventure
+                    </Text>
+                    <Text style={styles.vocabularyAdventurePrimaryArrow}>→</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <View
+                  style={styles.vocabularyAdventureUnavailable}
+                  accessibilityLabel="Vocabulary challenge unavailable"
+                >
+                  <View style={styles.vocabularyAdventureUnavailableMark}>
+                    <Text style={styles.vocabularyAdventureUnavailableMarkText}>i</Text>
+                  </View>
+                  <Text style={styles.vocabularyAdventureUnavailableTitle}>
+                    More word helpers needed
+                  </Text>
+                  <Text style={styles.vocabularyAdventureUnavailableText}>
+                    This reading does not have enough different vocabulary words for a fair
+                    adventure. ReadBuddy will not make up extra answers.
+                  </Text>
+                </View>
+              )}
+
+              <TouchableOpacity
+                style={styles.vocabularyAdventureSecondaryButton}
+                onPress={handleBackToReading}
+                accessibilityRole="button"
+                accessibilityLabel="Back to reading from vocabulary adventure"
+              >
+                <Text style={styles.vocabularyAdventureSecondaryButtonText}>Back to Reading</Text>
+              </TouchableOpacity>
+            </View>
+          ) : vocabularyGameStatus === "complete" ? (
+            <View
+              style={styles.vocabularyAdventureResults}
+              accessibilityLabel="Vocabulary adventure complete"
+            >
+              <View style={styles.vocabularyAdventureCelebration} accessible={false}>
+                <View style={styles.vocabularyAdventureCelebrationRayOne} />
+                <View style={styles.vocabularyAdventureCelebrationRayTwo} />
+                <View style={styles.vocabularyAdventureCelebrationDotOne} />
+                <View style={styles.vocabularyAdventureCelebrationDotTwo} />
+                <View style={styles.vocabularyAdventureMedalOuter}>
+                  <View style={styles.vocabularyAdventureMedalInner}>
+                    <Text style={styles.vocabularyAdventureMedalStar}>★</Text>
+                  </View>
+                </View>
+                <View style={styles.vocabularyAdventureRibbonLeft} />
+                <View style={styles.vocabularyAdventureRibbonRight} />
+              </View>
+              <Text style={styles.vocabularyAdventureResultsTitle}>Adventure Complete!</Text>
+              <Text style={styles.vocabularyAdventureResultsScore}>
+                {`You got ${vocabularyGameScore} out of ${vocabularyGameQuestions.length}!`}
+              </Text>
+              <Text style={styles.vocabularyAdventureResultsMessage}>
+                Every word you practiced is another step in your reading adventure. Nice exploring!
+              </Text>
+              <View style={styles.vocabularyAdventureReminder}>
+                <Text style={styles.vocabularyAdventureReminderText}>
+                  This score is just for today&apos;s practice. It is not a test of your reading
+                  ability.
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={styles.vocabularyAdventurePrimaryButton}
+                onPress={handleReplayVocabularyGame}
+                accessibilityRole="button"
+                accessibilityLabel="Play vocabulary adventure again"
+              >
+                <Text style={styles.vocabularyAdventurePrimaryButtonText}>Play Again</Text>
+                <Text style={styles.vocabularyAdventurePrimaryArrow}>↻</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.vocabularyAdventureSecondaryButton}
+                onPress={handleBackToReading}
+                accessibilityRole="button"
+                accessibilityLabel="Back to reading from results"
+              >
+                <Text style={styles.vocabularyAdventureSecondaryButtonText}>Back to Reading</Text>
+              </TouchableOpacity>
+            </View>
+          ) : activeVocabularyGameQuestion ? (
+            <View
+              style={styles.vocabularyAdventureQuestionScreen}
+              accessibilityLabel="Vocabulary adventure question"
+            >
+              <View style={styles.vocabularyAdventureQuestionHeader}>
+                <View style={styles.vocabularyAdventureQuestionIdentity}>
+                  <View style={styles.vocabularyAdventureQuestionBook} accessible={false}>
+                    <View style={styles.vocabularyAdventureQuestionBookPageLeft} />
+                    <View style={styles.vocabularyAdventureQuestionBookPageRight} />
+                  </View>
+                  <Text style={styles.vocabularyAdventureQuestionTitle}>Vocabulary Adventure</Text>
+                </View>
+                <View style={styles.vocabularyAdventureScorePill}>
+                  <Text style={styles.vocabularyAdventureScoreStar}>★</Text>
+                  <Text style={styles.vocabularyAdventureScorePillText}>
+                    {`Score ${vocabularyGameScore}`}
+                  </Text>
+                </View>
+              </View>
+              <Text style={styles.vocabularyAdventureProgressText}>
+                {`Question ${vocabularyGameQuestionIndex + 1} of ${vocabularyGameQuestions.length}`}
+              </Text>
+              <View style={styles.vocabularyAdventureProgressTrack}>
+                <View
+                  style={[
+                    styles.vocabularyAdventureProgressFill,
+                    { width: questionProgress },
+                  ]}
+                />
+              </View>
+
+              <View style={styles.vocabularyAdventureQuestionCard}>
+                <View style={styles.vocabularyAdventureQuestionBadge}>
+                  <Text style={styles.vocabularyAdventureQuestionEyebrow}>CHOOSE YOUR ANSWER</Text>
+                </View>
+                <Text style={styles.vocabularyAdventurePrompt}>
+                  {activeVocabularyGameQuestion.prompt}
+                </Text>
+              </View>
+
+              <View style={styles.vocabularyAdventureOptions}>
+                {activeVocabularyGameQuestion.options.map((option, optionIndex) => {
+                  const hasAnswered = vocabularyGameSelectedOption !== null;
+                  const isSelected = vocabularyGameSelectedOption === option.id;
+                  const isCorrect = option.id === activeVocabularyGameQuestion.correctOptionId;
+                  return (
+                    <TouchableOpacity
+                      key={option.id}
+                      style={[
+                        styles.vocabularyAdventureOption,
+                        optionIndex % 3 === 0
+                          ? styles.vocabularyAdventureOption0
+                          : optionIndex % 3 === 1
+                            ? styles.vocabularyAdventureOption1
+                            : styles.vocabularyAdventureOption2,
+                        hasAnswered && isCorrect && styles.vocabularyAdventureOptionCorrect,
+                        hasAnswered && isSelected && !isCorrect &&
+                          styles.vocabularyAdventureOptionWrong,
+                      ]}
+                      onPress={() => handleVocabularyGameAnswer(option.id)}
+                      disabled={hasAnswered}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Vocabulary answer: ${option.label}`}
+                      accessibilityState={{ selected: isSelected, disabled: hasAnswered }}
+                    >
+                      <View
+                        style={[
+                          styles.vocabularyAdventureOptionLetter,
+                          hasAnswered && isCorrect &&
+                            styles.vocabularyAdventureOptionLetterCorrect,
+                          hasAnswered && isSelected && !isCorrect &&
+                            styles.vocabularyAdventureOptionLetterWrong,
+                        ]}
+                      >
+                        <Text style={styles.vocabularyAdventureOptionLetterText}>
+                          {hasAnswered && isCorrect
+                            ? "✓"
+                            : hasAnswered && isSelected
+                              ? "×"
+                              : String.fromCharCode(65 + optionIndex)}
+                        </Text>
+                      </View>
+                      <Text style={styles.vocabularyAdventureOptionText}>{option.label}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              {vocabularyGameSelectedOption && (
+                <View
+                  style={[
+                    styles.vocabularyAdventureFeedback,
+                    vocabularyGameSelectedOption ===
+                      activeVocabularyGameQuestion.correctOptionId
+                      ? styles.vocabularyAdventureFeedbackCorrect
+                      : styles.vocabularyAdventureFeedbackTryAgain,
+                  ]}
+                  accessibilityLiveRegion="polite"
+                >
+                  <View style={styles.vocabularyAdventureFeedbackHeading}>
+                    <View
+                      style={[
+                        styles.vocabularyAdventureFeedbackIcon,
+                        vocabularyGameSelectedOption ===
+                          activeVocabularyGameQuestion.correctOptionId
+                          ? styles.vocabularyAdventureFeedbackIconCorrect
+                          : styles.vocabularyAdventureFeedbackIconTryAgain,
+                      ]}
+                    >
+                      <Text style={styles.vocabularyAdventureFeedbackIconText}>
+                        {vocabularyGameSelectedOption ===
+                        activeVocabularyGameQuestion.correctOptionId
+                          ? "✓"
+                          : "!"}
+                      </Text>
+                    </View>
+                    <Text style={styles.vocabularyAdventureFeedbackTitle}>
+                      {vocabularyGameSelectedOption ===
+                      activeVocabularyGameQuestion.correctOptionId
+                        ? "Great choice!"
+                        : `Good try! The answer is “${
+                            activeVocabularyGameQuestion.kind === "term_to_meaning"
+                              ? activeVocabularyGameQuestion.simplifiedDefinition
+                              : activeVocabularyGameQuestion.term
+                          }”.`}
+                    </Text>
+                  </View>
+                  <Text style={styles.vocabularyAdventureFeedbackDefinition}>
+                    {`${activeVocabularyGameQuestion.term}: ${activeVocabularyGameQuestion.simplifiedDefinition}`}
+                  </Text>
+                  {activeVocabularyGameQuestion.exampleSentence && (
+                    <Text style={styles.vocabularyAdventureFeedbackExample}>
+                      {`Example: ${activeVocabularyGameQuestion.exampleSentence}`}
+                    </Text>
+                  )}
+                  <TouchableOpacity
+                    style={styles.vocabularyAdventurePrimaryButton}
+                    onPress={handleNextVocabularyGameQuestion}
+                    accessibilityRole="button"
+                    accessibilityLabel={
+                      vocabularyGameQuestionIndex === vocabularyGameQuestions.length - 1
+                        ? "See vocabulary adventure score"
+                        : "Next vocabulary question"
+                    }
+                  >
+                    <Text style={styles.vocabularyAdventurePrimaryButtonText}>
+                      {vocabularyGameQuestionIndex === vocabularyGameQuestions.length - 1
+                        ? "See My Score"
+                        : "Next Question"}
+                    </Text>
+                    <Text style={styles.vocabularyAdventurePrimaryArrow}>→</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          ) : null}
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 
   const isResultsMode = Boolean(simplifiedResult);
 
@@ -2901,6 +3418,31 @@ export default function App() {
                     </View>
                   )}
                 </View>
+              </View>
+
+              {/* ── VOCABULARY ADVENTURE LAUNCHER ── */}
+              <View style={styles.vocabularyAdventureLauncher}>
+                <View style={styles.vocabularyAdventureLauncherCopy}>
+                  <Text style={styles.vocabularyAdventureLauncherEyebrow}>
+                    OPTIONAL WORD GAME
+                  </Text>
+                  <Text style={styles.vocabularyAdventureLauncherTitle}>
+                    Vocabulary Adventure
+                  </Text>
+                  <Text style={styles.vocabularyAdventureLauncherText}>
+                    Practice the word helpers from this reading in a colorful mini-game.
+                  </Text>
+                </View>
+                <TouchableOpacity
+                  style={styles.vocabularyAdventureLauncherButton}
+                  onPress={handleOpenVocabularyGame}
+                  accessibilityRole="button"
+                  accessibilityLabel="Open vocabulary adventure"
+                  accessibilityHint="Opens a full-screen vocabulary game using this reading"
+                >
+                  <Text style={styles.vocabularyAdventureLauncherButtonText}>Play</Text>
+                  <Text style={styles.vocabularyAdventureLauncherButtonArrow}>→</Text>
+                </TouchableOpacity>
               </View>
 
               {/* ── PDF LEARNING PACK ── */}
@@ -5692,6 +6234,919 @@ const styles = StyleSheet.create({
 
   // ── FEEDBACK SECTION ──────────────────────────────────────────────────────
   // PDF learning pack
+  // Vocabulary Adventure launcher on the preserved reading result
+  vocabularyAdventureLauncher: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    padding: 17,
+    borderRadius: 22,
+    borderWidth: 2,
+    borderColor: "#C4B5FD",
+    backgroundColor: "#F5F3FF",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    shadowColor: "#4C1D95",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 7,
+    elevation: 3,
+  },
+  vocabularyAdventureLauncherCopy: {
+    flex: 1,
+  },
+  vocabularyAdventureLauncherEyebrow: {
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: "900",
+    letterSpacing: 0.8,
+    color: "#7C3AED",
+  },
+  vocabularyAdventureLauncherTitle: {
+    marginTop: 2,
+    fontSize: 20,
+    lineHeight: 25,
+    fontWeight: "900",
+    color: "#312E81",
+  },
+  vocabularyAdventureLauncherText: {
+    marginTop: 4,
+    fontSize: 12,
+    lineHeight: 18,
+    color: "#475569",
+  },
+  vocabularyAdventureLauncherButton: {
+    minWidth: 82,
+    minHeight: 52,
+    paddingHorizontal: 15,
+    borderRadius: 26,
+    backgroundColor: "#F97316",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 5,
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
+  },
+  vocabularyAdventureLauncherButtonText: {
+    fontSize: 15,
+    fontWeight: "900",
+    color: "#FFFFFF",
+  },
+  vocabularyAdventureLauncherButtonArrow: {
+    fontSize: 20,
+    color: "#FFFFFF",
+    fontWeight: "900",
+  },
+
+  // Dedicated full-screen Vocabulary Adventure
+  vocabularyAdventureSafeArea: {
+    flex: 1,
+    backgroundColor: "#76D4F5",
+  },
+  vocabularyAdventureScroll: {
+    flexGrow: 1,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+    paddingBottom: 54,
+    position: "relative",
+  },
+  vocabularyAdventureDecorations: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    overflow: "hidden",
+  },
+  vocabularyAdventureSun: {
+    position: "absolute",
+    top: 44,
+    right: -24,
+    width: 112,
+    height: 112,
+    borderRadius: 56,
+    backgroundColor: "rgba(255,230,109,0.58)",
+    borderWidth: 10,
+    borderColor: "rgba(255,246,190,0.38)",
+  },
+  vocabularyAdventureCloudLeft: {
+    position: "absolute",
+    top: 104,
+    left: -34,
+    width: 126,
+    height: 40,
+    borderRadius: 22,
+    backgroundColor: "rgba(255,255,255,0.72)",
+  },
+  vocabularyAdventureCloudRight: {
+    position: "absolute",
+    top: 280,
+    right: -45,
+    width: 145,
+    height: 44,
+    borderRadius: 24,
+    backgroundColor: "rgba(255,255,255,0.62)",
+  },
+  vocabularyAdventureCloudPuffLarge: {
+    position: "absolute",
+    left: 36,
+    bottom: 10,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "rgba(255,255,255,0.78)",
+  },
+  vocabularyAdventureCloudPuffSmall: {
+    position: "absolute",
+    left: 78,
+    bottom: 6,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: "rgba(255,255,255,0.74)",
+  },
+  vocabularyAdventureSparkOne: {
+    position: "absolute",
+    top: 150,
+    right: 28,
+    width: 13,
+    height: 13,
+    borderRadius: 3,
+    backgroundColor: "#FFE154",
+    transform: [{ rotate: "45deg" }],
+  },
+  vocabularyAdventureSparkTwo: {
+    position: "absolute",
+    top: 380,
+    left: 20,
+    width: 10,
+    height: 10,
+    borderRadius: 2,
+    backgroundColor: "#8B5CF6",
+    transform: [{ rotate: "45deg" }],
+  },
+  vocabularyAdventureHillBack: {
+    position: "absolute",
+    left: -100,
+    right: -90,
+    bottom: -135,
+    height: 250,
+    borderTopLeftRadius: 220,
+    borderTopRightRadius: 250,
+    backgroundColor: "#8EE1A5",
+    transform: [{ rotate: "-4deg" }],
+  },
+  vocabularyAdventureHillFront: {
+    position: "absolute",
+    left: -80,
+    right: -120,
+    bottom: -182,
+    height: 270,
+    borderTopLeftRadius: 260,
+    borderTopRightRadius: 190,
+    backgroundColor: "#4FCB83",
+    transform: [{ rotate: "5deg" }],
+  },
+  vocabularyAdventureTopBar: {
+    minHeight: 54,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 14,
+    zIndex: 1,
+  },
+  vocabularyAdventureBack: {
+    minHeight: 46,
+    paddingHorizontal: 13,
+    borderRadius: 23,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+    backgroundColor: "rgba(255,253,245,0.94)",
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
+    shadowColor: "#176C94",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  vocabularyAdventureBackArrow: {
+    fontSize: 20,
+    color: "#4338CA",
+    fontWeight: "900",
+  },
+  vocabularyAdventureBackText: {
+    fontSize: 13,
+    color: "#312E81",
+    fontWeight: "900",
+  },
+  vocabularyAdventureBrandPill: {
+    minHeight: 42,
+    paddingLeft: 8,
+    paddingRight: 13,
+    paddingVertical: 8,
+    borderRadius: 21,
+    backgroundColor: "#6D28D9",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 7,
+    borderWidth: 2,
+    borderColor: "rgba(255,255,255,0.75)",
+  },
+  vocabularyAdventureBrandBook: {
+    width: 25,
+    height: 21,
+    position: "relative",
+  },
+  vocabularyAdventureBrandBookPageLeft: {
+    position: "absolute",
+    left: 0,
+    bottom: 1,
+    width: 13,
+    height: 18,
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 3,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#DDD6FE",
+    transform: [{ rotate: "-5deg" }],
+  },
+  vocabularyAdventureBrandBookPageRight: {
+    position: "absolute",
+    right: 0,
+    bottom: 1,
+    width: 13,
+    height: 18,
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 3,
+    backgroundColor: "#FFF7ED",
+    borderWidth: 1,
+    borderColor: "#FED7AA",
+    transform: [{ rotate: "5deg" }],
+  },
+  vocabularyAdventureBrandText: {
+    fontSize: 12,
+    fontWeight: "900",
+    color: "#FFFFFF",
+  },
+  vocabularyAdventureIntro: {
+    zIndex: 1,
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 14,
+    paddingBottom: 22,
+    borderRadius: 34,
+    backgroundColor: "#FFF9E9",
+    borderWidth: 3,
+    borderColor: "#FFFFFF",
+    shadowColor: "#245F7A",
+    shadowOffset: { width: 0, height: 9 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 8,
+    overflow: "hidden",
+  },
+  vocabularyAdventureIntroArt: {
+    alignSelf: "stretch",
+    height: 220,
+    marginHorizontal: -20,
+    marginTop: -14,
+    marginBottom: 10,
+    position: "relative",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    overflow: "hidden",
+    backgroundColor: "#DFF5FF",
+  },
+  vocabularyAdventureIntroSunburst: {
+    position: "absolute",
+    top: 18,
+    right: 24,
+    width: 76,
+    height: 76,
+    borderRadius: 38,
+    backgroundColor: "#FFE776",
+    borderWidth: 8,
+    borderColor: "rgba(255,249,196,0.8)",
+  },
+  vocabularyAdventureIntroHillBack: {
+    position: "absolute",
+    left: -50,
+    right: -50,
+    bottom: -52,
+    height: 116,
+    borderTopLeftRadius: 100,
+    borderTopRightRadius: 130,
+    backgroundColor: "#A6E7AF",
+    transform: [{ rotate: "-3deg" }],
+  },
+  vocabularyAdventureIntroHillFront: {
+    position: "absolute",
+    left: -40,
+    right: -70,
+    bottom: -78,
+    height: 124,
+    borderTopLeftRadius: 120,
+    borderTopRightRadius: 80,
+    backgroundColor: "#65D48A",
+    transform: [{ rotate: "5deg" }],
+  },
+  vocabularyAdventureIntroSparkLeft: {
+    position: "absolute",
+    top: 38,
+    left: 30,
+    width: 14,
+    height: 14,
+    borderRadius: 4,
+    backgroundColor: "#FACC15",
+    transform: [{ rotate: "45deg" }],
+  },
+  vocabularyAdventureIntroSparkRight: {
+    position: "absolute",
+    top: 102,
+    right: 26,
+    width: 10,
+    height: 10,
+    borderRadius: 3,
+    backgroundColor: "#A78BFA",
+    transform: [{ rotate: "45deg" }],
+  },
+  vocabularyAdventureReadingChild: {
+    width: 210,
+    height: 210,
+    marginBottom: -10,
+  },
+  vocabularyAdventureWordBadge: {
+    position: "absolute",
+    left: 18,
+    bottom: 15,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 14,
+    backgroundColor: "#6D28D9",
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
+    transform: [{ rotate: "-3deg" }],
+  },
+  vocabularyAdventureWordBadgeText: {
+    fontSize: 10,
+    fontWeight: "900",
+    letterSpacing: 1,
+    color: "#FFFFFF",
+  },
+  vocabularyAdventureTitle: {
+    fontSize: 30,
+    lineHeight: 36,
+    fontWeight: "900",
+    color: "#312E81",
+    textAlign: "center",
+  },
+  vocabularyAdventureSubtitle: {
+    marginTop: 6,
+    fontSize: 17,
+    lineHeight: 24,
+    fontWeight: "700",
+    color: "#475569",
+    textAlign: "center",
+  },
+  vocabularyAdventureCountPill: {
+    minWidth: 154,
+    marginTop: 16,
+    paddingHorizontal: 18,
+    paddingVertical: 11,
+    borderRadius: 22,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    backgroundColor: "#F1E9FF",
+    borderWidth: 2,
+    borderColor: "#CDB7FF",
+    shadowColor: "#5B21B6",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 2,
+  },
+  vocabularyAdventureCountNumber: {
+    fontSize: 22,
+    fontWeight: "900",
+    color: "#6D28D9",
+  },
+  vocabularyAdventureCountLabel: {
+    fontSize: 13,
+    fontWeight: "800",
+    color: "#4C1D95",
+  },
+  vocabularyAdventureIntroCopy: {
+    marginTop: 16,
+    marginBottom: 20,
+    fontSize: 14,
+    lineHeight: 22,
+    color: "#475569",
+    textAlign: "center",
+  },
+  vocabularyAdventurePrimaryButton: {
+    alignSelf: "stretch",
+    minHeight: 56,
+    paddingHorizontal: 20,
+    paddingVertical: 14,
+    borderRadius: 28,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+    backgroundColor: "#F97316",
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
+    shadowColor: "#9A3412",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 7,
+    elevation: 4,
+  },
+  vocabularyAdventurePrimaryButtonText: {
+    fontSize: 17,
+    lineHeight: 22,
+    fontWeight: "900",
+    color: "#FFFFFF",
+    textAlign: "center",
+  },
+  vocabularyAdventurePrimaryArrow: {
+    fontSize: 23,
+    lineHeight: 24,
+    fontWeight: "900",
+    color: "#FFFFFF",
+  },
+  vocabularyAdventureSecondaryButton: {
+    alignSelf: "stretch",
+    minHeight: 50,
+    marginTop: 11,
+    paddingHorizontal: 18,
+    borderRadius: 25,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
+    borderWidth: 2,
+    borderColor: "#C4B5FD",
+  },
+  vocabularyAdventureSecondaryButtonText: {
+    fontSize: 15,
+    fontWeight: "900",
+    color: "#5B21B6",
+  },
+  vocabularyAdventureUnavailable: {
+    alignSelf: "stretch",
+    marginTop: 20,
+    padding: 18,
+    borderRadius: 20,
+    alignItems: "center",
+    backgroundColor: "#EFF6FF",
+    borderWidth: 2,
+    borderColor: "#93C5FD",
+  },
+  vocabularyAdventureUnavailableMark: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#2563EB",
+    marginBottom: 8,
+  },
+  vocabularyAdventureUnavailableMarkText: {
+    color: "#FFFFFF",
+    fontSize: 21,
+    fontWeight: "900",
+  },
+  vocabularyAdventureUnavailableTitle: {
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: "900",
+    color: "#1E3A8A",
+    textAlign: "center",
+  },
+  vocabularyAdventureUnavailableText: {
+    marginTop: 6,
+    fontSize: 14,
+    lineHeight: 21,
+    color: "#334155",
+    textAlign: "center",
+  },
+  vocabularyAdventureQuestionScreen: {
+    zIndex: 1,
+    padding: 18,
+    borderRadius: 32,
+    backgroundColor: "#FFF9E9",
+    borderWidth: 3,
+    borderColor: "#FFFFFF",
+    shadowColor: "#245F7A",
+    shadowOffset: { width: 0, height: 9 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  vocabularyAdventureQuestionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 10,
+  },
+  vocabularyAdventureQuestionIdentity: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 9,
+  },
+  vocabularyAdventureQuestionBook: {
+    width: 38,
+    height: 34,
+    position: "relative",
+  },
+  vocabularyAdventureQuestionBookPageLeft: {
+    position: "absolute",
+    left: 1,
+    bottom: 2,
+    width: 19,
+    height: 28,
+    borderTopLeftRadius: 8,
+    borderBottomLeftRadius: 4,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 2,
+    borderColor: "#7C3AED",
+    transform: [{ rotate: "-5deg" }],
+  },
+  vocabularyAdventureQuestionBookPageRight: {
+    position: "absolute",
+    right: 1,
+    bottom: 2,
+    width: 19,
+    height: 28,
+    borderTopRightRadius: 8,
+    borderBottomRightRadius: 4,
+    backgroundColor: "#FFF7ED",
+    borderWidth: 2,
+    borderColor: "#F97316",
+    transform: [{ rotate: "5deg" }],
+  },
+  vocabularyAdventureQuestionTitle: {
+    flex: 1,
+    fontSize: 18,
+    lineHeight: 23,
+    fontWeight: "900",
+    color: "#312E81",
+  },
+  vocabularyAdventureScorePill: {
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 16,
+    backgroundColor: "#E5FAED",
+    borderWidth: 2,
+    borderColor: "#7FDEA1",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  vocabularyAdventureScoreStar: {
+    fontSize: 13,
+    color: "#F59E0B",
+    fontWeight: "900",
+  },
+  vocabularyAdventureScorePillText: {
+    fontSize: 12,
+    fontWeight: "900",
+    color: "#047857",
+  },
+  vocabularyAdventureProgressText: {
+    marginTop: 17,
+    fontSize: 13,
+    fontWeight: "800",
+    color: "#5B21B6",
+  },
+  vocabularyAdventureProgressTrack: {
+    height: 14,
+    marginTop: 8,
+    marginBottom: 18,
+    borderRadius: 7,
+    overflow: "hidden",
+    backgroundColor: "#E9E2F5",
+    borderWidth: 2,
+    borderColor: "#DDD0EF",
+  },
+  vocabularyAdventureProgressFill: {
+    height: "100%",
+    borderRadius: 7,
+    backgroundColor: "#31C879",
+  },
+  vocabularyAdventureQuestionCard: {
+    padding: 20,
+    borderRadius: 22,
+    backgroundColor: "#EEE8FF",
+    borderWidth: 2,
+    borderColor: "#BFA8FF",
+    borderBottomWidth: 5,
+    borderBottomColor: "#A98BEF",
+  },
+  vocabularyAdventureQuestionBadge: {
+    alignSelf: "flex-start",
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 11,
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1,
+    borderColor: "#D8CCFF",
+  },
+  vocabularyAdventureQuestionEyebrow: {
+    fontSize: 10,
+    fontWeight: "900",
+    letterSpacing: 0.9,
+    color: "#7C3AED",
+  },
+  vocabularyAdventurePrompt: {
+    fontSize: 22,
+    lineHeight: 31,
+    fontWeight: "900",
+    color: "#1E1B4B",
+  },
+  vocabularyAdventureOptions: {
+    marginTop: 15,
+    gap: 11,
+  },
+  vocabularyAdventureOption: {
+    minHeight: 68,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 19,
+    borderWidth: 2,
+    borderBottomWidth: 5,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+  },
+  vocabularyAdventureOption0: {
+    backgroundColor: "#DDF8EA",
+    borderColor: "#65D4A0",
+    borderBottomColor: "#3DB47D",
+  },
+  vocabularyAdventureOption1: {
+    backgroundColor: "#FFF2B8",
+    borderColor: "#F5CD48",
+    borderBottomColor: "#DEA91A",
+  },
+  vocabularyAdventureOption2: {
+    backgroundColor: "#F4E9FF",
+    borderColor: "#CDA5F2",
+    borderBottomColor: "#A875DB",
+  },
+  vocabularyAdventureOptionCorrect: {
+    backgroundColor: "#DCFCE7",
+    borderColor: "#16A34A",
+    borderBottomColor: "#15803D",
+  },
+  vocabularyAdventureOptionWrong: {
+    backgroundColor: "#FFF1F2",
+    borderColor: "#E11D48",
+    borderBottomColor: "#BE123C",
+  },
+  vocabularyAdventureOptionLetter: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FFFFFF",
+    borderWidth: 1.5,
+    borderColor: "#CBD5E1",
+  },
+  vocabularyAdventureOptionLetterCorrect: {
+    backgroundColor: "#16A34A",
+    borderColor: "#15803D",
+  },
+  vocabularyAdventureOptionLetterWrong: {
+    backgroundColor: "#E11D48",
+    borderColor: "#BE123C",
+  },
+  vocabularyAdventureOptionLetterText: {
+    fontSize: 15,
+    fontWeight: "900",
+    color: "#312E81",
+  },
+  vocabularyAdventureOptionText: {
+    flex: 1,
+    fontSize: 15,
+    lineHeight: 22,
+    fontWeight: "800",
+    color: "#1E293B",
+  },
+  vocabularyAdventureFeedback: {
+    marginTop: 15,
+    padding: 17,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderBottomWidth: 5,
+  },
+  vocabularyAdventureFeedbackCorrect: {
+    backgroundColor: "#ECFDF5",
+    borderColor: "#6EE7B7",
+    borderBottomColor: "#34B77A",
+  },
+  vocabularyAdventureFeedbackTryAgain: {
+    backgroundColor: "#FFF7ED",
+    borderColor: "#FDBA74",
+    borderBottomColor: "#F28A43",
+  },
+  vocabularyAdventureFeedbackHeading: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  vocabularyAdventureFeedbackIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  vocabularyAdventureFeedbackIconCorrect: {
+    backgroundColor: "#16A34A",
+  },
+  vocabularyAdventureFeedbackIconTryAgain: {
+    backgroundColor: "#F97316",
+  },
+  vocabularyAdventureFeedbackIconText: {
+    fontSize: 19,
+    fontWeight: "900",
+    color: "#FFFFFF",
+  },
+  vocabularyAdventureFeedbackTitle: {
+    flex: 1,
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: "900",
+    color: "#1E293B",
+  },
+  vocabularyAdventureFeedbackDefinition: {
+    marginTop: 8,
+    fontSize: 14,
+    lineHeight: 21,
+    color: "#334155",
+  },
+  vocabularyAdventureFeedbackExample: {
+    marginTop: 7,
+    marginBottom: 15,
+    fontSize: 13,
+    lineHeight: 20,
+    fontStyle: "italic",
+    color: "#475569",
+  },
+  vocabularyAdventureResults: {
+    zIndex: 1,
+    alignItems: "center",
+    paddingHorizontal: 22,
+    paddingTop: 30,
+    paddingBottom: 25,
+    borderRadius: 34,
+    backgroundColor: "#FFF9E9",
+    borderWidth: 3,
+    borderColor: "#FFFFFF",
+    shadowColor: "#245F7A",
+    shadowOffset: { width: 0, height: 9 },
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    elevation: 8,
+  },
+  vocabularyAdventureCelebration: {
+    width: 112,
+    height: 112,
+    position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+  },
+  vocabularyAdventureCelebrationRayOne: {
+    position: "absolute",
+    top: 4,
+    left: 4,
+    width: 14,
+    height: 42,
+    borderRadius: 7,
+    backgroundColor: "#F9A8D4",
+    transform: [{ rotate: "-45deg" }],
+  },
+  vocabularyAdventureCelebrationRayTwo: {
+    position: "absolute",
+    top: 2,
+    right: 4,
+    width: 14,
+    height: 42,
+    borderRadius: 7,
+    backgroundColor: "#86EFAC",
+    transform: [{ rotate: "45deg" }],
+  },
+  vocabularyAdventureCelebrationDotOne: {
+    position: "absolute",
+    bottom: 12,
+    left: 1,
+    width: 13,
+    height: 13,
+    borderRadius: 4,
+    backgroundColor: "#A78BFA",
+    transform: [{ rotate: "45deg" }],
+  },
+  vocabularyAdventureCelebrationDotTwo: {
+    position: "absolute",
+    bottom: 18,
+    right: 0,
+    width: 11,
+    height: 11,
+    borderRadius: 6,
+    backgroundColor: "#FACC15",
+  },
+  vocabularyAdventureMedalOuter: {
+    width: 88,
+    height: 88,
+    borderRadius: 44,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F97316",
+    borderWidth: 6,
+    borderColor: "#FED7AA",
+    zIndex: 2,
+  },
+  vocabularyAdventureMedalInner: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FACC15",
+  },
+  vocabularyAdventureMedalStar: {
+    fontSize: 34,
+    color: "#7C3AED",
+    fontWeight: "900",
+  },
+  vocabularyAdventureRibbonLeft: {
+    position: "absolute",
+    bottom: 0,
+    left: 25,
+    width: 25,
+    height: 50,
+    backgroundColor: "#7C3AED",
+    transform: [{ rotate: "15deg" }],
+  },
+  vocabularyAdventureRibbonRight: {
+    position: "absolute",
+    bottom: 0,
+    right: 25,
+    width: 25,
+    height: 50,
+    backgroundColor: "#2563EB",
+    transform: [{ rotate: "-15deg" }],
+  },
+  vocabularyAdventureResultsTitle: {
+    fontSize: 30,
+    lineHeight: 37,
+    fontWeight: "900",
+    color: "#312E81",
+    textAlign: "center",
+  },
+  vocabularyAdventureResultsScore: {
+    marginTop: 10,
+    fontSize: 22,
+    lineHeight: 29,
+    fontWeight: "900",
+    color: "#047857",
+    textAlign: "center",
+  },
+  vocabularyAdventureResultsMessage: {
+    marginTop: 11,
+    fontSize: 15,
+    lineHeight: 23,
+    fontWeight: "600",
+    color: "#475569",
+    textAlign: "center",
+  },
+  vocabularyAdventureReminder: {
+    alignSelf: "stretch",
+    marginTop: 16,
+    marginBottom: 19,
+    padding: 13,
+    borderRadius: 16,
+    backgroundColor: "#F5F3FF",
+    borderWidth: 1,
+    borderColor: "#DDD6FE",
+  },
+  vocabularyAdventureReminderText: {
+    fontSize: 12,
+    lineHeight: 18,
+    color: "#64748B",
+    textAlign: "center",
+  },
+
   learningPackSection: {
     marginHorizontal: 16,
     marginTop: 14,
