@@ -18,7 +18,11 @@ from app.modules.simplification.provider.base import (
     ProviderResponseError,
     ProviderUnavailableError,
 )
-from app.modules.simplification.provider.gemini import GeminiSimplificationProvider
+from app.modules.simplification.provider.gemini import (
+    _READING_LEVEL_INSTRUCTIONS,
+    _STRATEGY_INSTRUCTIONS,
+    GeminiSimplificationProvider,
+)
 from app.modules.simplification.schemas import (
     ReadingLevel,
     SimplificationRequest,
@@ -75,6 +79,21 @@ def _gemini_response(
     )
 
 
+def _simplification_payload(
+    *,
+    strategy: SimplificationStrategy = SimplificationStrategy.FULL_REWRITE,
+    reading_level: ReadingLevel = ReadingLevel.BEGINNER,
+) -> dict[str, object]:
+    return {
+        "simplified_text": "A safe synthetic output.",
+        "strategy_applied": strategy.value,
+        "target_reading_level": reading_level.value,
+        "concepts_preserved": [],
+        "validation_warnings": [],
+        "vocabulary_items": [],
+    }
+
+
 # ── Test 1: Successful Simplification Response ─────────────────────────────────
 
 
@@ -120,6 +139,155 @@ def test_simplify_success():
     assert result.ai_latency_ms >= 1
     assert len(result.vocabulary_items) == 1
     assert result.vocabulary_items[0]["term"] == "photosynthesis"
+
+
+def test_strategy_instruction_mapping_covers_every_enum_with_distinct_guidance():
+    assert set(_STRATEGY_INSTRUCTIONS) == set(SimplificationStrategy)
+    assert len(set(_STRATEGY_INSTRUCTIONS.values())) == len(SimplificationStrategy)
+    assert all(instruction.strip() for instruction in _STRATEGY_INSTRUCTIONS.values())
+
+
+@pytest.mark.parametrize("strategy", list(SimplificationStrategy))
+def test_simplification_prompt_contains_required_strategy_policy(
+    strategy: SimplificationStrategy,
+):
+    captured_body: dict[str, object] | None = None
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal captured_body
+        captured_body = json.loads(request.content.decode("utf-8"))
+        return _gemini_response(json.dumps(_simplification_payload(strategy=strategy)))
+
+    provider = GeminiSimplificationProvider(
+        _make_settings(),
+        client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+    provider.simplify(
+        SimplificationRequest(
+            source_text="A synthetic passage with enough detail for adaptation.",
+            preferred_strategy=strategy,
+        )
+    )
+
+    assert captured_body is not None
+    contents = captured_body["contents"]
+    assert isinstance(contents, list)
+    prompt = contents[0]["parts"][0]["text"]
+    assert "REQUIRED TRANSFORMATION POLICY" in prompt
+    assert f"Required strategy: {strategy.value}" in prompt
+    assert _STRATEGY_INSTRUCTIONS[strategy] in prompt
+    assert f"Return strategy_applied as exactly: {strategy.value}" in prompt
+
+
+def test_reading_level_instruction_mapping_covers_every_enum_with_meaningful_guidance():
+    assert set(_READING_LEVEL_INSTRUCTIONS) == set(ReadingLevel)
+    assert len(set(_READING_LEVEL_INSTRUCTIONS.values())) == len(ReadingLevel)
+    assert all(
+        "sentence" in instruction.lower() for instruction in _READING_LEVEL_INSTRUCTIONS.values()
+    )
+    assert all(
+        any(word in instruction.lower() for word in ("word", "vocabulary"))
+        for instruction in _READING_LEVEL_INSTRUCTIONS.values()
+    )
+    assert all(
+        "detail" in instruction.lower() for instruction in _READING_LEVEL_INSTRUCTIONS.values()
+    )
+
+
+@pytest.mark.parametrize("reading_level", list(ReadingLevel))
+def test_simplification_prompt_contains_required_reading_level_guidance(
+    reading_level: ReadingLevel,
+):
+    captured_body: dict[str, object] | None = None
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal captured_body
+        captured_body = json.loads(request.content.decode("utf-8"))
+        return _gemini_response(json.dumps(_simplification_payload(reading_level=reading_level)))
+
+    provider = GeminiSimplificationProvider(
+        _make_settings(),
+        client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+    provider.simplify(
+        SimplificationRequest(
+            source_text="A synthetic passage with enough detail for adaptation.",
+            target_reading_level=reading_level,
+        )
+    )
+
+    assert captured_body is not None
+    contents = captured_body["contents"]
+    assert isinstance(contents, list)
+    prompt = contents[0]["parts"][0]["text"]
+    assert "REQUIRED TARGET READING LEVEL" in prompt
+    assert f"Target reading level: {reading_level.value}" in prompt
+    assert _READING_LEVEL_INSTRUCTIONS[reading_level] in prompt
+    assert f"Return target_reading_level as exactly: {reading_level.value}" in prompt
+
+
+def test_explicit_strategy_mismatch_is_rejected():
+    def handler(request: httpx.Request) -> httpx.Response:
+        return _gemini_response(
+            json.dumps(_simplification_payload(strategy=SimplificationStrategy.VOCABULARY_SWAP))
+        )
+
+    provider = GeminiSimplificationProvider(
+        _make_settings(),
+        client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+
+    with pytest.raises(ProviderResponseError, match="strategy did not match"):
+        provider.simplify(
+            SimplificationRequest(
+                source_text="A synthetic passage.",
+                preferred_strategy=SimplificationStrategy.SENTENCE_SPLIT,
+            )
+        )
+
+
+def test_explicit_reading_level_mismatch_is_rejected():
+    def handler(request: httpx.Request) -> httpx.Response:
+        return _gemini_response(
+            json.dumps(_simplification_payload(reading_level=ReadingLevel.ADVANCED))
+        )
+
+    provider = GeminiSimplificationProvider(
+        _make_settings(),
+        client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+
+    with pytest.raises(ProviderResponseError, match="reading level did not match"):
+        provider.simplify(
+            SimplificationRequest(
+                source_text="A synthetic passage.",
+                target_reading_level=ReadingLevel.BEGINNER,
+            )
+        )
+
+
+def test_omitted_strategy_and_reading_level_keep_existing_defaults():
+    captured_body: dict[str, object] | None = None
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        nonlocal captured_body
+        captured_body = json.loads(request.content.decode("utf-8"))
+        return _gemini_response(json.dumps({"simplified_text": "A safe synthetic output."}))
+
+    provider = GeminiSimplificationProvider(
+        _make_settings(),
+        client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+    result = provider.simplify(SimplificationRequest(source_text="A synthetic passage."))
+
+    assert result.strategy_applied == SimplificationStrategy.FULL_REWRITE
+    assert result.target_reading_level == ReadingLevel.BEGINNER
+    assert captured_body is not None
+    contents = captured_body["contents"]
+    assert isinstance(contents, list)
+    prompt = contents[0]["parts"][0]["text"]
+    assert "Required strategy: full_rewrite" in prompt
+    assert "Target reading level: beginner" in prompt
 
 
 # ── Test 2: Successful Vocabulary Explanation Response ─────────────────────────
