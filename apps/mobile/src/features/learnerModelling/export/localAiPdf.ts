@@ -1,3 +1,4 @@
+import { openBrowserReport } from "./browserAiPdf";
 import { printToFileAsync } from "expo-print";
 import { isAvailableAsync, shareAsync } from "expo-sharing";
 
@@ -136,6 +137,7 @@ export async function exportLocalAiPdf({ snapshot, selection, platform, modules 
   isCurrent?: () => boolean;
 }): Promise<void> {
   const html = buildLocalAiReportHtml(snapshot, selection);
+  if (platform === "web") { openBrowserReport(html, isCurrent); return; }
   if (platform !== "ios" && platform !== "android") throw new ReportPdfError("platform");
   if (!modules) throw new ReportPdfError("dependencies");
   const current = () => { if (!isCurrent()) throw new ReportPdfError("cancelled"); };

@@ -1,3 +1,4 @@
+import * as browserPdf from "../export/browserAiPdf";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 import { Platform, Text } from "react-native";
 import { EducatorStudents } from "../components/EducatorStudents";
@@ -98,7 +99,7 @@ it("sanitizes generation, storage, sharing and cancellation failures without sha
     if (phase !== "share") expect(modules.shareAsync).not.toHaveBeenCalled();
   }
   const { modules, files } = native();
-  await expect(exportEducatorReport({ selection: selection(0), platform: "web", modules, files })).rejects.toMatchObject({ reason: "platform" });
+  await expect(exportEducatorReport({ selection: selection(null), platform: "windows", modules, files })).rejects.toMatchObject({ reason: "platform" });
   expect(modules.printToFileAsync).not.toHaveBeenCalled();
 });
 
@@ -201,4 +202,102 @@ it("formats half-open UTC periods accurately across months, years and partial da
   expect(educatorReportingPeriod("2025-12-31T00:00:00Z", "2026-01-02T00:00:00Z")).toBe("31 December 2025\u20131 January 2026");
   expect(educatorReportingPeriod("2026-01-01T00:00:00Z", "2026-01-02T09:00:00Z")).toBe("1 January 2026, 00:00:00.000 UTC to before 2 January 2026, 09:00:00.000 UTC");
   expect(() => educatorReportingPeriod("invalid", "2026-01-02T00:00:00Z")).toThrow();
+});
+
+it.each([0, 1, 2])("opens only student %s in the browser using the existing report HTML without native or network calls", async student => {
+  jest.useFakeTimers().setSystemTime(date);
+  try {
+    const open = jest.spyOn(browserPdf, "openBrowserReport").mockImplementation(() => {});
+    const network = jest.spyOn(globalThis, "fetch"); const { modules, files } = native();
+    await exportEducatorReport({ selection: selection(student), platform: "web", modules, files });
+    expect(open).toHaveBeenCalledWith(buildEducatorReport(selection(student), date).html, expect.any(Function));
+    expect(modules.printToFileAsync).not.toHaveBeenCalled(); expect(modules.shareAsync).not.toHaveBeenCalled();
+    expect(files.copyAsync).not.toHaveBeenCalled(); expect(network).not.toHaveBeenCalled();
+    const html = open.mock.calls[0]![0];
+    if (student === 2) { expect(html).toContain("2 completed sessions"); expect(html).toContain("Not enough reading sessions to show a reliable trend yet."); expect(html).toContain("Not measured"); }
+    expect(html).toContain("not AI-generated");
+  } finally { jest.useRealTimers(); }
+});
+it("blocks web exports for unauthorized, unavailable and invalid selections before opening a window", async () => {
+  const open = jest.spyOn(browserPdf, "openBrowserReport").mockImplementation(() => {});
+  for (const invalid of [{ role: "learner" }, { role: "guardian" }, { demoMode: false }, { development: false }, { student: -1 }, { student: 3 }, { student: 0.5 }, { student: 0, scenarioId: "mismatch" }]) {
+    const bad = { ...selection(2), ...invalid } as EducatorReportSelection;
+    await expect(exportEducatorReport({ selection: bad, platform: "web" })).rejects.toMatchObject({ reason: "unavailable" });
+  }
+  expect(open).not.toHaveBeenCalled();
+});
+it("enables Jamie's two-session web report, handles blocked popups and invalidates stale report windows", async () => {
+  jest.replaceProperty(Platform, "OS", "web");
+  const open = jest.spyOn(browserPdf, "openBrowserReport").mockImplementation(() => { throw new browserPdf.BrowserReportError("popup"); });
+  const view = render(<EducatorReportButton selection={selection(2)} />);
+  const print = screen.getByRole("button", { name: "Print / Save Student Report as PDF" });
+  expect(print).toBeEnabled(); fireEvent.press(print);
+  await screen.findByText("Your browser blocked the report window. Allow popups for ReadBuddy and try again.");
+  open.mockImplementation(() => {}); fireEvent.press(print);
+  await screen.findByText(/Report opened. Select Print/);
+  const current = open.mock.calls.at(-1)![1]!;
+  expect(current()).toBe(true);
+  view.rerender(<EducatorReportButton selection={selection(1)} />);
+  expect(current()).toBe(false);
+  expect(screen.queryByText(/Report opened/)).toBeNull();
+  view.rerender(<EducatorReportButton selection={{ ...selection(0), scenarioId: "mismatch" }} />);
+  expect(screen.getByRole("button", { name: "Print / Save Student Report as PDF" })).toBeDisabled();
+  expect(screen.getByText("Reading results are unavailable for this report.")).toBeTruthy();
+  view.rerender(<EducatorReportButton selection={selection(2)} unavailable />);
+  expect(screen.getByRole("button")).toBeDisabled();
+  expect(Print.printToFileAsync).not.toHaveBeenCalled(); expect(Sharing.shareAsync).not.toHaveBeenCalled();
+});
+
+it.each([0, 1, 3, 6])("opens the exact class report for scenario %s without native APIs or cross-student comparisons", async index => {
+  jest.useFakeTimers().setSystemTime(date);
+  try {
+    const open = jest.spyOn(browserPdf, "openBrowserReport").mockImplementation(() => {});
+    const { modules, files } = native(); const chosen = selection(null, index);
+    const network = jest.spyOn(globalThis, "fetch");
+    await exportEducatorReport({ selection: chosen, platform: "web", modules, files });
+    expect(open).toHaveBeenCalledWith(buildEducatorReport(chosen, date).html, expect.any(Function));
+    const html = open.mock.calls[0]![0];
+    for (const name of ["Alex Storybook", "Robin Page", "Jamie Bookmark"]) expect(html).toContain(name);
+    expect(html).toContain("Whole Class Analytics Report");
+    expect(html).toContain("no class averages or cross-student trend comparisons");
+    expect(html).toContain("Not measured"); expect(html).toContain("Sample Data");
+    expect(html).toContain("Not enough reading sessions to show a reliable trend yet.");
+    expect(modules.printToFileAsync).not.toHaveBeenCalled(); expect(modules.shareAsync).not.toHaveBeenCalled();
+    expect(files.copyAsync).not.toHaveBeenCalled(); expect(network).not.toHaveBeenCalled();
+  } finally { jest.useRealTimers(); }
+});
+it("rejects unauthorized class web contexts and retains honest incomplete-data reporting", async () => {
+  const open = jest.spyOn(browserPdf, "openBrowserReport").mockImplementation(() => {});
+  for (const change of [{ role: "guardian" }, { role: "learner" }, { demoMode: false }, { development: false }, { student: 99 }]) {
+    await expect(exportEducatorReport({ selection: { ...selection(null), ...change } as EducatorReportSelection, platform: "web" })).rejects.toMatchObject({ reason: "unavailable" });
+  }
+  expect(open).not.toHaveBeenCalled();
+  await exportEducatorReport({ selection: { ...selection(null), scenarioId: "mismatch" }, platform: "web" });
+  expect(open.mock.calls[0]![0]).toContain("Session totals are incomplete");
+  expect(open.mock.calls[0]![0]).toContain("Reading results unavailable");
+});
+it("enables class web printing, handles popup errors and invalidates a stale class window", async () => {
+  jest.replaceProperty(Platform, "OS", "web");
+  const open = jest.spyOn(browserPdf, "openBrowserReport").mockImplementation(() => { throw new browserPdf.BrowserReportError("popup"); });
+  const view = render(<EducatorReportButton selection={selection(null, 1)} />);
+  const action = screen.getByRole("button", { name: "Print / Save Class Report as PDF" });
+  expect(action).toBeEnabled();
+  expect(screen.queryByText("Open the iPhone or Android app to share a PDF.")).toBeNull();
+  fireEvent.press(action);
+  await screen.findByText("Your browser blocked the report window. Allow popups for ReadBuddy and try again.");
+  open.mockImplementation(() => { throw new browserPdf.BrowserReportError("printing"); }); fireEvent.press(action);
+  await screen.findByText("Could not open the class report. Please try again. No saved copy is confirmed.");
+  open.mockImplementation(() => {}); fireEvent.press(action);
+  await screen.findByText(/Report opened. Select Print/);
+  const current = open.mock.calls.at(-1)![1]!; expect(current()).toBe(true);
+  view.rerender(<EducatorReportButton selection={selection(null, 6)} />);
+  expect(current()).toBe(false);
+  view.rerender(<EducatorReportButton selection={{ ...selection(null), role: "guardian" }} />);
+  expect(screen.getByRole("button")).toBeDisabled();
+});
+it.each(["ios", "android"])("preserves class report native printing and sharing on %s", async platform => {
+  const { modules, files } = native();
+  await exportEducatorReport({ selection: selection(null), platform, modules, files });
+  expect(modules.printToFileAsync).toHaveBeenCalledWith(expect.objectContaining({ html: expect.stringContaining("Whole Class Analytics Report") }));
+  expect(modules.shareAsync).toHaveBeenCalledWith(expect.stringMatching(/ReadBuddy-Class-Analytics-.*\.pdf$/), expect.objectContaining({ mimeType: "application/pdf" }));
 });

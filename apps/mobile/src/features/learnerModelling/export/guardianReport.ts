@@ -1,3 +1,4 @@
+import { openBrowserReport } from "./browserAiPdf";
 import * as Files from "expo-file-system/legacy";
 import { escapeHtml as e, installedPdfModules, ReportPdfError, type ExpoPdfModules } from "./localAiPdf";
 export interface GuardianReportData {
@@ -23,9 +24,19 @@ export function buildGuardianReport(data: GuardianReportData, now = new Date()) 
     <h2>About These Results</h2>${[...new Set(data.notes)].map(s => `<p>${e(s)}</p>`).join("")}<p><small>Factual progress summary; not AI-generated.</small></p></body></html>`;
   return { html, filename: `ReadBuddy-Parent-Progress-${now.toISOString().slice(0, 10)}.pdf` };
 }
-export async function exportGuardianReport({ data, platform, modules = installedPdfModules(), files = Files, isCurrent = () => true }: {
-  data: GuardianReportData; platform: string; modules?: ExpoPdfModules | null; files?: Pick<typeof Files, "cacheDirectory" | "copyAsync" | "deleteAsync">; isCurrent?: () => boolean;
+export interface GuardianWebSelection { development: boolean; demoMode: boolean; role: string }
+/** Demo context is not authentication; production screens never supply these reports. */
+export function buildGuardianWebReport(data: GuardianReportData, selection?: GuardianWebSelection) {
+  if (!__DEV__ || !selection?.development || !selection.demoMode || selection.role !== "guardian"
+    || !Number.isInteger(data.completed) || data.completed < 0 || Date.parse(data.start) >= Date.parse(data.end)
+    || data.contexts.some(c => !Number.isInteger(c.sessions) || c.sessions < 0)
+    || (data.completed === 0 && (data.contexts.some(c => c.sessions > 0) || data.latest.some(m => m.value !== "Unavailable")))) throw new ReportPdfError("unavailable");
+  return buildGuardianReport(data);
+}
+export async function exportGuardianReport({ data, platform, modules = installedPdfModules(), files = Files, isCurrent = () => true, selection }: {
+  data: GuardianReportData; platform: string; selection?: GuardianWebSelection; modules?: ExpoPdfModules | null; files?: Pick<typeof Files, "cacheDirectory" | "copyAsync" | "deleteAsync">; isCurrent?: () => boolean;
 }) {
+  if (platform === "web") { const report = buildGuardianWebReport(data, selection); openBrowserReport(report.html, isCurrent); return; }
   const report = buildGuardianReport(data);
   if (platform !== "ios" && platform !== "android") throw new ReportPdfError("platform");
   if (!modules) throw new ReportPdfError("dependencies");

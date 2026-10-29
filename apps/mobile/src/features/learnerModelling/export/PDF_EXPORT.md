@@ -1,15 +1,15 @@
-# Native synthetic AI report PDF export
+# Synthetic AI report PDF export
 
 ## Current status
 
 STEP 164 explicitly approved and installed `expo-print 57.0.2` and
 `expo-sharing 57.0.23` for Expo SDK 57. `installedPdfModules()` now connects the
 public `printToFileAsync`, `isAvailableAsync` and `shareAsync` APIs. The button is
-enabled on Android/iOS only after development-only learner demo opt-in and successful
+enabled on Android/iOS after development-only learner demo opt-in and successful
 snapshot validation; duplicate taps are blocked during generation/sharing.
 
 The app creates a cached local PDF and opens the native share sheet. It performs no
-upload, new model generation or automatic permanent save. No web fallback is used.
+upload, new model generation or automatic permanent save. Web uses the separate browser print flow described below.
 Installation changed only package.json and yarn.lock. The installer's automatic
 incoming-share plugin entry was removed: receiving shares/extensions are not part of
 this feature. No shared app configuration or native project was changed.
@@ -101,3 +101,62 @@ for clipped rows, isolated headings and disclaimer-only pages. Original technica
 statements must remain available in the clearly labeled unchanged-source section.
 The updated pagination has not yet been physically verified by the implementation
 agent. A resolved native share sheet still does not prove the user saved a copy.
+
+## Browser Print / Save as PDF
+
+In the learner demo, open the previously saved AI report and choose **Print / Save as PDF**.
+A dedicated report window opens containing the same validated HTML, source statements,
+measurements and disclosures used by native PDF export. In that window select
+**Print / Save as PDF**, then choose **Save as PDF** in the browser print dialog.
+The printing controls are excluded from printed pages. Allow popups for ReadBuddy
+if the browser blocks the report window. Printing failures show a retry instruction.
+
+This opens a print dialog, not an automatic PDF download. The browser controls the
+filename, destination, margins and pagination. Closing a print dialog does not prove
+that a file was saved. Report-selection changes invalidate further printing from an
+older window; close it and open the current report again. Already visible content
+cannot be revoked from a user's browser or saved files.
+
+No report is regenerated, no AI provider is contacted, and no data is uploaded.
+Learner/development/demo opt-in and snapshot validation remain required. Android and
+iOS continue to use Expo Print and the native share sheet unchanged. Browser tests
+use synthetic snapshots and mocked window/print operations; real browser pagination,
+popup policy and Save as PDF require manual verification.
+
+### Educator individual analytics reports on web
+
+The Educator demo's valid student selection offers **Print / Save Student Report as PDF**.
+The dedicated window contains only that student's existing role-projected analytics
+report from `buildEducatorReport()`. Select **Print / Save as PDF** in that window,
+then **Save as PDF** in the browser dialog. Two sessions can produce a descriptive
+report; insufficient trend evidence and missing measurements remain explicit.
+This deterministic analytics report is independent of the saved learner GenAI snapshot.
+Educator development/demo gates and selection validation remain enforced. Popup,
+printing and stale-selection handling reuse the browser helper above. Android/iOS
+exports remain unchanged. Class web exports use the matching flow below.
+
+### Guardian progress reports on web
+
+Valid Guardian demo evidence offers **Print / Save Guardian Report as PDF**.
+A dedicated window uses the unchanged Guardian report HTML, measurements, period,
+missing-data explanations and synthetic disclosures. Choose **Print / Save as PDF**
+there, then **Save as PDF** in the browser print dialog. Zero-session reports remain
+exportable and show insufficient evidence, never an improvement or decline.
+The browser path requires explicit Guardian development/demo context and valid report
+data. This is not production authorization: existing live/demo screen boundaries and
+Guardian projections remain the source restrictions. Native generation/sharing,
+Educator reports and saved AI reports are unchanged. Browser popup, print, cancellation
+and save limitations described above also apply.
+
+### Educator class analytics reports on web
+
+Class Overview offers **Print / Save Class Report as PDF** for valid Educator
+development/demo selections. It opens only the existing `buildEducatorReport()`
+class HTML in a dedicated report window. Select **Print / Save as PDF** there and
+choose **Save as PDF** in the browser dialog. All three fictional student records,
+individual reporting periods, missing-data notes, supported trends and disclosures
+are unchanged. Missing Alex evidence remains explicitly unavailable, with incomplete
+class totals, as in the existing report generator. No student rankings or pooled
+performance averages are introduced. Native class sharing and other report types
+are unchanged. Existing browser popup, printing, stale-selection and save limitations
+apply; saving is never automatically confirmed.

@@ -1,3 +1,4 @@
+import { openBrowserReport } from "./browserAiPdf";
 import { selectRoleScenario, type EducatorArtifact } from "../preview/roleScenarioResults";
 import * as NativeFiles from "expo-file-system/legacy";
 import { selectEducatorStudent } from "../preview/educatorStudents";
@@ -121,6 +122,7 @@ export async function exportEducatorReport({ selection, platform, modules = inst
   selection: EducatorReportSelection; platform: string; modules?: ExpoPdfModules | null; files?: EducatorPdfFiles; isCurrent?: () => boolean;
 }) {
   const report = buildEducatorReport(selection);
+  if (platform === "web") { openBrowserReport(report.html, isCurrent); return; }
   if (platform !== "ios" && platform !== "android") throw new ReportPdfError("platform");
   if (!modules) throw new ReportPdfError("dependencies");
   const current = () => { if (!isCurrent()) throw new ReportPdfError("cancelled"); };

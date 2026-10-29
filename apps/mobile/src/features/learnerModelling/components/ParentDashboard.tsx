@@ -51,7 +51,7 @@ export function ParentDashboard({ projection, dashboard, selection, onSeparate }
       </View>
       {contexts.length > 1 ? <Text style={s.note}>Latest results: {latest?.label}. Contexts are compared separately.</Text> : null}
       <View style={s.card}><Text accessibilityRole="header" style={s.heading}>Progress Summary</Text><Text style={s.body}>{status}</Text></View>
-      {report ? <GuardianReportButton data={report} /> : null}
+      {report ? <GuardianReportButton data={report} selection={{ development: __DEV__, demoMode: true, role: "guardian" }} /> : null}
       {onSeparate ? <Pressable accessibilityRole="button" onPress={onSeparate} style={s.action}><Text style={s.actionText}>View separate example</Text></Pressable> : null}
       {contexts.map((c, i) => <View key={i} style={s.card}>
         <Text style={s.heading}>{c.label}</Text><Text style={s.note}>{sessions(c.sessions)}</Text>

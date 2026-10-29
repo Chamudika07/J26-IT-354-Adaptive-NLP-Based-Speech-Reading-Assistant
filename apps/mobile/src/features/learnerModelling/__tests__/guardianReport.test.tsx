@@ -1,3 +1,5 @@
+import * as browserPdf from "../export/browserAiPdf";
+import { GuardianReportButton } from "../components/GuardianReportButton";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react-native";
 import { Platform } from "react-native";
 import * as Print from "expo-print";
@@ -83,5 +85,55 @@ it("escapes available names and does not enable export for unavailable Guardian 
 });
 it("rejects non-native platforms before generating a PDF", async () => {
   const data: GuardianReportData = { source: "Independent example", start: "2026-01-01T00:00:00Z", end: "2026-01-31T00:00:00Z", completed: 0, status: "More reading sessions are needed to see a trend", latest: [], contexts: [], support: [], notes: [] };
-  await expect(exportGuardianReport({ data, platform: "web" })).rejects.toMatchObject({ reason: "platform" }); expect(Print.printToFileAsync).not.toHaveBeenCalled();
+  await expect(exportGuardianReport({ data, platform: "windows" })).rejects.toMatchObject({ reason: "platform" }); expect(Print.printToFileAsync).not.toHaveBeenCalled();
+});
+
+it.each([0, 1, 3, 6])("opens the identical Guardian scenario %s HTML on web without native calls", async index => {
+  jest.replaceProperty(Platform, "OS", "web");
+  const open = jest.spyOn(browserPdf, "openBrowserReport").mockImplementation(() => {});
+  const network = jest.spyOn(globalThis, "fetch");
+  render(<ParentDashboard projection={projection(index)} selection={`Sample ${index}`} />);
+  fireEvent.press(screen.getByRole("button", { name: "Print / Save Guardian Report as PDF" }));
+  await screen.findByText(/Report opened. Select Print/);
+  const html = open.mock.calls[0]![0];
+  expect(html).toContain(`Selected reading scenario: Sample ${index}`);
+  expect(html).toContain(`${index} ${index === 1 ? "session" : "sessions"} completed`);
+  expect(html).toContain("Fictional Demonstration Data");
+  for (const c of projection(index).contexts) for (const m of c.metrics) expect(html).toContain(escapeHtml(m.explanation));
+  if (index === 0) { expect(html).toContain("Unavailable"); expect(html).toContain("More reading sessions are needed to see a trend"); expect(html).not.toContain("<th>First</th>"); }
+  expect(Print.printToFileAsync).not.toHaveBeenCalled(); expect(Sharing.shareAsync).not.toHaveBeenCalled(); expect(network).not.toHaveBeenCalled();
+});
+it("rejects invalid or unauthorized Guardian web selections and unavailable evidence", async () => {
+  const open = jest.spyOn(browserPdf, "openBrowserReport").mockImplementation(() => {});
+  const data: GuardianReportData = { source: "Independent example", start: "2026-01-01T00:00:00Z", end: "2026-01-31T00:00:00Z", completed: 0, status: "More reading sessions are needed to see a trend", latest: [], contexts: [], support: [], notes: [] };
+  for (const selection of [undefined, { development: true, demoMode: true, role: "learner" }, { development: true, demoMode: true, role: "educator" }, { development: true, demoMode: false, role: "guardian" }, { development: false, demoMode: true, role: "guardian" }]) {
+    await expect(exportGuardianReport({ data, selection, platform: "web" })).rejects.toMatchObject({ reason: "unavailable" });
+  }
+  const selection = { development: true, demoMode: true, role: "guardian" };
+  for (const invalid of [{ completed: -1 }, { start: "invalid" }, { end: data.start }, { latest: [{ label: "Accuracy", unit: "%", value: "95" }] }]) await expect(exportGuardianReport({ data: { ...data, ...invalid }, selection, platform: "web" })).rejects.toMatchObject({ reason: "unavailable" });
+  expect(open).not.toHaveBeenCalled();
+  jest.replaceProperty(Platform, "OS", "web");
+  render(<GuardianReportButton data={data} />); expect(screen.getByRole("button")).toBeDisabled();
+});
+it("handles blocked Guardian popups and invalidates old browser reports on scenario changes", async () => {
+  jest.replaceProperty(Platform, "OS", "web");
+  const open = jest.spyOn(browserPdf, "openBrowserReport").mockImplementation(() => { throw new browserPdf.BrowserReportError("popup"); });
+  const view = render(<ParentDashboard projection={projection(1)} selection="Sample 1" />);
+  fireEvent.press(screen.getByRole("button", { name: "Print / Save Guardian Report as PDF" }));
+  await screen.findByText("Your browser blocked the report window. Allow popups for ReadBuddy and try again.");
+  open.mockImplementation(() => {});
+  fireEvent.press(screen.getByRole("button", { name: "Print / Save Guardian Report as PDF" }));
+  await screen.findByText(/Report opened. Select Print/);
+  const current = open.mock.calls.at(-1)![1]!; expect(current()).toBe(true);
+  view.rerender(<ParentDashboard projection={projection(6)} selection="Sample 6" />);
+  expect(current()).toBe(false); expect(screen.queryByText(/Report opened/)).toBeNull();
+  view.rerender(<ParentDashboard projection={null} selection="Missing" />);
+  expect(screen.queryByRole("button", { name: "Print / Save Guardian Report as PDF" })).toBeNull();
+});
+it("preserves Android Guardian generation and sharing", async () => {
+  jest.replaceProperty(Platform, "OS", "android");
+  render(<ParentDashboard projection={projection(1)} selection="Sample 1" />);
+  fireEvent.press(screen.getByRole("button", { name: "Download Progress Report" }));
+  await waitFor(() => expect(Sharing.shareAsync).toHaveBeenCalledTimes(1));
+  expect(Print.printToFileAsync).toHaveBeenCalledTimes(1);
 });

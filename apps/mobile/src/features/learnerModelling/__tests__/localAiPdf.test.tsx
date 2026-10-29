@@ -1,3 +1,4 @@
+import * as browserPdf from "../export/browserAiPdf";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react-native";
 import { Platform, ScrollView } from "react-native";
 import * as Print from "expo-print";
@@ -125,7 +126,7 @@ it.each(["ios", "android"] as const)("connects the installed Expo adapter to the
   expect(html).not.toContain("2026-10-15");
 });
 
-it.each(["web", "windows"])("does not substitute web downloads on %s", async (platform) => {
+it.each(["windows"])("does not substitute web downloads on %s", async (platform) => {
   const native = modules();
   await expect(pdf.exportLocalAiPdf({ snapshot: snapshot(), selection, platform, modules: native })).rejects.toMatchObject({ reason: "platform" });
   expect(native.isAvailableAsync).not.toHaveBeenCalled();
@@ -242,9 +243,9 @@ it("keeps a missing native adapter visible with a reason instead of hiding or cr
 it("shows invalid snapshots and unsupported platforms as disabled actions with reasons", () => {
   jest.replaceProperty(Platform, "OS", "web");
   render(<LocalAiPdfButton snapshot={{ ...snapshot(), validated: false }} selection={selection} compact />);
-  expect(screen.getByRole("button", { name: "Download AI Report PDF" })).toBeDisabled();
+  expect(screen.getByRole("button", { name: "Print / Save as PDF" })).toBeDisabled();
   expect(screen.getByText(/Open a saved AI report first/)).toBeVisible();
-  expect(screen.getByText("PDF export requires the Android or iOS app.")).toBeVisible();
+  expect(screen.queryByText("PDF export requires the Android or iOS app.")).toBeNull();
 });
 
 
@@ -284,4 +285,18 @@ it("separates friendly display explanations from every unchanged source statemen
   for (const text of original.statements) expect(source).toContain(pdf.escapeHtml(text));
   expect(JSON.stringify(original)).toBe(before);
   expect(html).toContain("Friendly labels and unit conversions above are display-only.");
+});
+
+it("offers web printing without native dependencies and reports blocked popups honestly", async () => {
+  jest.mocked(Print.printToFileAsync).mockClear(); jest.mocked(Sharing.shareAsync).mockClear();
+  jest.replaceProperty(Platform, "OS", "web");
+  jest.spyOn(pdf, "installedPdfModules").mockImplementation(() => { throw new Error("Should not load native adapter"); });
+  const open = jest.spyOn(browserPdf, "openBrowserReport").mockImplementation(() => { throw new browserPdf.BrowserReportError("popup"); });
+  render(<LocalAiPdfButton snapshot={snapshot()} selection={selection} compact />);
+  const print = screen.getByRole("button", { name: "Print / Save as PDF" });
+  expect(print).toBeEnabled(); fireEvent.press(print);
+  expect(await screen.findByText("Your browser blocked the report window. Allow popups for ReadBuddy and try again.")).toBeVisible();
+  open.mockImplementation(() => {}); fireEvent.press(print);
+  expect(await screen.findByText(/Report opened. Select Print/)).toBeVisible();
+  expect(Print.printToFileAsync).not.toHaveBeenCalled(); expect(Sharing.shareAsync).not.toHaveBeenCalled();
 });
