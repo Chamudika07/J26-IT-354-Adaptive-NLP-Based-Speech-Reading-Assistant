@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, within } from "@testing-library/react-native";
-import { StyleSheet } from "react-native";
+import { act, fireEvent, render, screen, within } from "@testing-library/react-native";
+import { Dimensions, StyleSheet } from "react-native";
 import { LearnerSuggestionsScreen } from "../screens/LearnerSuggestionsScreen";
 import { ConnectedLearnerJourney } from "../components/ConnectedLearnerJourney";
 import { DeveloperTestBoundary } from "../preview/DeveloperTestSession";
@@ -64,4 +64,43 @@ it("does not fabricate measurements, evidence quality or a decision for an empty
   fireEvent.press(screen.getByRole("button", { name: "Why This Tip?" }));
   expect(screen.getByText("Decision evidence: Unavailable")).toBeTruthy();
   expect(screen.queryByText("Evidence status is not a confidence score.")).toBeNull();
+});
+
+it("adds decorative book artwork and meaningful icons without changing the recommendation or announcements", () => {
+  const dashboard = buildSyntheticDashboard("learner", 30);
+  render(<LearnerSuggestionsScreen dashboard={dashboard} demoMode periodDays={30} />);
+  const book = screen.getByTestId("tips-reading-illustration", { includeHiddenElements: true });
+  expect(book.props.accessibilityElementsHidden).toBe(true);
+  expect(book.props.importantForAccessibility).toBe("no-hide-descendants");
+  expect(screen.queryByLabelText("ReadBuddy smiling book character")).toBeNull();
+  expect(screen.getByLabelText("ReadBuddy smiling book character", { includeHiddenElements: true })).toBeTruthy();
+  const icons = screen.getAllByTestId("tips-pictorial-icon", { includeHiddenElements: true });
+  expect(icons).toHaveLength(3);
+  for (const icon of icons) {
+    expect(icon.props.accessibilityElementsHidden).toBe(true);
+    expect(icon.props.importantForAccessibility).toBe("no-hide-descendants");
+    expect(icon.props.pointerEvents).toBe("none");
+    expect(StyleSheet.flatten(icon.props.style).position).toBeUndefined();
+  }
+  expect(screen.getByText(dashboard.recommendation.explanation)).toBeTruthy();
+  expect(screen.getByText(dashboard.recommendation.supportSuggestion)).toBeTruthy();
+  expect(screen.getByText("ADVISORY ONLY")).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Why This Tip?" }).props.accessibilityState.expanded).toBe(false);
+});
+
+it("keeps Tips headings, evidence and actions readable with large text on a small iPhone", () => {
+  const original = { window: Dimensions.get("window"), screen: Dimensions.get("screen") };
+  act(() => Dimensions.set({ window: { width: 320, height: 568, scale: 2, fontScale: 2 } }));
+  const dashboard = buildSyntheticDashboard("learner", 30);
+  const view = render(<LearnerSuggestionsScreen dashboard={dashboard} demoMode periodDays={30} />);
+  try {
+    for (const name of ["My Reading Tips", "Why this recommendation?", "What should I do next?"]) {
+      const heading = screen.getByRole("header", { name });
+      expect(heading.props.allowFontScaling).not.toBe(false);
+      expect(StyleSheet.flatten(heading.props.style).height).toBeUndefined();
+    }
+    fireEvent.press(screen.getByRole("button", { name: "Why This Tip?" }));
+    expect(screen.getByText("Exact rule conditions: Unavailable.")).toBeTruthy();
+    expect(screen.getByText("No settings or reading level were changed automatically.")).toBeTruthy();
+  } finally { view.unmount(); act(() => Dimensions.set(original)); }
 });

@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { palette, radii } from "../theme";
+import { ReadingBuddyIllustration } from "./ReadingBuddyIllustration";
 
 export interface TipEvidenceMetric { label: string; value: string; evidence?: string; explanation?: string; observations?: string }
 /** Presentation only: decision reasons and evidence come from the selected source. */
@@ -12,12 +13,15 @@ export function ReadingTipsView({ disclosure, title, metrics, reasons, nextSteps
   const [details, setDetails] = useState(false);
   const uniqueReasons = [...new Set(reasons)];
   return <ScrollView style={styles.scroll} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-    <Text accessibilityRole="header" style={styles.title}>My Reading Tips</Text>
+    <View style={styles.header}>
+      <Text accessibilityRole="header" style={[styles.title, styles.headerTitle]}>My Reading Tips</Text>
+      <View testID="tips-reading-illustration" pointerEvents="none" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={styles.illustration}><ReadingBuddyIllustration compact /></View>
+    </View>
     <Text style={styles.disclosure}>{disclosure}</Text>
     {developerAction}
     <View style={styles.recommendation}>
       <Text style={styles.advisory}>ADVISORY ONLY</Text>
-      <Text accessibilityRole="header" style={styles.recommendationTitle}>{title}</Text>
+      <View style={styles.sectionHeading}><TipPicture symbol={"\uD83D\uDCA1"} background="#EEF5FF" /><Text accessibilityRole="header" style={[styles.recommendationTitle, styles.headingText]}>{title}</Text></View>
       <Text style={styles.body}>No settings or reading level were changed automatically.</Text>
     </View>
     <View style={styles.card}>
@@ -29,7 +33,7 @@ export function ReadingTipsView({ disclosure, title, metrics, reasons, nextSteps
       </View>
     </View>
     <View style={styles.card}>
-      <Text accessibilityRole="header" style={styles.heading}>Why this recommendation?</Text>
+      <View style={styles.sectionHeading}><TipPicture symbol={"\uD83D\uDD0D"} background="#F4EFFF" /><Text accessibilityRole="header" style={[styles.heading, styles.headingText]}>Why this recommendation?</Text></View>
       {unavailableReason ? <Text style={styles.body}>{unavailableReason}</Text> : null}
       {uniqueReasons.length ? uniqueReasons.map((reason, index) => <View key={reason} style={styles.reason}>
         <Text accessible={false} style={styles.reasonNumber}>{index + 1}</Text><Text style={[styles.body, { flex: 1 }]}>{reason}</Text>
@@ -54,13 +58,24 @@ export function ReadingTipsView({ disclosure, title, metrics, reasons, nextSteps
       </View> : null}
     </View>
     <View style={styles.card}>
-      <Text accessibilityRole="header" style={styles.heading}>What should I do next?</Text>
+      <View style={styles.sectionHeading}><TipPicture symbol={"\uD83D\uDCD6"} background="#EAFBF1" /><Text accessibilityRole="header" style={[styles.heading, styles.headingText]}>What should I do next?</Text></View>
       {nextSteps.map(text => <Text key={text} style={styles.body}>{text}</Text>)}
       {onReport ? <Pressable accessibilityRole="button" onPress={onReport} style={styles.primary}><Text style={styles.primaryText}>Next: My Reading Report</Text></Pressable> : null}
     </View>
   </ScrollView>;
 }
+function TipPicture({ symbol, background }: { symbol: string; background: string }) {
+  return <View testID="tips-pictorial-icon" pointerEvents="none" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={[styles.iconBadge, { backgroundColor: background }]}><Text allowFontScaling={false} style={styles.icon}>{symbol}</Text></View>;
+}
+
 const styles = StyleSheet.create({
+  header: { flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 8 },
+  headerTitle: { flexGrow: 1, flexShrink: 1, flexBasis: 180 },
+  illustration: { width: 94, height: 84 },
+  sectionHeading: { flexDirection: "row", alignItems: "center", gap: 8 },
+  headingText: { flex: 1 },
+  iconBadge: { width: 32, height: 32, borderRadius: 10, alignItems: "center", justifyContent: "center" },
+  icon: { fontSize: 20, lineHeight: 26 },
   scroll: { backgroundColor: palette.paper }, content: { paddingHorizontal: 16, paddingTop: 8, paddingBottom: 96, gap: 12 },
   title: { fontSize: 22, color: palette.primaryDark, fontWeight: "900" }, disclosure: { fontSize: 12, lineHeight: 18, color: palette.muted },
   card: { padding: 12, gap: 10, borderRadius: radii.medium, backgroundColor: palette.surface },
