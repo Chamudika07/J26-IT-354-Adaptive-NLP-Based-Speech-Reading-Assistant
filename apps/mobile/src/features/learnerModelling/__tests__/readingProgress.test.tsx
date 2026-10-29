@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react-native";
-import { Alert, StyleSheet } from "react-native";
+import { act, fireEvent, render, screen, within } from "@testing-library/react-native";
+import { Alert, Dimensions, StyleSheet } from "react-native";
 import { ConfirmJourneyReset, ReadingProgress } from "../components/ReadingProgress";
 import { selectConnectedReplay } from "../preview/connectedSessionPreview";
 
@@ -90,4 +90,68 @@ it("requires explicit confirmation before resetting the journey", () => {
   expect(buttons.find(b => b.text === "Cancel")!.style).toBe("cancel");
   buttons.find(b => b.text === "Reset Journey")!.onPress!();
   expect(onReset).toHaveBeenCalledTimes(1); alert.mockRestore();
+});
+
+it("uses consistent pastel metric colors and readable chart colors with accessible evidence labels", () => {
+  const row = { label: "S1", accuracy: 95, speed: 100, hesitation: 2 };
+  render(<ReadingProgress rows={[row]} latest={row} period="Sample period" onTips={() => {}} />);
+  const luminance = (hex: string) => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255).map(v => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4).reduce((sum, v, i) => sum + v * [0.2126, 0.7152, 0.0722][i]!, 0);
+  for (const [key, label, unit, accent, background] of [
+    ["accuracy", "Reading Accuracy", "%", "#3182F6", "#EEF5FF"],
+    ["speed", "Reading Speed", "WPM", "#22C55E", "#EAFBF1"],
+    ["hesitation", "Hesitation Frequency", "per 100 attempted words", "#8B5CF6", "#F4EFFF"],
+  ] as const) {
+    const card = screen.getByTestId(`analytics-${key}`);
+    expect(StyleSheet.flatten(card.props.style)).toMatchObject({ borderTopColor: accent, backgroundColor: background });
+    expect(card.props.accessibilityLabel).toBe(`${label}: ${row[key]} ${unit}`);
+    const foreground = StyleSheet.flatten(within(card).getByText(String(row[key])).props.style).color;
+    expect((luminance(background) + 0.05) / (luminance(foreground) + 0.05)).toBeGreaterThanOrEqual(4.5);
+    expect(StyleSheet.flatten(screen.getByTestId(`trend-${key}`).props.style).borderTopColor).toBe(accent);
+    expect(StyleSheet.flatten(screen.getByTestId(`bar-${key}-0`).props.style).backgroundColor).toBe(foreground);
+  }
+  expect(StyleSheet.flatten(screen.getByTestId("analytics-sessions").props.style).backgroundColor).toBe("#E7F8F5");
+  expect(StyleSheet.flatten(screen.getByRole("button", { name: "View Reading Tips" }).props.style)).toMatchObject({ minHeight: 48, backgroundColor: "#1D4ED8" });
+});
+
+it("stacks Analytics metrics for small iPhones and large text while retaining readable chart alternatives", () => {
+  const original = { window: Dimensions.get("window"), screen: Dimensions.get("screen") };
+  act(() => Dimensions.set({ window: { width: 320, height: 568, scale: 2, fontScale: 2 } }));
+  const row = { label: "S1", accuracy: 95, speed: 100, hesitation: null };
+  const view = render(<ReadingProgress rows={[row]} latest={row} period="Sample period" />);
+  try {
+    for (const key of ["sessions", "accuracy", "speed", "hesitation"]) {
+      const style = StyleSheet.flatten(screen.getByTestId(`analytics-${key}`).props.style);
+      expect(style.flexBasis).toBe("100%"); expect(style.height).toBeUndefined();
+    }
+    expect(screen.getByLabelText("S1: 95 %")).toBeTruthy();
+    expect(screen.getByTestId("analytics-hesitation").props.accessibilityLabel).toBe("Hesitation Frequency: Unavailable");
+    expect(screen.queryByTestId("bar-hesitation-0")).toBeNull();
+    for (const name of ["View Behaviour Details", "View Reading History"]) {
+      const control = screen.getByRole("button", { name });
+      expect(control.props.accessibilityState.expanded).toBe(false);
+      expect(StyleSheet.flatten(control.props.style).minHeight).toBeGreaterThanOrEqual(44);
+    }
+  } finally { view.unmount(); act(() => Dimensions.set(original)); }
+});
+
+it("reuses the friendly book and hides decorative artwork and four pictorial icons from VoiceOver", () => {
+  const row = { label: "S1", accuracy: 95, speed: 100, hesitation: 2 };
+  render(<ReadingProgress rows={[row]} latest={row} period="Sample period" onTips={() => {}} />);
+  const artwork = screen.getByTestId("analytics-reading-illustration", { includeHiddenElements: true });
+  expect(artwork.props.accessibilityElementsHidden).toBe(true);
+  expect(artwork.props.importantForAccessibility).toBe("no-hide-descendants");
+  expect(artwork.props.pointerEvents).toBe("none");
+  expect(screen.queryByLabelText("ReadBuddy smiling book character")).toBeNull();
+  expect(screen.getByLabelText("ReadBuddy smiling book character", { includeHiddenElements: true })).toBeTruthy();
+  const icons = screen.getAllByTestId("analytics-metric-icon", { includeHiddenElements: true });
+  expect(icons).toHaveLength(4);
+  for (const icon of icons) {
+    expect(icon.props.accessibilityElementsHidden).toBe(true);
+    expect(icon.props.importantForAccessibility).toBe("no-hide-descendants");
+    expect(StyleSheet.flatten(icon.props.style).position).toBeUndefined();
+  }
+  for (const label of ["Completed Sessions: 1", "Reading Accuracy: 95 %", "Reading Speed: 100 WPM", "Hesitation Frequency: 2 per 100 attempted words"]) expect(screen.getByLabelText(label)).toBeTruthy();
+  expect(screen.getByRole("header", { name: "My Reading Analytics" })).toBeTruthy();
+  expect(screen.getByTestId("bar-accuracy-0")).toBeTruthy();
+  expect(screen.getByRole("button", { name: "View Reading Tips" })).toBeTruthy();
 });
