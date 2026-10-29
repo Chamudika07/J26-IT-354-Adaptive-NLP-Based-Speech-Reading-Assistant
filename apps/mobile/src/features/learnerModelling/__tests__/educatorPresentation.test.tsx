@@ -59,3 +59,30 @@ it("keeps missing evidence honest and actions reachable on small screens with la
   expect(screen.getByText("My Students")).toBeTruthy();
   Dimensions.set({ window: { width: 390, height: 844, scale: 2, fontScale: 1 } });
 });
+
+it("uses a sky-blue reading header, mint overview and distinct student accents without changing evidence", () => {
+  publishScenario(3, sample(3));
+  render(<EducatorStudents><Text>Independent example</Text></EducatorStudents>);
+  expect(StyleSheet.flatten(screen.getByTestId("teacher-header").props.style).backgroundColor).toBe("#EEF5FF");
+  expect(StyleSheet.flatten(screen.getByTestId("teacher-class-overview").props.style).backgroundColor).toBe("#EAFBF1");
+  for (const [index, color] of ["#3182F6", "#8B5CF6", "#22C55E"].entries()) {
+    const card = screen.getByTestId(`student-card-${index}`);
+    expect(StyleSheet.flatten(card.props.style)).toMatchObject({ borderLeftColor: color, backgroundColor: "#FFFFFF", minHeight: 44 });
+    expect(within(card).getByText("View Reading Progress")).toBeTruthy();
+    expect(within(card).getByText(/Accuracy:/)).toBeTruthy();
+    expect(within(card).getByText(/Speed:/)).toBeTruthy();
+  }
+  expect(screen.queryByLabelText("ReadBuddy smiling book character")).toBeNull();
+  const artwork = screen.getAllByTestId("teacher-artwork", { includeHiddenElements: true });
+  expect(artwork).toHaveLength(5);
+  for (const decoration of artwork) {
+    expect(decoration.props.accessibilityElementsHidden).toBe(true);
+    expect(decoration.props.importantForAccessibility).toBe("no-hide-descendants");
+    expect(decoration.props.pointerEvents).toBe("none");
+    expect(StyleSheet.flatten(decoration.props.style).position).toBeUndefined();
+  }
+  const download = screen.getByRole("button", { name: "Download Class Analytics Report" });
+  expect(StyleSheet.flatten(download.props.style).backgroundColor).toBe("#1D4ED8");
+  expect(StyleSheet.flatten(download.props.style).minHeight).toBeGreaterThanOrEqual(44);
+  expect(screen.getAllByText("Demo \u00b7 Fictional classroom data")).toHaveLength(1);
+});
