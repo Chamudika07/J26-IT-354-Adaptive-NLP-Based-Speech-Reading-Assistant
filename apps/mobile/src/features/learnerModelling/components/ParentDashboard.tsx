@@ -4,7 +4,11 @@ import { useState } from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import type { GuardianArtifact } from "../preview/roleScenarioResults";
 import type { GuardianDashboardPreview, MetricKey } from "../types";
-import { palette, radii } from "../theme";
+import { palette, radii, softShadow } from "../theme";
+
+import { ReadingBuddyIllustration } from "./ReadingBuddyIllustration";
+
+const metricArt = { reading_accuracy: { accent: "#3182F6", background: "#EEF5FF", ink: "#153E75", icon: "\uD83C\uDFAF" }, reading_fluency_wpm: { accent: "#22C55E", background: "#EAFBF1", ink: "#166534", icon: "\u23F1\uFE0F" }, hesitation_rate_per_word: { accent: "#8B5CF6", background: "#F4EFFF", ink: "#5B21B6", icon: "\u23F8\uFE0F" } };
 
 type Metric = { key: MetricKey; first: number | null; latest: number | null; count?: number; missing?: number; sufficient: boolean; direction: string; explanation: string; detail?: string };
 type Context = { label: string; sessions: number; metrics: Metric[] };
@@ -41,13 +45,18 @@ export function ParentDashboard({ projection, dashboard, selection, onSeparate }
     notes: [...(projection?.evidence_limitations ?? dashboard?.limitations ?? []), projection?.disclaimer ?? dashboard?.disclaimer ?? ""],
   } : null;
   return <ScrollView style={s.scroll} contentContainerStyle={s.content}>
-    <Text accessibilityRole="header" style={s.title}>Parent Dashboard</Text>
-    <Text style={s.note}>{"Demo \u00b7 Fictional data"}</Text>
+    <View testID="parent-header" style={s.hero}>
+      <View style={s.headerCopy}><Text accessibilityRole="header" style={s.title}>Parent Dashboard</Text><Text style={s.note}>{"Demo \u00b7 Fictional data"}</Text></View>
+      <ParentReadingArtwork />
+    </View>
     {selection ? <Text accessibilityLiveRegion="polite" style={s.note}>Selected reading scenario: {selection}</Text> : <Text style={s.note}>Independent example. It does not follow the Learner&apos;s selected scenario.</Text>}
     {!available ? <Text accessibilityRole="alert" style={s.body}>These sample results are unavailable. Select a matching sample in Learner view or choose a separate example.</Text> : <>
+      <View testID="parent-overview" style={s.overview}>
+      <View style={s.overviewHeading}><View style={s.headerCopy}><Text accessibilityRole="header" style={s.heading}>Reading Overview</Text>{start && end ? <Text style={s.note}>{date(start)} to {date(end)} (end not included)</Text> : null}</View><View testID="parent-book-art" pointerEvents="none" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants"><ReadingBuddyIllustration compact /></View></View>
       <View style={s.metrics}>
-        <View style={s.metric}><Text style={s.value}>{count}</Text><Text style={s.body}>Completed Sessions</Text><Text style={s.note}>{sessions(count)} completed</Text></View>
-        {keys.map(key => { const m = latest?.metrics.find(m => m.key === key); const [label, unit] = labels[key]; return <View key={key} testID={`parent-${key}`} accessibilityLabel={`${label}: ${value(m?.latest)} ${unit}`} style={s.metric}><Text style={s.value}>{value(m?.latest)}</Text><Text style={s.body}>{label}</Text><Text style={s.note}>{unit}</Text></View>; })}
+        <View testID="parent-sessions" style={[s.metric, { backgroundColor: "#FFF7E6", borderTopColor: "#FFB020" }]}><ParentIcon symbol={"\uD83D\uDCDA"} /><Text style={s.value}>{count}</Text><Text style={s.body}>Completed Sessions</Text><Text style={s.note}>{sessions(count)} completed</Text></View>
+        {keys.map(key => { const m = latest?.metrics.find(m => m.key === key); const [label, unit] = labels[key]; return <View key={key} testID={`parent-${key}`} accessibilityLabel={`${label}: ${value(m?.latest)} ${unit}`} style={[s.metric, { backgroundColor: metricArt[key].background, borderTopColor: metricArt[key].accent }]}><ParentIcon symbol={metricArt[key].icon} /><Text style={[s.value, { color: metricArt[key].ink }]}>{value(m?.latest)}</Text><Text style={s.body}>{label}</Text><Text style={s.note}>{unit}</Text></View>; })}
+      </View>
       </View>
       {contexts.length > 1 ? <Text style={s.note}>Latest results: {latest?.label}. Contexts are compared separately.</Text> : null}
       <View style={s.card}><Text accessibilityRole="header" style={s.heading}>Progress Summary</Text><Text style={s.body}>{status}</Text></View>
@@ -85,11 +94,35 @@ export function ParentDashboard({ projection, dashboard, selection, onSeparate }
     {!available && onSeparate ? <Pressable accessibilityRole="button" onPress={onSeparate} style={s.action}><Text style={s.actionText}>View separate example</Text></Pressable> : null}
   </ScrollView>;
 }
+/** Original local parent-and-child artwork, never a learner identity. */
+function ParentReadingArtwork() {
+  return <View testID="parent-reading-art" pointerEvents="none" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={s.familyArt}>
+    <View style={s.parentBody} /><View style={s.parentHead}><View style={s.faceEyes}><View style={s.eye} /><View style={s.eye} /></View><View style={s.smile} /></View>
+    <View style={s.childBody} /><View style={s.childHead}><View style={s.faceEyes}><View style={s.eye} /><View style={s.eye} /></View><View style={s.smile} /></View>
+    <Text allowFontScaling={false} style={s.familyBook}>{"\uD83D\uDCD6"}</Text><Text allowFontScaling={false} style={s.star}>{"\u2605"}</Text>
+  </View>;
+}
+function ParentIcon({ symbol }: { symbol: string }) {
+  return <View testID="parent-metric-art" pointerEvents="none" accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants" style={s.iconBadge}><Text allowFontScaling={false} style={s.icon}>{symbol}</Text></View>;
+}
 const s = StyleSheet.create({
+  hero: { flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 8, padding: 12, borderRadius: 22, backgroundColor: "#EEF5FF", borderWidth: 1, borderColor: "#D7E7FF" },
+  headerCopy: { flexGrow: 1, flexShrink: 1, flexBasis: 150, gap: 6 },
+  familyArt: { width: 110, height: 84, borderRadius: 18, backgroundColor: "#EAFBF1", marginLeft: "auto" },
+  parentHead: { position: "absolute", top: 9, left: 12, width: 34, height: 34, borderRadius: 17, backgroundColor: "#F2C6A4", alignItems: "center" },
+  childHead: { position: "absolute", top: 25, right: 14, width: 28, height: 28, borderRadius: 14, backgroundColor: "#B77A50", alignItems: "center" },
+  parentBody: { position: "absolute", top: 40, left: 7, width: 46, height: 36, borderRadius: 16, backgroundColor: "#3182F6" },
+  childBody: { position: "absolute", top: 51, right: 8, width: 39, height: 25, borderRadius: 13, backgroundColor: "#8B5CF6" },
+  faceEyes: { flexDirection: "row", gap: 8, marginTop: 10 }, eye: { width: 3, height: 3, borderRadius: 2, backgroundColor: "#07142B" },
+  smile: { width: 10, height: 5, borderBottomWidth: 2, borderColor: "#07142B", borderRadius: 5, marginTop: 3 },
+  familyBook: { position: "absolute", bottom: 0, left: 32, fontSize: 32, lineHeight: 40 }, star: { position: "absolute", top: 1, right: 12, fontSize: 14, color: "#FFB020" },
+  overview: { padding: 12, gap: 10, borderRadius: 22, backgroundColor: "#FFFFFF", ...softShadow },
+  overviewHeading: { flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 8 },
+  iconBadge: { width: 32, height: 32, borderRadius: 10, backgroundColor: "#FFFFFF", alignItems: "center", justifyContent: "center" }, icon: { fontSize: 20, lineHeight: 26 },
   scroll: { backgroundColor: palette.paper }, content: { padding: 16, paddingBottom: 112, gap: 12 },
-  title: { color: palette.primaryDark, fontSize: 22, fontWeight: "900" }, heading: { color: palette.primaryDark, fontSize: 17, fontWeight: "800" },
+  title: { color: "#07142B", fontSize: 22, fontWeight: "900" }, heading: { color: "#07142B", fontSize: 17, fontWeight: "800" },
   body: { color: palette.ink, fontSize: 15, lineHeight: 22 }, note: { color: palette.muted, fontSize: 12, lineHeight: 18 }, value: { color: palette.primaryDark, fontSize: 23, fontWeight: "900" },
-  metrics: { flexDirection: "row", flexWrap: "wrap", gap: 8 }, metric: { backgroundColor: palette.surface, borderRadius: radii.medium, padding: 10, gap: 4, flexBasis: 130, flexGrow: 1 },
+  metrics: { flexDirection: "row", flexWrap: "wrap", gap: 8 }, metric: { backgroundColor: palette.surface, borderRadius: radii.medium, padding: 12, gap: 6, borderTopWidth: 4, flexBasis: 130, flexGrow: 1 },
   card: { backgroundColor: palette.surface, borderRadius: radii.medium, padding: 12, gap: 8 }, comparison: { gap: 6 }, track: { height: 6, backgroundColor: palette.primarySoft },
   action: { minHeight: 44, padding: 12, borderRadius: radii.small, backgroundColor: palette.primarySoft, justifyContent: "center" }, actionText: { color: palette.primaryDark, fontSize: 15, fontWeight: "700" },
 });

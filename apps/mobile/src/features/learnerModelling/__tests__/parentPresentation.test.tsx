@@ -49,3 +49,26 @@ it("fails closed when a matching Guardian artifact is missing", () => {
   expect(screen.getByRole("alert")).toBeTruthy(); expect(screen.queryByTestId("parent-reading_accuracy")).toBeNull();
   expect(screen.getByRole("button", { name: "View separate example" })).toBeTruthy();
 });
+
+it("adds restrained Guardian artwork, metric colors and a styled PDF action while retaining evidence", () => {
+  const p = projection(3);
+  render(<ParentDashboard projection={p} selection="Sample 3" />);
+  expect(StyleSheet.flatten(screen.getByTestId("parent-header").props.style).backgroundColor).toBe("#EEF5FF");
+  expect(screen.getByRole("header", { name: "Reading Overview" })).toBeTruthy();
+  expect(screen.getByText("3 sessions completed")).toBeTruthy();
+  for (const [key, background, accent] of [
+    ["reading_accuracy", "#EEF5FF", "#3182F6"], ["reading_fluency_wpm", "#EAFBF1", "#22C55E"], ["hesitation_rate_per_word", "#F4EFFF", "#8B5CF6"],
+  ]) expect(StyleSheet.flatten(screen.getByTestId(`parent-${key}`).props.style)).toMatchObject({ backgroundColor: background, borderTopColor: accent });
+  expect(StyleSheet.flatten(screen.getByTestId("parent-sessions").props.style).backgroundColor).toBe("#FFF7E6");
+  for (const name of ["parent-reading-art", "parent-book-art"]) {
+    const art = screen.getByTestId(name, { includeHiddenElements: true });
+    expect(art.props.accessibilityElementsHidden).toBe(true);
+    expect(art.props.importantForAccessibility).toBe("no-hide-descendants");
+    expect(art.props.pointerEvents).toBe("none");
+  }
+  expect(screen.queryByLabelText("ReadBuddy smiling book character")).toBeNull();
+  expect(screen.getAllByTestId("parent-metric-art", { includeHiddenElements: true })).toHaveLength(4);
+  expect(StyleSheet.flatten(screen.getByRole("button", { name: "Download Progress Report" }).props.style)).toMatchObject({ backgroundColor: "#1D4ED8", minHeight: 48 });
+  expect(screen.getAllByText("Demo \u00b7 Fictional data")).toHaveLength(1);
+  expect(screen.getByRole("button", { name: "About these results" }).props.accessibilityState.expanded).toBe(false);
+});
