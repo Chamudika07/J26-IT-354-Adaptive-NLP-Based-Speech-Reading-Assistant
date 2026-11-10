@@ -1,0 +1,23 @@
+{
+  "expo": {
+    "name": "Reading Companion",
+    "slug": "j26-it-354-reading",
+    "scheme": "j26reading",
+    "version": "0.1.0",
+    "orientation": "default",
+    "platforms": ["ios", "android"],
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-status-bar"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "lk.sliit.j26it354"
+    },
+    "android": {
+      "package": "lk.sliit.j26it354",
+      "allowBackup": false
+    }
+  }
+}

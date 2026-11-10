@@ -1,5 +1,10 @@
 # Learner Profile & Preferences API
 
+This document records the original profile/preferences scope. Administrator-managed
+profile creation and educator-grant creation/revocation are now available through
+the [account onboarding workflow](account-onboarding.md). The existing read and
+preference authorization rules below remain unchanged.
+
 Four endpoints extend the existing modular monolith. This sprint changes no tables,
 indexes, dependencies, or migrations. Alembic remains at `0005_auth_sessions`.
 No profile editing, learner creation, relationship management, consent execution,

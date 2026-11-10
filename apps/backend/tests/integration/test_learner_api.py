@@ -472,7 +472,7 @@ def test_consent_evidence_cannot_grant_access(auth_client, path, db_session, act
     )
 
 
-def test_no_profile_edit_or_relationship_endpoints(auth_client, path):
+def test_no_profile_edit_and_non_admin_cannot_create_profiles(auth_client, path):
     learner, headers, _, _ = path("self")
     assert (
         auth_client.patch(
@@ -480,7 +480,12 @@ def test_no_profile_edit_or_relationship_endpoints(auth_client, path):
         ).status_code
         == 405
     )
-    assert auth_client.post("/api/v1/learners", headers=headers, json={}).status_code == 405
+    assert (
+        auth_client.post(
+            "/api/v1/learners", headers=headers, json={"display_name": "Synthetic reader"}
+        ).status_code
+        == 403
+    )
 
 
 @pytest.mark.parametrize(

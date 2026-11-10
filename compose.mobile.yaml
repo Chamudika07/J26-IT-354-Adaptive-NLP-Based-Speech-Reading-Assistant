@@ -1,0 +1,7 @@
+# Opt-in LAN access for the API only. Requires Docker Compose 2.24.4+.
+# Keep MOBILE_API_BIND_HOST equal to your host's private LAN IPv4 address.
+services:
+  backend:
+    ports: !override
+      - "127.0.0.1:${API_PORT:-8000}:8000"
+      - "${MOBILE_API_BIND_HOST:?Set MOBILE_API_BIND_HOST to the host private LAN IPv4 address}:${API_PORT:-8000}:8000"

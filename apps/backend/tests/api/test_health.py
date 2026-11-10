@@ -62,7 +62,10 @@ def test_only_approved_endpoints_are_exposed(client: TestClient) -> None:
         "/api/v1/auth/refresh",
         "/api/v1/auth/logout",
         "/api/v1/auth/me",
+        "/api/v1/auth/users",
         "/api/v1/learners",
+        "/api/v1/learners/{learner_id}/educator-grants",
+        "/api/v1/learners/{learner_id}/educator-grants/{grant_id}/revoke",
         "/api/v1/learners/{learner_id}",
         "/api/v1/learners/{learner_id}/preferences",
     }

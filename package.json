@@ -1,0 +1,13 @@
+{
+  "name": "j26-it-354",
+  "private": true,
+  "workspaces": ["apps/mobile", "packages/api-client"],
+  "scripts": {
+    "mobile": "npm run start --workspace @j26/mobile",
+    "api:generate": "openapi-typescript packages/api-client/openapi.json -o packages/api-client/src/schema.ts",
+    "typecheck": "npm run typecheck --workspace @j26/mobile",
+    "test:mobile": "tsx --test apps/mobile/tests/*.test.ts",
+    "test:mobile:live": "tsx --test --test-concurrency=1 apps/mobile/tests/live/*.test.ts"
+  },
+  "devDependencies": {"openapi-typescript": "^7.13.0", "tsx": "^4.21.0"}
+}

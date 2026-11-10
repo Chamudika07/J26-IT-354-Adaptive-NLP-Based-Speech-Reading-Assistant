@@ -1,5 +1,10 @@
 # Authentication and authorization foundation
 
+This document records the original foundation scope. Administrator-managed educator
+creation and a local first-administrator CLI are now available; see
+[account onboarding](account-onboarding.md). Public self-registration and recovery
+remain unavailable. The historical endpoint table below covers authentication only.
+
 This sprint adds authentication and action-scoped learner authorization to the same
 FastAPI modular monolith and PostgreSQL database. It adds no registration, recovery,
 user/role administration, content-processing, or consent-execution endpoints.

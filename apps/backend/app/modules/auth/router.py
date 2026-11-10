@@ -1,12 +1,23 @@
-"""Only the four approved authentication endpoints; no account administration."""
+"""Authentication and administrator-managed educator provisioning."""
 
 from fastapi import APIRouter, Response
 
 from app.modules.auth import service
 from app.modules.auth.dependencies import Authenticated, Database, RuntimeSettings
+from app.modules.auth.provisioning import create_educator
+from app.modules.auth.provisioning_schemas import AccountCreate, AccountCreated
 from app.modules.auth.schemas import LoginRequest, MeResponse, RefreshRequest, TokenResponse
 
 router = APIRouter()
+
+
+@router.post("/users", response_model=AccountCreated, status_code=201)
+def create_user(
+    payload: AccountCreate, principal: Authenticated, db: Database, response: Response
+) -> AccountCreated:
+    """Administrator only. Create an educator account; learner access is assigned separately."""
+    response.headers["Cache-Control"] = "no-store"
+    return create_educator(db, principal, payload)
 
 
 @router.post("/login", response_model=TokenResponse)

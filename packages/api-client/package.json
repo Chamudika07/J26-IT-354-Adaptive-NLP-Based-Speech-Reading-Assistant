@@ -1,0 +1,7 @@
+{
+  "name": "@j26/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {".": "./src/index.ts", "./schema": "./src/schema.ts"},
+  "dependencies": {"openapi-fetch": "^0.15.0"}
+}
